@@ -1036,37 +1036,65 @@ export default function NutritionTracker() {
           )}
           {showDropdown && filtered.length > 0 && !selected && (
             <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-20 py-1 max-h-48 overflow-y-auto">
-              {filtered.map((f) => (
-                <button
-                  key={f.name}
-                  onClick={() => selectFood(f)}
-                  className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between"
-                >
-                  <span>{f.name}</span>
-                  <span className="text-muted-foreground">{f.calories} cal</span>
-                </button>
-              ))}
+              {filtered.map((f) => {
+                const unit = UNIT_MAP[f.name];
+                return (
+                  <button
+                    key={f.name}
+                    onClick={() => selectFood(f)}
+                    className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between"
+                  >
+                    <span>{f.name} {unit && <span className="text-muted-foreground text-[10px]">per {unit.unitLabel} ≈{unit.gramsPerUnit}g</span>}</span>
+                    <span className="text-muted-foreground">{f.calories} cal</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
-        <div className="flex gap-2">
-          <div className="relative">
-            <input
-              type="number"
-              value={grams}
-              onChange={(e) => setGrams(e.target.value)}
-              className="w-20 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-              min="1"
-            />
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">g</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-2 items-center">
+            <div className="relative">
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder={effectiveGramMode ? "grams" : "How many?"}
+                className="w-24 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+                min="0.1"
+                step={effectiveGramMode ? "1" : "0.5"}
+              />
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                {effectiveGramMode ? "g" : "×"}
+              </span>
+            </div>
+            <button
+              onClick={addEntry}
+              disabled={!selected}
+              className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <button
-            onClick={addEntry}
-            disabled={!selected}
-            className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
+          {/* Unit toggle & conversion info */}
+          {selected && hasUnit && (
+            <div className="flex flex-col gap-0.5">
+              <button
+                onClick={() => {
+                  setUseGramMode(!useGramMode);
+                  setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100));
+                }}
+                className="text-[10px] text-accent hover:underline self-start"
+              >
+                {effectiveGramMode ? `Use ${selectedUnit!.unitLabel} count` : "Enter grams instead"}
+              </button>
+              {!effectiveGramMode && quantity && parseFloat(quantity) > 0 && (
+                <span className="text-[10px] text-muted-foreground">
+                  {quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
