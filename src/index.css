@@ -172,281 +172,104 @@
 }
 
 @layer utilities {
-  .glass-card {
-    background: hsl(var(--card));
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: var(--radius);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-  }
-
-  .light .glass-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  }
-
-  .glass-card:hover {
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.03);
-  }
-
   /* ===== SECTION CARD BASE ===== */
   .section-card {
+    background: #13131f;
     border: 1px solid var(--section-border, rgba(255, 255, 255, 0.1));
-    border-radius: 20px;
+    border-radius: 16px;
+    border-top: 3px solid var(--section-accent-raw, rgba(255, 255, 255, 0.2));
     transition: all 0.25s ease;
     position: relative;
     overflow: hidden;
     padding: 24px;
   }
 
-  /* Glow orb pseudo-element (dark mode only) */
-  .section-card::after {
-    content: '';
-    position: absolute;
-    top: -30px;
-    right: -30px;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--section-orb, transparent) 0%, transparent 70%);
-    opacity: 0.25;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .light .section-card::after {
-    opacity: 0;
-  }
-
   .section-card:hover {
     border-color: var(--section-hover-border, rgba(255, 255, 255, 0.2));
+    border-top-color: var(--section-accent-raw, rgba(255, 255, 255, 0.4));
     transform: translateY(-2px);
-    box-shadow: 0 0 30px var(--section-glow, transparent);
   }
 
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 
-  /* ===== DARK MODE CARD BACKGROUNDS — Mesh Gradients ===== */
+  /* ===== DARK MODE SECTION VARIANTS ===== */
   .section-focus {
-    --section-accent: hsl(var(--focus-accent));
-    --section-glow: hsla(263, 70%, 50%, 0.25);
-    --section-orb: #a78bfa;
+    --section-accent-raw: #7c3aed;
     --section-border: rgba(124, 58, 237, 0.3);
-    --section-hover-border: rgba(124, 58, 237, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #4c1d95 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #2e1065 0px, transparent 60%),
-      #0f0a1a;
+    --section-hover-border: rgba(124, 58, 237, 0.6);
   }
   .section-study {
-    --section-accent: hsl(var(--study-accent));
-    --section-glow: hsla(192, 82%, 31%, 0.25);
-    --section-orb: #22d3ee;
+    --section-accent-raw: #0e7490;
     --section-border: rgba(14, 116, 144, 0.3);
-    --section-hover-border: rgba(14, 116, 144, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #155e75 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #0e7490 0px, transparent 60%),
-      #00080f;
+    --section-hover-border: rgba(14, 116, 144, 0.6);
   }
   .section-nutrition {
-    --section-accent: hsl(var(--nutrition-accent));
-    --section-glow: hsla(187, 72%, 37%, 0.25);
-    --section-orb: #06b6d4;
+    --section-accent-raw: #0891b2;
     --section-border: rgba(8, 145, 178, 0.3);
-    --section-hover-border: rgba(8, 145, 178, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #164e63 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #0e7490 0px, transparent 60%),
-      #00080f;
+    --section-hover-border: rgba(8, 145, 178, 0.6);
   }
   .section-habits {
-    --section-accent: hsl(var(--habits-accent));
-    --section-glow: hsla(330, 81%, 60%, 0.25);
-    --section-orb: #f472b6;
+    --section-accent-raw: #db2777;
     --section-border: rgba(219, 39, 119, 0.3);
-    --section-hover-border: rgba(219, 39, 119, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #831843 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #500724 0px, transparent 60%),
-      #0f0010;
+    --section-hover-border: rgba(219, 39, 119, 0.6);
   }
   .section-goals {
-    --section-accent: hsl(var(--goals-accent));
-    --section-glow: hsla(217, 91%, 60%, 0.25);
-    --section-orb: #60a5fa;
+    --section-accent-raw: #2563eb;
     --section-border: rgba(37, 99, 235, 0.3);
-    --section-hover-border: rgba(37, 99, 235, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #1e3a8a 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #1e40af 0px, transparent 60%),
-      #00050f;
+    --section-hover-border: rgba(37, 99, 235, 0.6);
   }
   .section-mood {
-    --section-accent: hsl(var(--mood-accent));
-    --section-glow: hsla(350, 89%, 60%, 0.25);
-    --section-orb: #fb7185;
+    --section-accent-raw: #e11d48;
     --section-border: rgba(225, 29, 72, 0.3);
-    --section-hover-border: rgba(225, 29, 72, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #9f1239 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #881337 0px, transparent 60%),
-      #0f0008;
+    --section-hover-border: rgba(225, 29, 72, 0.6);
   }
   .section-chatbot {
-    --section-accent: hsl(var(--chatbot-accent));
-    --section-glow: hsla(271, 81%, 56%, 0.25);
-    --section-orb: #c084fc;
+    --section-accent-raw: #9333ea;
     --section-border: rgba(147, 51, 234, 0.3);
-    --section-hover-border: rgba(147, 51, 234, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #581c87 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #6b21a8 0px, transparent 60%),
-      #08000f;
+    --section-hover-border: rgba(147, 51, 234, 0.6);
   }
   .section-music {
-    --section-accent: hsl(var(--pomodoro-accent));
-    --section-glow: hsla(25, 95%, 53%, 0.2);
-    --section-orb: #fb923c;
-    --section-border: rgba(234, 88, 12, 0.3);
-    --section-hover-border: rgba(234, 88, 12, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #7c2d12 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #431407 0px, transparent 60%),
-      #0f0a00;
+    --section-accent-raw: #f97316;
+    --section-border: rgba(249, 115, 22, 0.3);
+    --section-hover-border: rgba(249, 115, 22, 0.6);
   }
   .section-weekly {
-    --section-accent: hsl(var(--goals-accent));
-    --section-glow: hsla(217, 91%, 60%, 0.2);
-    --section-orb: #60a5fa;
+    --section-accent-raw: #2563eb;
     --section-border: rgba(37, 99, 235, 0.3);
-    --section-hover-border: rgba(37, 99, 235, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #1e3a8a 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #172554 0px, transparent 60%),
-      #00050f;
+    --section-hover-border: rgba(37, 99, 235, 0.6);
   }
   .section-revision {
-    --section-accent: hsl(var(--revision-accent));
-    --section-glow: hsla(239, 84%, 67%, 0.25);
-    --section-orb: #818cf8;
+    --section-accent-raw: #4f46e5;
     --section-border: rgba(79, 70, 229, 0.3);
-    --section-hover-border: rgba(79, 70, 229, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #312e81 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #3730a3 0px, transparent 60%),
-      #05050f;
+    --section-hover-border: rgba(79, 70, 229, 0.6);
   }
   .section-pomodoro {
-    --section-accent: hsl(var(--pomodoro-accent));
-    --section-glow: hsla(25, 95%, 53%, 0.25);
-    --section-orb: #fb923c;
-    --section-border: rgba(234, 88, 12, 0.3);
-    --section-hover-border: rgba(234, 88, 12, 0.7);
-    background:
-      radial-gradient(at 0% 0%, #7c2d12 0px, transparent 60%),
-      radial-gradient(at 100% 100%, #431407 0px, transparent 60%),
-      #0f0a00;
+    --section-accent-raw: #f97316;
+    --section-border: rgba(249, 115, 22, 0.3);
+    --section-hover-border: rgba(249, 115, 22, 0.6);
   }
 
-  /* ===== LIGHT MODE CARD BACKGROUNDS — Glassmorphism ===== */
-  .light .section-focus {
-    background: rgba(139, 92, 246, 0.08);
+  /* ===== LIGHT MODE CARD STYLES ===== */
+  .light .section-card {
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(20px);
-    --section-border: rgba(124, 58, 237, 0.4);
-    --section-hover-border: rgba(124, 58, 237, 0.7);
-    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.08);
-  }
-  .light .section-study {
-    background: rgba(14, 116, 144, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(14, 116, 144, 0.4);
-    --section-hover-border: rgba(14, 116, 144, 0.7);
-    box-shadow: 0 8px 32px rgba(14, 116, 144, 0.08);
-  }
-  .light .section-nutrition {
-    background: rgba(8, 145, 178, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(8, 145, 178, 0.4);
-    --section-hover-border: rgba(8, 145, 178, 0.7);
-    box-shadow: 0 8px 32px rgba(8, 145, 178, 0.08);
-  }
-  .light .section-habits {
-    background: rgba(219, 39, 119, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(219, 39, 119, 0.4);
-    --section-hover-border: rgba(219, 39, 119, 0.7);
-    box-shadow: 0 8px 32px rgba(219, 39, 119, 0.08);
-  }
-  .light .section-goals {
-    background: rgba(37, 99, 235, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(37, 99, 235, 0.4);
-    --section-hover-border: rgba(37, 99, 235, 0.7);
-    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
-  }
-  .light .section-mood {
-    background: rgba(225, 29, 72, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(225, 29, 72, 0.4);
-    --section-hover-border: rgba(225, 29, 72, 0.7);
-    box-shadow: 0 8px 32px rgba(225, 29, 72, 0.08);
-  }
-  .light .section-chatbot {
-    background: rgba(147, 51, 234, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(147, 51, 234, 0.4);
-    --section-hover-border: rgba(147, 51, 234, 0.7);
-    box-shadow: 0 8px 32px rgba(147, 51, 234, 0.08);
-  }
-  .light .section-music,
-  .light .section-pomodoro {
-    background: rgba(234, 88, 12, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(234, 88, 12, 0.4);
-    --section-hover-border: rgba(234, 88, 12, 0.7);
-    box-shadow: 0 8px 32px rgba(234, 88, 12, 0.08);
-  }
-  .light .section-weekly {
-    background: rgba(37, 99, 235, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(37, 99, 235, 0.4);
-    --section-hover-border: rgba(37, 99, 235, 0.7);
-    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
-  }
-  .light .section-revision {
-    background: rgba(79, 70, 229, 0.08);
-    backdrop-filter: blur(20px);
-    --section-border: rgba(79, 70, 229, 0.4);
-    --section-hover-border: rgba(79, 70, 229, 0.7);
-    box-shadow: 0 8px 32px rgba(79, 70, 229, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 3px solid var(--section-accent-raw, rgba(0, 0, 0, 0.1));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   }
 
   /* Section heading text colors */
-  .section-title-focus { color: hsl(var(--focus-accent)); }
-  .section-title-study { color: hsl(var(--study-accent)); }
-  .section-title-nutrition { color: hsl(var(--nutrition-accent)); }
-  .section-title-habits { color: hsl(var(--habits-accent)); }
-  .section-title-goals { color: hsl(var(--goals-accent)); }
-  .section-title-mood { color: hsl(var(--mood-accent)); }
-  .section-title-chatbot { color: hsl(var(--chatbot-accent)); }
-  .section-title-revision { color: hsl(var(--revision-accent)); }
-  .section-title-pomodoro { color: hsl(var(--pomodoro-accent)); }
-
-  .dark .section-title-focus,
-  .dark .section-title-study,
-  .dark .section-title-nutrition,
-  .dark .section-title-habits,
-  .dark .section-title-goals,
-  .dark .section-title-mood,
-  .dark .section-title-chatbot,
-  .dark .section-title-revision,
-  .dark .section-title-pomodoro {
-    color: #ffffff;
-  }
+  .section-title-focus { color: #7c3aed; }
+  .section-title-study { color: #0e7490; }
+  .section-title-nutrition { color: #0891b2; }
+  .section-title-habits { color: #db2777; }
+  .section-title-goals { color: #2563eb; }
+  .section-title-mood { color: #e11d48; }
+  .section-title-chatbot { color: #9333ea; }
+  .section-title-revision { color: #4f46e5; }
+  .section-title-pomodoro { color: #f97316; }
 
   /* Tab bar styles */
   .tab-bar {
@@ -506,72 +329,29 @@
     color: hsl(var(--foreground));
     min-height: 48px;
     padding: 12px 16px;
-    background: hsl(var(--secondary) / 0.5);
-    border: 1px solid hsl(var(--border));
+    background: #1e1e2e;
+    border: 1px solid #2a2a3d;
   }
   .input-styled:focus {
-    border-color: var(--section-accent, hsl(var(--accent)));
-    box-shadow: 0 0 0 2px var(--section-glow, hsla(263, 70%, 50%, 0.15));
+    border-color: var(--section-accent-raw, hsl(var(--accent)));
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+  }
+  .input-styled::placeholder {
+    color: #64748b;
   }
   .light .input-styled {
     background: rgba(255, 255, 255, 0.6);
+    border-color: hsl(var(--border));
   }
 
-  /* ===== DARK MODE CONTRAST FIX FOR CARD ELEMENTS ===== */
-  :root .section-card .input-styled,
-  .dark .section-card .input-styled {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+  /* Progress bar track */
+  .progress-track,
+  .section-card .bg-secondary {
+    background: #1e1e2e !important;
   }
-  :root .section-card .input-styled::placeholder,
-  .dark .section-card .input-styled::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-  }
-  :root .section-card .input-styled:focus,
-  .dark .section-card .input-styled:focus {
-    border-color: rgba(255, 255, 255, 0.5);
-  }
-  :root .section-card select.input-styled option,
-  .dark .section-card select.input-styled option {
-    background: hsl(var(--card));
-    color: hsl(var(--foreground));
-  }
-
-  /* Progress bar tracks inside cards */
-  :root .section-card .progress-track,
-  .dark .section-card .progress-track,
-  :root .section-card .bg-secondary,
-  .dark .section-card .bg-secondary {
-    background: rgba(255, 255, 255, 0.15) !important;
-  }
-  :root .section-card .bg-secondary\/40,
-  .dark .section-card .bg-secondary\/40 {
-    background: rgba(255, 255, 255, 0.08) !important;
-  }
-  :root .section-card .bg-secondary\/60,
-  .dark .section-card .bg-secondary\/60 {
-    background: rgba(255, 255, 255, 0.12) !important;
-  }
-  :root .section-card .bg-secondary\/30,
-  .dark .section-card .bg-secondary\/30 {
-    background: rgba(255, 255, 255, 0.06) !important;
-  }
-  :root .section-card .bg-secondary\/20,
-  .dark .section-card .bg-secondary\/20 {
-    background: rgba(255, 255, 255, 0.05) !important;
-  }
-
-  /* Dividers */
-  :root .section-card .border-border,
-  .dark .section-card .border-border {
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-
-  /* Tab bar inside cards */
-  :root .section-card .tab-bar,
-  .dark .section-card .tab-bar {
-    background: rgba(255, 255, 255, 0.08);
+  .light .progress-track,
+  .light .section-card .bg-secondary {
+    background: hsl(var(--secondary)) !important;
   }
 }
 
