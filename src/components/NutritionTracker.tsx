@@ -1186,46 +1186,46 @@ export default function NutritionTracker() {
       </div>
 
       {/* Search + add */}
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input value={search} onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelected(null); }} onFocus={() => setShowDropdown(true)} placeholder="Search food..." className="w-full bg-secondary/50 border border-border/60 rounded-lg pl-8 pr-8 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
-          {search && (<button onClick={() => { setSearch(""); setSelected(null); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="w-3.5 h-3.5" /></button>)}
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input value={search} onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelected(null); }} onFocus={() => setShowDropdown(true)} placeholder="Search food..." className="input-styled w-full pl-12 pr-10" />
+          {search && (<button onClick={() => { setSearch(""); setSelected(null); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>)}
           {showDropdown && filtered.length > 0 && !selected && (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-20 py-1 max-h-48 overflow-y-auto">
+            <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-xl shadow-xl z-20 py-1 max-h-64 overflow-y-auto">
               {filtered.map((f: any) => {
                 const unit = dynamicUnitMap[f.name];
                 return (
-                  <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between items-center gap-2">
-                    <span className="flex items-center gap-1.5 min-w-0">
+                  <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-4 py-3 text-[15px] text-foreground hover:bg-nutrition/5 transition-colors flex justify-between items-center gap-3 min-h-[48px]">
+                    <span className="flex items-center gap-2 min-w-0">
                       <span className="truncate">{f.name}</span>
-                      {f.tag && <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"}`}>{f.tag}</span>}
-                      {unit && <span className="text-muted-foreground text-[10px] shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
+                      {f.tag && <span className={`shrink-0 text-sm px-2 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-nutrition/15 text-nutrition" : "bg-primary/15 text-primary"}`}>{f.tag}</span>}
+                      {unit && <span className="text-muted-foreground text-sm shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
                     </span>
-                    <span className="text-muted-foreground shrink-0">{f.calories} cal</span>
+                    <span className="text-muted-foreground shrink-0 text-sm">{f.calories} cal</span>
                   </button>
                 );
               })}
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <div className="flex gap-2 items-center">
             <div className="relative">
-              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder={effectiveGramMode ? "grams" : "How many?"} className="w-24 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" min="0.1" step={effectiveGramMode ? "1" : "0.5"} />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{effectiveGramMode ? "g" : "×"}</span>
+              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder={effectiveGramMode ? "grams" : "How many?"} className="input-styled w-28 pr-8" min="0.1" step={effectiveGramMode ? "1" : "0.5"} />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{effectiveGramMode ? "g" : "×"}</span>
             </div>
-            <button onClick={addEntry} disabled={!selected} className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
-              <Plus className="w-3.5 h-3.5" />
+            <button onClick={addEntry} disabled={!selected} className="btn-primary bg-nutrition text-white hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 px-6">
+              <Plus className="w-5 h-5" />
             </button>
           </div>
           {selected && hasUnit && (
             <div className="flex flex-col gap-0.5">
-              <button onClick={() => { setUseGramMode(!useGramMode); setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100)); }} className="text-[10px] text-accent hover:underline self-start">
+              <button onClick={() => { setUseGramMode(!useGramMode); setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100)); }} className="text-sm text-nutrition hover:underline self-start">
                 {effectiveGramMode ? `Use ${selectedUnit!.unitLabel} count` : "Enter grams instead"}
               </button>
               {!effectiveGramMode && quantity && parseFloat(quantity) > 0 && (
-                <span className="text-[10px] text-muted-foreground">{quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g</span>
+                <span className="text-sm text-muted-foreground">{quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g</span>
               )}
             </div>
           )}
@@ -1234,22 +1234,22 @@ export default function NutritionTracker() {
 
       {/* Food log */}
       {data.log.length > 0 && (
-        <div className="flex flex-col gap-1 max-h-48 overflow-y-auto -mx-1 px-1">
+        <div className="flex flex-col gap-1.5 max-h-56 overflow-y-auto -mx-1 px-1">
           {data.log.map((entry) => {
             const m = entry.grams / 100;
             return (
-              <div key={entry.id} className="group flex items-center gap-2 px-2 sm:px-3 py-2 rounded-lg hover:bg-secondary/40 transition-colors">
+              <div key={entry.id} className="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-secondary/40 transition-colors">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-xs text-foreground truncate">{entry.food.name}</span>
-                    <span className="text-[10px] text-muted-foreground shrink-0">{Math.round(entry.grams)}g</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[15px] text-foreground truncate">{entry.food.name}</span>
+                    <span className="text-sm text-muted-foreground shrink-0">{Math.round(entry.grams)}g</span>
                   </div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">
+                  <div className="text-sm text-muted-foreground mt-0.5">
                     {Math.round(entry.food.calories * m)} cal · {Math.round(entry.food.protein * m)}p · {Math.round(entry.food.carbs * m)}c · {Math.round(entry.food.fat * m)}f
                   </div>
                 </div>
                 <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
-                  <Trash2 className="w-3 h-3" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             );
@@ -1257,7 +1257,13 @@ export default function NutritionTracker() {
         </div>
       )}
 
-      {data.log.length === 0 && (<p className="text-[11px] text-muted-foreground text-center py-3">Search and add foods to start tracking</p>)}
+      {data.log.length === 0 && (
+        <div className="text-center py-6">
+          <p className="text-3xl mb-2">🍽️</p>
+          <p className="text-[15px] text-muted-foreground">No food logged yet</p>
+          <p className="text-sm text-muted-foreground/60 mt-1">Search and add foods to start tracking</p>
+        </div>
+      )}
 
       {/* Custom Food Modal */}
       <Modal open={showCustomModal} onClose={() => setShowCustomModal(false)} title={editingCustom ? "Edit Custom Food" : "Create Custom Food"}>
