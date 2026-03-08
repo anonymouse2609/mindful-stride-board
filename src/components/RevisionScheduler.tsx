@@ -393,7 +393,7 @@ export default function RevisionScheduler() {
                       {isOverdue && !doneToday ? (
                         <span className="text-red-400 font-medium">Overdue by {overdueDays} day{overdueDays > 1 ? "s" : ""}</span>
                       ) : doneToday ? (
-                        <span className="text-green-400 font-medium">✓ Completed</span>
+                        <span className="text-indigo-400 font-medium">✓ Completed</span>
                       ) : (
                         <span className="text-amber-400">Due Today</span>
                       )}
