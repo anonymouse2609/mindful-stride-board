@@ -488,7 +488,7 @@ export default function SubjectStudyTimer() {
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">Energy:</span>
             {[1, 2, 3, 4, 5].map(l => (
-              <button key={l} onClick={() => setEnergyLevel(l)} className={`w-8 h-8 rounded-full text-lg transition-all ${energyLevel >= l ? "text-foreground scale-110" : "text-muted-foreground/30"}`} disabled={isRunning}>
+              <button key={l} onClick={() => setEnergyLevel(l)} className={`w-8 h-8 rounded-full text-lg transition-all ${energyLevel >= l ? "text-foreground scale-110" : "text-muted-foreground opacity-50"}`} disabled={isRunning}>
                 {l <= 2 ? "😴" : l === 3 ? "😐" : l === 4 ? "⚡" : "🔥"}
               </button>
             ))}
