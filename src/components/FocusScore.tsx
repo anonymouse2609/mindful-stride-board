@@ -184,7 +184,7 @@ function saveData(data: FocusScoreData) {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 81) return "hsl(160, 60%, 45%)";
+  if (score >= 81) return "hsl(187, 72%, 37%)";
   if (score >= 61) return "hsl(217, 91%, 60%)";
   if (score >= 41) return "hsl(38, 90%, 55%)";
   return "hsl(0, 60%, 50%)";
@@ -206,7 +206,7 @@ function getVerdict(score: number): string {
 }
 
 function getBarColor(score: number): string {
-  if (score >= 81) return "hsl(160, 60%, 45%)";
+  if (score >= 81) return "hsl(187, 72%, 37%)";
   if (score >= 61) return "hsl(217, 91%, 60%)";
   if (score >= 41) return "hsl(38, 90%, 55%)";
   return "hsl(0, 60%, 50%)";
@@ -355,14 +355,14 @@ const FocusScore = () => {
       >
         <div className="flex items-center justify-between mb-4">
          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-              <Zap className="w-[22px] h-[22px] text-white" />
+            <div className="w-8 h-8 rounded-xl bg-focus/15 flex items-center justify-center">
+              <Zap className="w-[22px] h-[22px] text-focus" />
             </div>
             <h2 className="text-[18px] font-semibold section-title-focus">Focus Score</h2>
           </div>
           {streak > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60">
-              <Flame className="w-4 h-4 text-study" />
+              <Flame className="w-4 h-4 text-pomodoro" />
               <span className="text-sm font-semibold text-foreground">{streak} day streak</span>
             </div>
           )}

@@ -5,87 +5,142 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 240 15% 5%;
-    --foreground: 220 13% 91%;
+  /* ===== DARK MODE (default) ===== */
+  :root, .dark {
+    --background: 230 25% 4%;
+    --foreground: 210 40% 98%;
 
-    --card: 240 12% 8%;
-    --card-foreground: 220 13% 91%;
+    --card: 230 20% 8%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 240 12% 8%;
-    --popover-foreground: 220 13% 91%;
+    --popover: 230 20% 8%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 220 13% 91%;
-    --primary-foreground: 240 15% 5%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 230 25% 4%;
 
-    --secondary: 240 10% 12%;
-    --secondary-foreground: 220 8% 70%;
+    --secondary: 230 15% 14%;
+    --secondary-foreground: 215 20% 65%;
 
-    --muted: 240 8% 16%;
+    --muted: 230 12% 18%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 38 70% 55%;
-    --accent-foreground: 240 15% 5%;
+    --accent: 263 70% 50%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 60% 50%;
-    --destructive-foreground: 220 13% 91%;
+    --destructive-foreground: 210 40% 98%;
 
-    --success: 152 50% 42%;
-    --success-foreground: 240 15% 5%;
+    --success: 175 60% 42%;
+    --success-foreground: 230 25% 4%;
 
     --high: 0 60% 55%;
     --medium: 38 70% 55%;
     --low: 210 50% 55%;
 
-    /* Section accent colors */
-    --focus-accent: 239 84% 67%;
-    --focus-accent-soft: 239 68% 70%;
-    --study-accent: 25 95% 53%;
-    --study-accent-soft: 29 93% 63%;
-    --nutrition-accent: 160 60% 45%;
-    --nutrition-accent-soft: 158 60% 55%;
-    --habits-accent: 271 91% 65%;
-    --habits-accent-soft: 270 76% 72%;
+    /* Section accent colors — NO GREEN */
+    --focus-accent: 263 70% 50%;
+    --focus-accent-soft: 263 60% 68%;
+    --study-accent: 192 82% 31%;
+    --study-accent-soft: 192 70% 45%;
+    --nutrition-accent: 187 72% 37%;
+    --nutrition-accent-soft: 187 60% 50%;
+    --habits-accent: 330 81% 60%;
+    --habits-accent-soft: 330 70% 70%;
     --goals-accent: 217 91% 60%;
     --goals-accent-soft: 213 94% 68%;
     --mood-accent: 350 89% 60%;
     --mood-accent-soft: 351 83% 69%;
-    --chatbot-accent: 263 70% 50%;
-    --chatbot-accent-soft: 259 60% 68%;
+    --chatbot-accent: 271 81% 56%;
+    --chatbot-accent-soft: 271 70% 68%;
+    --revision-accent: 239 84% 67%;
+    --revision-accent-soft: 239 68% 72%;
+    --pomodoro-accent: 25 95% 53%;
+    --pomodoro-accent-soft: 29 93% 63%;
 
-    /* Section tinted backgrounds */
-    --focus-bg-from: 240 30% 10%;
-    --focus-bg-to: 240 15% 5%;
-    --study-bg-from: 25 40% 7%;
-    --study-bg-to: 240 15% 5%;
-    --nutrition-bg-from: 155 35% 6%;
-    --nutrition-bg-to: 240 15% 5%;
-    --habits-bg-from: 270 30% 8%;
-    --habits-bg-to: 240 15% 5%;
-    --goals-bg-from: 217 35% 8%;
-    --goals-bg-to: 240 15% 5%;
-    --mood-bg-from: 350 30% 7%;
-    --mood-bg-to: 240 15% 5%;
-    --chatbot-bg-from: 260 25% 7%;
-    --chatbot-bg-to: 240 15% 5%;
-
-    --border: 240 8% 14%;
-    --input: 240 8% 14%;
-    --ring: 0 0% 50%;
+    --border: 230 12% 16%;
+    --input: 230 12% 16%;
+    --ring: 263 70% 50%;
 
     --radius: 1.25rem;
 
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    --sidebar-background: 240 12% 8%;
-    --sidebar-foreground: 220 13% 91%;
-    --sidebar-primary: 220 13% 91%;
-    --sidebar-primary-foreground: 240 15% 5%;
-    --sidebar-accent: 240 10% 12%;
-    --sidebar-accent-foreground: 220 8% 70%;
-    --sidebar-border: 240 8% 14%;
-    --sidebar-ring: 0 0% 50%;
+    --sidebar-background: 230 20% 8%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 40% 98%;
+    --sidebar-primary-foreground: 230 25% 4%;
+    --sidebar-accent: 230 15% 14%;
+    --sidebar-accent-foreground: 215 20% 65%;
+    --sidebar-border: 230 12% 16%;
+    --sidebar-ring: 263 70% 50%;
+  }
+
+  /* ===== LIGHT MODE ===== */
+  .light {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 222 47% 30%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 263 70% 50%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 175 60% 42%;
+    --success-foreground: 210 40% 98%;
+
+    --high: 0 72% 51%;
+    --medium: 38 92% 50%;
+    --low: 217 91% 60%;
+
+    --focus-accent: 263 70% 50%;
+    --focus-accent-soft: 263 60% 40%;
+    --study-accent: 192 82% 31%;
+    --study-accent-soft: 192 70% 28%;
+    --nutrition-accent: 187 72% 37%;
+    --nutrition-accent-soft: 187 60% 30%;
+    --habits-accent: 330 81% 60%;
+    --habits-accent-soft: 330 70% 45%;
+    --goals-accent: 217 91% 60%;
+    --goals-accent-soft: 217 80% 45%;
+    --mood-accent: 350 89% 60%;
+    --mood-accent-soft: 350 80% 45%;
+    --chatbot-accent: 271 81% 56%;
+    --chatbot-accent-soft: 271 70% 42%;
+    --revision-accent: 239 84% 67%;
+    --revision-accent-soft: 239 68% 50%;
+    --pomodoro-accent: 25 95% 53%;
+    --pomodoro-accent-soft: 25 85% 40%;
+
+    --border: 214 32% 85%;
+    --input: 214 32% 85%;
+    --ring: 263 70% 50%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 222 47% 11%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 30%;
+    --sidebar-border: 214 32% 85%;
+    --sidebar-ring: 263 70% 50%;
   }
 }
 
@@ -98,7 +153,17 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
     letter-spacing: -0.01em;
-    color: hsl(220, 13%, 91%);
+  }
+
+  .dark body,
+  :root body {
+    color: #f8fafc;
+  }
+
+  .light body {
+    color: #0f172a;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 25%, #f5f3ff 50%, #fdf4ff 75%, #fff7ed 100%);
+    background-attachment: fixed;
   }
 
   code, .font-mono {
@@ -114,25 +179,28 @@
     transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
 
+  .light .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
   .glass-card:hover {
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.03);
   }
 
+  /* ===== SECTION CARD BASE ===== */
   .section-card {
     border: 1px solid var(--section-border, rgba(255, 255, 255, 0.1));
     border-radius: 20px;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     position: relative;
     overflow: hidden;
     padding: 24px;
-    color: #f1f5f9;
   }
 
-  .section-card::before {
-    display: none;
-  }
-
-  /* Glow orb pseudo-element */
+  /* Glow orb pseudo-element (dark mode only) */
   .section-card::after {
     content: '';
     position: absolute;
@@ -147,6 +215,10 @@
     z-index: 0;
   }
 
+  .light .section-card::after {
+    opacity: 0;
+  }
+
   .section-card:hover {
     border-color: var(--section-hover-border, rgba(255, 255, 255, 0.2));
     transform: translateY(-2px);
@@ -157,97 +229,224 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 
-  /* Section-specific styles — solid vibrant backgrounds, no fade */
+  /* ===== DARK MODE CARD BACKGROUNDS — Mesh Gradients ===== */
   .section-focus {
     --section-accent: hsl(var(--focus-accent));
-    --section-glow: hsla(239, 84%, 67%, 0.25);
-    --section-orb: #818cf8;
-    --section-border: #4f46e5;
-    --section-hover-border: #818cf8;
-    background: #1e1b4b;
+    --section-glow: hsla(263, 70%, 50%, 0.25);
+    --section-orb: #a78bfa;
+    --section-border: rgba(124, 58, 237, 0.3);
+    --section-hover-border: rgba(124, 58, 237, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #4c1d95 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #2e1065 0px, transparent 60%),
+      #0f0a1a;
   }
   .section-study {
     --section-accent: hsl(var(--study-accent));
-    --section-glow: hsla(25, 95%, 53%, 0.25);
-    --section-orb: #fb923c;
-    --section-border: #ea580c;
-    --section-hover-border: #fb923c;
-    background: #1c0a00;
+    --section-glow: hsla(192, 82%, 31%, 0.25);
+    --section-orb: #22d3ee;
+    --section-border: rgba(14, 116, 144, 0.3);
+    --section-hover-border: rgba(14, 116, 144, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #155e75 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #0e7490 0px, transparent 60%),
+      #00080f;
   }
   .section-nutrition {
     --section-accent: hsl(var(--nutrition-accent));
-    --section-glow: hsla(160, 60%, 45%, 0.25);
-    --section-orb: #34d399;
-    --section-border: #059669;
-    --section-hover-border: #34d399;
-    background: #022c1e;
+    --section-glow: hsla(187, 72%, 37%, 0.25);
+    --section-orb: #06b6d4;
+    --section-border: rgba(8, 145, 178, 0.3);
+    --section-hover-border: rgba(8, 145, 178, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #164e63 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #0e7490 0px, transparent 60%),
+      #00080f;
   }
   .section-habits {
     --section-accent: hsl(var(--habits-accent));
-    --section-glow: hsla(271, 91%, 65%, 0.25);
-    --section-orb: #c084fc;
-    --section-border: #9333ea;
-    --section-hover-border: #c084fc;
-    background: #1a0533;
+    --section-glow: hsla(330, 81%, 60%, 0.25);
+    --section-orb: #f472b6;
+    --section-border: rgba(219, 39, 119, 0.3);
+    --section-hover-border: rgba(219, 39, 119, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #831843 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #500724 0px, transparent 60%),
+      #0f0010;
   }
   .section-goals {
     --section-accent: hsl(var(--goals-accent));
     --section-glow: hsla(217, 91%, 60%, 0.25);
     --section-orb: #60a5fa;
-    --section-border: #2563eb;
-    --section-hover-border: #60a5fa;
-    background: #0c1547;
+    --section-border: rgba(37, 99, 235, 0.3);
+    --section-hover-border: rgba(37, 99, 235, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #1e3a8a 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #1e40af 0px, transparent 60%),
+      #00050f;
   }
   .section-mood {
     --section-accent: hsl(var(--mood-accent));
     --section-glow: hsla(350, 89%, 60%, 0.25);
     --section-orb: #fb7185;
-    --section-border: #e11d48;
-    --section-hover-border: #fb7185;
-    background: #2d0a16;
+    --section-border: rgba(225, 29, 72, 0.3);
+    --section-hover-border: rgba(225, 29, 72, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #9f1239 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #881337 0px, transparent 60%),
+      #0f0008;
   }
   .section-chatbot {
     --section-accent: hsl(var(--chatbot-accent));
-    --section-glow: hsla(263, 70%, 50%, 0.25);
-    --section-orb: #a78bfa;
-    --section-border: #7c3aed;
-    --section-hover-border: #a78bfa;
-    background: #1a0840;
+    --section-glow: hsla(271, 81%, 56%, 0.25);
+    --section-orb: #c084fc;
+    --section-border: rgba(147, 51, 234, 0.3);
+    --section-hover-border: rgba(147, 51, 234, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #581c87 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #6b21a8 0px, transparent 60%),
+      #08000f;
   }
   .section-music {
-    --section-accent: hsl(var(--accent));
-    --section-glow: hsla(38, 70%, 55%, 0.25);
-    --section-orb: #fbbf24;
-    --section-border: #d97706;
-    --section-hover-border: #fbbf24;
-    background: #1a1000;
+    --section-accent: hsl(var(--pomodoro-accent));
+    --section-glow: hsla(25, 95%, 53%, 0.2);
+    --section-orb: #fb923c;
+    --section-border: rgba(234, 88, 12, 0.3);
+    --section-hover-border: rgba(234, 88, 12, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #7c2d12 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #431407 0px, transparent 60%),
+      #0f0a00;
   }
   .section-weekly {
-    --section-accent: hsl(var(--accent));
-    --section-glow: hsla(38, 70%, 55%, 0.25);
-    --section-orb: #fbbf24;
-    --section-border: #d97706;
-    --section-hover-border: #fbbf24;
-    background: #1a1000;
+    --section-accent: hsl(var(--goals-accent));
+    --section-glow: hsla(217, 91%, 60%, 0.2);
+    --section-orb: #60a5fa;
+    --section-border: rgba(37, 99, 235, 0.3);
+    --section-hover-border: rgba(37, 99, 235, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #1e3a8a 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #172554 0px, transparent 60%),
+      #00050f;
   }
   .section-revision {
-    --section-accent: #22c55e;
-    --section-glow: rgba(34, 197, 94, 0.25);
-    --section-orb: #4ade80;
-    --section-border: #16a34a;
-    --section-hover-border: #4ade80;
-    background: #052e16;
+    --section-accent: hsl(var(--revision-accent));
+    --section-glow: hsla(239, 84%, 67%, 0.25);
+    --section-orb: #818cf8;
+    --section-border: rgba(79, 70, 229, 0.3);
+    --section-hover-border: rgba(79, 70, 229, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #312e81 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #3730a3 0px, transparent 60%),
+      #05050f;
+  }
+  .section-pomodoro {
+    --section-accent: hsl(var(--pomodoro-accent));
+    --section-glow: hsla(25, 95%, 53%, 0.25);
+    --section-orb: #fb923c;
+    --section-border: rgba(234, 88, 12, 0.3);
+    --section-hover-border: rgba(234, 88, 12, 0.7);
+    background:
+      radial-gradient(at 0% 0%, #7c2d12 0px, transparent 60%),
+      radial-gradient(at 100% 100%, #431407 0px, transparent 60%),
+      #0f0a00;
   }
 
-  /* Section heading text colors — pure white on bright card tops */
-  .section-title-focus { color: #ffffff; }
-  .section-title-study { color: #ffffff; }
-  .section-title-nutrition { color: #ffffff; }
-  .section-title-habits { color: #ffffff; }
-  .section-title-goals { color: #ffffff; }
-  .section-title-mood { color: #ffffff; }
-  .section-title-chatbot { color: #ffffff; }
-  .section-title-revision { color: #ffffff; }
+  /* ===== LIGHT MODE CARD BACKGROUNDS — Glassmorphism ===== */
+  .light .section-focus {
+    background: rgba(139, 92, 246, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(124, 58, 237, 0.4);
+    --section-hover-border: rgba(124, 58, 237, 0.7);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.08);
+  }
+  .light .section-study {
+    background: rgba(14, 116, 144, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(14, 116, 144, 0.4);
+    --section-hover-border: rgba(14, 116, 144, 0.7);
+    box-shadow: 0 8px 32px rgba(14, 116, 144, 0.08);
+  }
+  .light .section-nutrition {
+    background: rgba(8, 145, 178, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(8, 145, 178, 0.4);
+    --section-hover-border: rgba(8, 145, 178, 0.7);
+    box-shadow: 0 8px 32px rgba(8, 145, 178, 0.08);
+  }
+  .light .section-habits {
+    background: rgba(219, 39, 119, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(219, 39, 119, 0.4);
+    --section-hover-border: rgba(219, 39, 119, 0.7);
+    box-shadow: 0 8px 32px rgba(219, 39, 119, 0.08);
+  }
+  .light .section-goals {
+    background: rgba(37, 99, 235, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(37, 99, 235, 0.4);
+    --section-hover-border: rgba(37, 99, 235, 0.7);
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
+  }
+  .light .section-mood {
+    background: rgba(225, 29, 72, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(225, 29, 72, 0.4);
+    --section-hover-border: rgba(225, 29, 72, 0.7);
+    box-shadow: 0 8px 32px rgba(225, 29, 72, 0.08);
+  }
+  .light .section-chatbot {
+    background: rgba(147, 51, 234, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(147, 51, 234, 0.4);
+    --section-hover-border: rgba(147, 51, 234, 0.7);
+    box-shadow: 0 8px 32px rgba(147, 51, 234, 0.08);
+  }
+  .light .section-music,
+  .light .section-pomodoro {
+    background: rgba(234, 88, 12, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(234, 88, 12, 0.4);
+    --section-hover-border: rgba(234, 88, 12, 0.7);
+    box-shadow: 0 8px 32px rgba(234, 88, 12, 0.08);
+  }
+  .light .section-weekly {
+    background: rgba(37, 99, 235, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(37, 99, 235, 0.4);
+    --section-hover-border: rgba(37, 99, 235, 0.7);
+    box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08);
+  }
+  .light .section-revision {
+    background: rgba(79, 70, 229, 0.08);
+    backdrop-filter: blur(20px);
+    --section-border: rgba(79, 70, 229, 0.4);
+    --section-hover-border: rgba(79, 70, 229, 0.7);
+    box-shadow: 0 8px 32px rgba(79, 70, 229, 0.08);
+  }
+
+  /* Section heading text colors */
+  .section-title-focus { color: hsl(var(--focus-accent)); }
+  .section-title-study { color: hsl(var(--study-accent)); }
+  .section-title-nutrition { color: hsl(var(--nutrition-accent)); }
+  .section-title-habits { color: hsl(var(--habits-accent)); }
+  .section-title-goals { color: hsl(var(--goals-accent)); }
+  .section-title-mood { color: hsl(var(--mood-accent)); }
+  .section-title-chatbot { color: hsl(var(--chatbot-accent)); }
+  .section-title-revision { color: hsl(var(--revision-accent)); }
+  .section-title-pomodoro { color: hsl(var(--pomodoro-accent)); }
+
+  .dark .section-title-focus,
+  .dark .section-title-study,
+  .dark .section-title-nutrition,
+  .dark .section-title-habits,
+  .dark .section-title-goals,
+  .dark .section-title-mood,
+  .dark .section-title-chatbot,
+  .dark .section-title-revision,
+  .dark .section-title-pomodoro {
+    color: #ffffff;
+  }
 
   /* Tab bar styles */
   .tab-bar {
@@ -255,18 +454,21 @@
     border-radius: var(--radius);
     padding: 4px;
   }
+  .light .tab-bar {
+    background: rgba(0, 0, 0, 0.04);
+  }
   .tab-active {
-    background: #ffffff;
-    color: #0d0d14;
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
     font-weight: 600;
     border-radius: calc(var(--radius) - 4px);
   }
   .tab-inactive {
-    color: #94a3b8;
+    color: hsl(var(--muted-foreground));
     border-radius: calc(var(--radius) - 4px);
   }
   .tab-inactive:hover {
-    color: #e2e8f0;
+    color: hsl(var(--foreground));
   }
 
   /* Button base styles */
@@ -301,15 +503,18 @@
   /* Inputs */
   .input-styled {
     @apply rounded-xl text-[15px] placeholder:text-muted-foreground focus:outline-none transition-all;
-    color: hsl(220, 13%, 91%);
+    color: hsl(var(--foreground));
     min-height: 48px;
     padding: 12px 16px;
     background: hsl(var(--secondary) / 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    border: 1px solid hsl(var(--border));
   }
   .input-styled:focus {
     border-color: var(--section-accent, hsl(var(--accent)));
-    box-shadow: 0 0 0 2px var(--section-glow, hsla(38, 70%, 55%, 0.15));
+    box-shadow: 0 0 0 2px var(--section-glow, hsla(263, 70%, 50%, 0.15));
+  }
+  .light .input-styled {
+    background: rgba(255, 255, 255, 0.6);
   }
 }
 

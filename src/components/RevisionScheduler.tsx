@@ -35,7 +35,7 @@ const INTERVALS: Record<Difficulty, number[]> = {
 };
 
 const DIFF_COLORS: Record<Difficulty, { bg: string; text: string; label: string }> = {
-  easy: { bg: "bg-green-500/15", text: "text-green-400", label: "Easy" },
+  easy: { bg: "bg-cyan-500/15", text: "text-cyan-400", label: "Easy" },
   medium: { bg: "bg-amber-500/15", text: "text-amber-400", label: "Medium" },
   hard: { bg: "bg-red-500/15", text: "text-red-400", label: "Hard" },
 };
@@ -328,8 +328,8 @@ export default function RevisionScheduler() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-[18px] font-semibold section-title-revision flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-            <Calendar className="w-[22px] h-[22px] text-white" />
+          <div className="w-8 h-8 rounded-xl bg-revision/15 flex items-center justify-center">
+            <Calendar className="w-[22px] h-[22px] text-revision" />
           </div>
           Revision Scheduler
         </h2>
@@ -344,7 +344,7 @@ export default function RevisionScheduler() {
               ⭐ {masteredTopics.length} mastered
             </span>
           )}
-          <button onClick={() => { setEditingTopic(null); setForm({ name: "", subject: "", difficulty: "medium", dateFirstStudied: todayKey() }); setShowAdd(true); }} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-green-500/10 text-green-400 hover:bg-green-500/20">
+          <button onClick={() => { setEditingTopic(null); setForm({ name: "", subject: "", difficulty: "medium", dateFirstStudied: todayKey() }); setShowAdd(true); }} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20">
             <Plus className="w-[18px] h-[18px]" />
           </button>
         </div>
@@ -368,7 +368,7 @@ export default function RevisionScheduler() {
               <p className="text-3xl mb-2">🌟</p>
               <p className="text-[15px] text-foreground font-medium">No revisions due today — enjoy your day!</p>
               {nextDueTopic && (
-                <p className="text-sm text-muted-foreground mt-1">Next revision: <span className="text-green-400">{nextDueTopic.name}</span> on {nextDueTopic.nextDue}</p>
+                <p className="text-sm text-muted-foreground mt-1">Next revision: <span className="text-indigo-400">{nextDueTopic.name}</span> on {nextDueTopic.nextDue}</p>
               )}
             </div>
           )}
@@ -393,7 +393,7 @@ export default function RevisionScheduler() {
                       {isOverdue && !doneToday ? (
                         <span className="text-red-400 font-medium">Overdue by {overdueDays} day{overdueDays > 1 ? "s" : ""}</span>
                       ) : doneToday ? (
-                        <span className="text-green-400 font-medium">✓ Completed</span>
+                        <span className="text-indigo-400 font-medium">✓ Completed</span>
                       ) : (
                         <span className="text-amber-400">Due Today</span>
                       )}
@@ -402,7 +402,7 @@ export default function RevisionScheduler() {
                   </div>
                   {!doneToday && (
                     <div className="flex gap-1.5 shrink-0">
-                      <button onClick={() => markRevised(topic.id)} className="px-3 py-2 rounded-xl text-xs font-medium bg-green-500/15 text-green-400 hover:bg-green-500/25 transition-all" title="Revised">✓ Revised</button>
+                      <button onClick={() => markRevised(topic.id)} className="px-3 py-2 rounded-xl text-xs font-medium bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/25 transition-all" title="Revised">✓ Revised</button>
                       <button onClick={() => markTooHard(topic.id)} className="px-2.5 py-2 rounded-xl text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all" title="Too Hard">😅</button>
                       <button onClick={() => markTooEasy(topic.id)} className="px-2.5 py-2 rounded-xl text-xs font-medium bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all" title="Too Easy">⚡</button>
                     </div>
@@ -433,11 +433,11 @@ export default function RevisionScheduler() {
               const dayName = new Date(day.date + "T00:00:00").toLocaleDateString("en", { weekday: "short" }).slice(0, 2);
               return (
                 <button key={day.date} onClick={() => setSelectedDay(selectedDay === day.date ? null : day.date)}
-                  className={`flex flex-col items-center p-2 rounded-xl text-xs transition-all ${isToday ? "bg-green-500/15 border border-green-500/30" : selectedDay === day.date ? "bg-secondary/60" : "bg-secondary/20 hover:bg-secondary/30"}`}>
+                  className={`flex flex-col items-center p-2 rounded-xl text-xs transition-all ${isToday ? "bg-indigo-500/15 border border-indigo-500/30" : selectedDay === day.date ? "bg-secondary/60" : "bg-secondary/20 hover:bg-secondary/30"}`}>
                   <span className="text-[10px] text-muted-foreground">{dayName}</span>
-                  <span className={`text-sm font-semibold ${isToday ? "text-green-400" : "text-foreground"}`}>{dayNum}</span>
+                  <span className={`text-sm font-semibold ${isToday ? "text-indigo-400" : "text-foreground"}`}>{dayNum}</span>
                   {day.count > 0 && (
-                    <span className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${day.count >= 5 ? "bg-amber-500/20 text-amber-400" : "bg-green-500/15 text-green-400"}`}>
+                    <span className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${day.count >= 5 ? "bg-amber-500/20 text-amber-400" : "bg-indigo-500/15 text-indigo-400"}`}>
                       {day.count}
                     </span>
                   )}
@@ -521,7 +521,7 @@ export default function RevisionScheduler() {
                 </div>
                 {/* Mastery bar */}
                 <div className="h-2 rounded-full bg-secondary/40 overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500 bg-green-500" style={{ width: `${masteryPct}%` }} />
+                  <div className="h-full rounded-full transition-all duration-500 bg-indigo-500" style={{ width: `${masteryPct}%` }} />
                 </div>
               </div>
             );
@@ -579,7 +579,7 @@ export default function RevisionScheduler() {
             <div>
               <span className="text-xs text-muted-foreground mb-1 block">This Week Progress</span>
               <div className="h-3 rounded-full bg-secondary/40 overflow-hidden">
-                <div className="h-full rounded-full bg-green-500 transition-all duration-500" style={{ width: `${Math.min((stats.completedThisWeek / stats.dueThisWeek) * 100, 100)}%` }} />
+                <div className="h-full rounded-full bg-indigo-500 transition-all duration-500" style={{ width: `${Math.min((stats.completedThisWeek / stats.dueThisWeek) * 100, 100)}%` }} />
               </div>
               <span className="text-xs text-muted-foreground mt-1">{stats.completedThisWeek}/{stats.dueThisWeek} completed</span>
             </div>
@@ -628,7 +628,7 @@ export default function RevisionScheduler() {
                   <input type="date" value={form.dateFirstStudied} onChange={e => setForm({ ...form, dateFirstStudied: e.target.value })} className="input-styled text-sm" />
                 </div>
               </div>
-              <button onClick={editingTopic ? updateTopic : addTopic} disabled={!form.name.trim()} className="btn-primary w-full bg-green-500 text-white hover:bg-green-600 disabled:opacity-30">
+              <button onClick={editingTopic ? updateTopic : addTopic} disabled={!form.name.trim()} className="btn-primary w-full bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-30">
                 {editingTopic ? "Update Topic" : "Add Topic"}
               </button>
             </div>
