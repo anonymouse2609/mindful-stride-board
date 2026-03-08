@@ -573,7 +573,7 @@
   .dark .section-card .tab-bar {
     background: rgba(255, 255, 255, 0.08);
   }
-
+}
 
 @keyframes fade-in {
   0% { opacity: 0; transform: translateY(8px); }
