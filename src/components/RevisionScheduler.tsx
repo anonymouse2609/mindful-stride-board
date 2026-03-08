@@ -433,11 +433,11 @@ export default function RevisionScheduler() {
               const dayName = new Date(day.date + "T00:00:00").toLocaleDateString("en", { weekday: "short" }).slice(0, 2);
               return (
                 <button key={day.date} onClick={() => setSelectedDay(selectedDay === day.date ? null : day.date)}
-                  className={`flex flex-col items-center p-2 rounded-xl text-xs transition-all ${isToday ? "bg-green-500/15 border border-green-500/30" : selectedDay === day.date ? "bg-secondary/60" : "bg-secondary/20 hover:bg-secondary/30"}`}>
+                  className={`flex flex-col items-center p-2 rounded-xl text-xs transition-all ${isToday ? "bg-indigo-500/15 border border-indigo-500/30" : selectedDay === day.date ? "bg-secondary/60" : "bg-secondary/20 hover:bg-secondary/30"}`}>
                   <span className="text-[10px] text-muted-foreground">{dayName}</span>
-                  <span className={`text-sm font-semibold ${isToday ? "text-green-400" : "text-foreground"}`}>{dayNum}</span>
+                  <span className={`text-sm font-semibold ${isToday ? "text-indigo-400" : "text-foreground"}`}>{dayNum}</span>
                   {day.count > 0 && (
-                    <span className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${day.count >= 5 ? "bg-amber-500/20 text-amber-400" : "bg-green-500/15 text-green-400"}`}>
+                    <span className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${day.count >= 5 ? "bg-amber-500/20 text-amber-400" : "bg-indigo-500/15 text-indigo-400"}`}>
                       {day.count}
                     </span>
                   )}
