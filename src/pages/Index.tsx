@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import QuoteSection from "@/components/QuoteSection";
-import PomodoroTimer from "@/components/PomodoroTimer";
+import SubjectStudyTimer from "@/components/SubjectStudyTimer";
 import TodoList from "@/components/TodoList";
 import HabitsTracker from "@/components/HabitsTracker";
 import DailyGoals from "@/components/DailyGoals";
