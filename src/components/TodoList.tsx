@@ -118,7 +118,7 @@ export default function TodoList() {
                   : "border-white/50 hover:border-white/80"
               }`}
             >
-              {todo.done && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+              {todo.done && <Check className="w-3.5 h-3.5 text-pomodoro" />}
             </button>
             <span className={`w-2 h-2 rounded-full shrink-0 ${priorityDot[todo.priority]}`} />
             <span className={`flex-1 text-[15px] min-w-0 break-words ${todo.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
