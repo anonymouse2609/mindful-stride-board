@@ -402,7 +402,7 @@ export default function RevisionScheduler() {
                   </div>
                   {!doneToday && (
                     <div className="flex gap-1.5 shrink-0">
-                      <button onClick={() => markRevised(topic.id)} className="px-3 py-2 rounded-xl text-xs font-medium bg-green-500/15 text-green-400 hover:bg-green-500/25 transition-all" title="Revised">✓ Revised</button>
+                      <button onClick={() => markRevised(topic.id)} className="px-3 py-2 rounded-xl text-xs font-medium bg-indigo-500/15 text-indigo-400 hover:bg-indigo-500/25 transition-all" title="Revised">✓ Revised</button>
                       <button onClick={() => markTooHard(topic.id)} className="px-2.5 py-2 rounded-xl text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all" title="Too Hard">😅</button>
                       <button onClick={() => markTooEasy(topic.id)} className="px-2.5 py-2 rounded-xl text-xs font-medium bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-all" title="Too Easy">⚡</button>
                     </div>
