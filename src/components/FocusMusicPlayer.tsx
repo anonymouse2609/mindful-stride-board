@@ -15,9 +15,9 @@ export default function FocusMusicPlayer() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="section-card p-5 sm:p-6 flex flex-col gap-4" style={{ "--section-accent": "hsl(var(--accent))", "--section-glow": "hsla(38, 70%, 55%, 0.12)" } as React.CSSProperties & Record<string, string>}>
+    <div className="section-card section-music">
       <div className="flex items-center justify-between" style={{ animation: "fade-in 0.4s ease-out 0.25s forwards", opacity: 0 }}>
-        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+        <h2 className="text-[18px] font-semibold flex items-center gap-2" style={{ color: "hsl(var(--accent))" }}>
           <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
             <Music className="w-[18px] h-[18px] text-accent" />
           </div>

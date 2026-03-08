@@ -358,7 +358,7 @@ const FocusScore = () => {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-4xl font-bold font-mono ${getScoreColorClass(score)}`}>{score}</span>
+              <span className="text-4xl font-bold font-mono text-foreground">{score}</span>
               <span className="text-[11px] text-muted-foreground">/ 100</span>
             </div>
           </div>

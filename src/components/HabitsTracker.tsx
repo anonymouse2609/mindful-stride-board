@@ -120,15 +120,15 @@ export default function HabitsTracker() {
                 {DAYS.map((_, i) => {
                   const checked = data.grid[habit]?.[i] || false;
                   return (
-                    <td key={i} className="text-center py-1.5 px-0.5">
+                     <td key={i} className="text-center py-1.5 px-0.5">
                       <button
                         onClick={() => toggleDay(habit, i)}
                         className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center mx-auto transition-all ${
                           checked
-                            ? "bg-habits/20 text-habits"
+                            ? "bg-habits text-white"
                             : i === todayIdx
-                            ? "bg-secondary/80 hover:bg-habits/10"
-                            : "bg-secondary/40 hover:bg-secondary/70"
+                            ? "bg-secondary/80 border border-muted/50 hover:bg-habits/10"
+                            : "bg-secondary/40 border border-transparent hover:bg-secondary/70"
                         } ${checked ? "animate-check-pop" : ""}`}
                       >
                         {checked && <Check className="w-4 h-4" />}
