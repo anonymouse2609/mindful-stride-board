@@ -144,6 +144,22 @@
     height: 3px;
     background: var(--section-accent);
     border-radius: var(--radius) var(--radius) 0 0;
+    z-index: 1;
+  }
+
+  /* Glow orb pseudo-element */
+  .section-card::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--section-orb, transparent) 0%, transparent 70%);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
   }
 
   .section-card:hover {
@@ -156,51 +172,60 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 
-  /* Section-specific styles */
+  /* Section-specific styles with BOLD visible gradients */
   .section-focus {
     --section-accent: hsl(var(--focus-accent));
     --section-glow: hsla(239, 84%, 67%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--focus-bg-from)), hsl(var(--focus-bg-to)));
+    --section-orb: #6366f1;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #0d0d14 100%);
   }
   .section-study {
     --section-accent: hsl(var(--study-accent));
     --section-glow: hsla(25, 95%, 53%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--study-bg-from)), hsl(var(--study-bg-to)));
+    --section-orb: #f97316;
+    background: linear-gradient(135deg, #431407 0%, #7c2d12 30%, #0d0d14 100%);
   }
   .section-nutrition {
     --section-accent: hsl(var(--nutrition-accent));
     --section-glow: hsla(160, 60%, 45%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--nutrition-bg-from)), hsl(var(--nutrition-bg-to)));
+    --section-orb: #10b981;
+    background: linear-gradient(135deg, #052e16 0%, #14532d 30%, #0d0d14 100%);
   }
   .section-habits {
     --section-accent: hsl(var(--habits-accent));
     --section-glow: hsla(271, 91%, 65%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--habits-bg-from)), hsl(var(--habits-bg-to)));
+    --section-orb: #a855f7;
+    background: linear-gradient(135deg, #2e1065 0%, #4c1d95 30%, #0d0d14 100%);
   }
   .section-goals {
     --section-accent: hsl(var(--goals-accent));
     --section-glow: hsla(217, 91%, 60%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--goals-bg-from)), hsl(var(--goals-bg-to)));
+    --section-orb: #3b82f6;
+    background: linear-gradient(135deg, #0c1a4a 0%, #1e3a8a 30%, #0d0d14 100%);
   }
   .section-mood {
     --section-accent: hsl(var(--mood-accent));
     --section-glow: hsla(350, 89%, 60%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--mood-bg-from)), hsl(var(--mood-bg-to)));
+    --section-orb: #f43f5e;
+    background: linear-gradient(135deg, #3f0d1a 0%, #881337 30%, #0d0d14 100%);
   }
   .section-chatbot {
     --section-accent: hsl(var(--chatbot-accent));
     --section-glow: hsla(263, 70%, 50%, 0.15);
-    background: linear-gradient(180deg, hsl(var(--chatbot-bg-from)), hsl(var(--chatbot-bg-to)));
+    --section-orb: #8b5cf6;
+    background: linear-gradient(135deg, #1e1030 0%, #2e1065 30%, #0d0d14 100%);
   }
   .section-music {
     --section-accent: hsl(var(--accent));
     --section-glow: hsla(38, 70%, 55%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--card)));
+    --section-orb: #f59e0b;
+    background: linear-gradient(135deg, #1c1208 0%, #422006 30%, #0d0d14 100%);
   }
   .section-weekly {
     --section-accent: hsl(var(--accent));
     --section-glow: hsla(38, 70%, 55%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--card)));
+    --section-orb: #f59e0b;
+    background: linear-gradient(135deg, #1c1208 0%, #422006 30%, #0d0d14 100%);
   }
 
   /* Section heading text colors */
