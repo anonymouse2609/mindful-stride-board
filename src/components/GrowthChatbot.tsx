@@ -285,8 +285,8 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
                   <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
                       isUser
-                        ? "bg-accent text-accent-foreground rounded-br-md"
-                        : "bg-secondary/60 text-foreground rounded-bl-md"
+                        ? "bg-[hsl(221,83%,53%)] text-white rounded-br-md"
+                        : "rounded-bl-md" } `} style={!isUser ? { background: "hsl(240, 12%, 10%)", color: "hsl(220, 13%, 91%)" } : undefined}>
                     }`}>
                       {msg.content.split(/(\*\*.*?\*\*)/).map((part, j) => {
                         if (part.startsWith("**") && part.endsWith("**")) {
