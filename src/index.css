@@ -151,13 +151,13 @@
   .section-card::after {
     content: '';
     position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 150px;
-    height: 150px;
+    top: -30px;
+    right: -30px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background: radial-gradient(circle, var(--section-orb, transparent) 0%, transparent 70%);
-    opacity: 0.15;
+    opacity: 0.25;
     pointer-events: none;
     z-index: 0;
   }
@@ -172,77 +172,97 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 
-  /* Section-specific styles with BOLD visible gradients */
+  /* Section-specific styles — bright top-down spotlight gradients */
   .section-focus {
     --section-accent: hsl(var(--focus-accent));
-    --section-glow: hsla(239, 84%, 67%, 0.15);
-    --section-orb: #6366f1;
-    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #0d0d14 100%);
+    --section-glow: hsla(239, 84%, 67%, 0.2);
+    --section-orb: #818cf8;
+    background: linear-gradient(180deg, #4f46e5 0%, #1e1b4b 40%, #0d0d14 100%);
   }
   .section-study {
     --section-accent: hsl(var(--study-accent));
-    --section-glow: hsla(25, 95%, 53%, 0.15);
-    --section-orb: #f97316;
-    background: linear-gradient(135deg, #431407 0%, #7c2d12 30%, #0d0d14 100%);
+    --section-glow: hsla(25, 95%, 53%, 0.2);
+    --section-orb: #fb923c;
+    background: linear-gradient(180deg, #ea580c 0%, #431407 40%, #0d0d14 100%);
   }
   .section-nutrition {
     --section-accent: hsl(var(--nutrition-accent));
-    --section-glow: hsla(160, 60%, 45%, 0.15);
-    --section-orb: #10b981;
-    background: linear-gradient(135deg, #052e16 0%, #14532d 30%, #0d0d14 100%);
+    --section-glow: hsla(160, 60%, 45%, 0.2);
+    --section-orb: #34d399;
+    background: linear-gradient(180deg, #059669 0%, #064e3b 40%, #0d0d14 100%);
   }
   .section-habits {
     --section-accent: hsl(var(--habits-accent));
-    --section-glow: hsla(271, 91%, 65%, 0.15);
-    --section-orb: #a855f7;
-    background: linear-gradient(135deg, #2e1065 0%, #4c1d95 30%, #0d0d14 100%);
+    --section-glow: hsla(271, 91%, 65%, 0.2);
+    --section-orb: #c084fc;
+    background: linear-gradient(180deg, #9333ea 0%, #3b0764 40%, #0d0d14 100%);
   }
   .section-goals {
     --section-accent: hsl(var(--goals-accent));
-    --section-glow: hsla(217, 91%, 60%, 0.15);
-    --section-orb: #3b82f6;
-    background: linear-gradient(135deg, #0c1a4a 0%, #1e3a8a 30%, #0d0d14 100%);
+    --section-glow: hsla(217, 91%, 60%, 0.2);
+    --section-orb: #60a5fa;
+    background: linear-gradient(180deg, #2563eb 0%, #1e3a8a 40%, #0d0d14 100%);
   }
   .section-mood {
     --section-accent: hsl(var(--mood-accent));
-    --section-glow: hsla(350, 89%, 60%, 0.15);
-    --section-orb: #f43f5e;
-    background: linear-gradient(135deg, #3f0d1a 0%, #881337 30%, #0d0d14 100%);
+    --section-glow: hsla(350, 89%, 60%, 0.2);
+    --section-orb: #fb7185;
+    background: linear-gradient(180deg, #e11d48 0%, #881337 40%, #0d0d14 100%);
   }
   .section-chatbot {
     --section-accent: hsl(var(--chatbot-accent));
-    --section-glow: hsla(263, 70%, 50%, 0.15);
-    --section-orb: #8b5cf6;
-    background: linear-gradient(135deg, #1e1030 0%, #2e1065 30%, #0d0d14 100%);
+    --section-glow: hsla(263, 70%, 50%, 0.2);
+    --section-orb: #a78bfa;
+    background: linear-gradient(180deg, #7c3aed 0%, #2e1065 40%, #0d0d14 100%);
   }
   .section-music {
     --section-accent: hsl(var(--accent));
-    --section-glow: hsla(38, 70%, 55%, 0.12);
-    --section-orb: #f59e0b;
-    background: linear-gradient(135deg, #1c1208 0%, #422006 30%, #0d0d14 100%);
+    --section-glow: hsla(38, 70%, 55%, 0.2);
+    --section-orb: #fbbf24;
+    background: linear-gradient(180deg, #d97706 0%, #451a03 40%, #0d0d14 100%);
   }
   .section-weekly {
     --section-accent: hsl(var(--accent));
-    --section-glow: hsla(38, 70%, 55%, 0.12);
-    --section-orb: #f59e0b;
-    background: linear-gradient(135deg, #1c1208 0%, #422006 30%, #0d0d14 100%);
+    --section-glow: hsla(38, 70%, 55%, 0.2);
+    --section-orb: #fbbf24;
+    background: linear-gradient(180deg, #d97706 0%, #451a03 40%, #0d0d14 100%);
   }
   .section-revision {
     --section-accent: #22c55e;
-    --section-glow: rgba(34, 197, 94, 0.15);
-    --section-orb: #22c55e;
-    background: linear-gradient(135deg, #0f1a10 0%, #166534 30%, #0d0d14 100%);
+    --section-glow: rgba(34, 197, 94, 0.2);
+    --section-orb: #4ade80;
+    background: linear-gradient(180deg, #16a34a 0%, #14532d 40%, #0d0d14 100%);
   }
 
-  /* Section heading text colors */
-  .section-title-focus { color: hsl(var(--focus-accent-soft)); }
-  .section-title-study { color: hsl(var(--study-accent-soft)); }
-  .section-title-nutrition { color: hsl(var(--nutrition-accent-soft)); }
-  .section-title-habits { color: hsl(var(--habits-accent-soft)); }
-  .section-title-goals { color: hsl(var(--goals-accent-soft)); }
-  .section-title-mood { color: hsl(var(--mood-accent-soft)); }
-  .section-title-chatbot { color: hsl(var(--chatbot-accent-soft)); }
-  .section-title-revision { color: #4ade80; }
+  /* Section heading text colors — pure white on bright card tops */
+  .section-title-focus { color: #ffffff; }
+  .section-title-study { color: #ffffff; }
+  .section-title-nutrition { color: #ffffff; }
+  .section-title-habits { color: #ffffff; }
+  .section-title-goals { color: #ffffff; }
+  .section-title-mood { color: #ffffff; }
+  .section-title-chatbot { color: #ffffff; }
+  .section-title-revision { color: #ffffff; }
+
+  /* Tab bar styles */
+  .tab-bar {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+  .tab-active {
+    background: #ffffff;
+    color: #0d0d14;
+    font-weight: 600;
+    border-radius: calc(var(--radius) - 4px);
+  }
+  .tab-inactive {
+    color: #94a3b8;
+    border-radius: calc(var(--radius) - 4px);
+  }
+  .tab-inactive:hover {
+    color: #e2e8f0;
+  }
 
   /* Button base styles */
   .btn-primary {

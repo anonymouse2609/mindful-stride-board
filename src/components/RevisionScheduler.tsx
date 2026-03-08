@@ -328,8 +328,8 @@ export default function RevisionScheduler() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-[18px] font-semibold section-title-revision flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center">
-            <Calendar className="w-[18px] h-[18px] text-green-400" />
+          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+            <Calendar className="w-[22px] h-[22px] text-white" />
           </div>
           Revision Scheduler
         </h2>
@@ -351,10 +351,10 @@ export default function RevisionScheduler() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 overflow-x-auto -mx-1 px-1">
+      <div className="flex gap-1 overflow-x-auto -mx-1 px-1 tab-bar">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap min-h-[36px] ${tab === t.key ? "bg-green-500/15 text-green-400" : "text-muted-foreground hover:text-foreground"}`}>
+            className={`px-3 py-2 text-sm font-medium transition-all whitespace-nowrap min-h-[36px] ${tab === t.key ? "tab-active" : "tab-inactive"}`}>
             {t.label}
           </button>
         ))}

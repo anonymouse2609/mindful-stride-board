@@ -354,9 +354,9 @@ const FocusScore = () => {
         onClick={() => setShowBreakdown(true)}
       >
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-focus/10 flex items-center justify-center">
-              <Zap className="w-[18px] h-[18px] text-focus" />
+         <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+              <Zap className="w-[22px] h-[22px] text-white" />
             </div>
             <h2 className="text-[18px] font-semibold section-title-focus">Focus Score</h2>
           </div>
@@ -403,7 +403,7 @@ const FocusScore = () => {
               ].map(c => (
                 <div key={c.label} className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground w-16 text-right">{c.label}</span>
-                  <div className="flex-1 h-2 rounded-full bg-secondary/60 overflow-hidden">
+                  <div className="flex-1 h-3.5 rounded-full bg-secondary/60 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${(c.val / c.max) * 100}%`, background: c.color }}

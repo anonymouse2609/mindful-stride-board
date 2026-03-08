@@ -35,8 +35,8 @@ export default function DailyGoals() {
     <div className="section-card section-goals flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.15s forwards", opacity: 0 }}>
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-semibold section-title-goals flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-goals/10 flex items-center justify-center">
-            <Target className="w-[18px] h-[18px] text-goals" />
+          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+            <Target className="w-[22px] h-[22px] text-white" />
           </div>
           Today's Goals
         </h2>
