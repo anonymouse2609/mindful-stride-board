@@ -828,7 +828,7 @@ function MacroBar({ label, current, goal, color }: { label: string; current: num
           <span className="text-muted-foreground font-normal">/{goal}{label === "Calories" ? "" : "g"}</span>
         </span>
       </div>
-      <div className="w-full h-3.5 rounded-full bg-secondary overflow-hidden">
+      <div className="w-full h-3.5 rounded-full bg-white/15 overflow-hidden">
         <div className={`h-full rounded-full transition-all duration-500 ${over ? "bg-destructive" : ""}`} style={{ width: `${pct}%`, backgroundColor: over ? undefined : color }} />
       </div>
     </div>
@@ -1260,8 +1260,8 @@ export default function NutritionTracker() {
       {data.log.length === 0 && (
         <div className="text-center py-6">
           <p className="text-3xl mb-2">🍽️</p>
-          <p className="text-[15px] text-muted-foreground">No food logged yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Search and add foods to start tracking</p>
+          <p className="text-[15px] text-white/70">No food logged yet</p>
+          <p className="text-sm text-white/60 mt-1">Search and add foods to start tracking</p>
         </div>
       )}
 

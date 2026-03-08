@@ -490,7 +490,7 @@ export default function RevisionScheduler() {
           {filteredTopics.length === 0 && (
             <div className="text-center py-6">
               <p className="text-3xl mb-2">📚</p>
-              <p className="text-[15px] text-muted-foreground">No topics found</p>
+              <p className="text-[15px] text-white/70">No topics found</p>
             </div>
           )}
           {filteredTopics.map(topic => {
@@ -520,7 +520,7 @@ export default function RevisionScheduler() {
                   </div>
                 </div>
                 {/* Mastery bar */}
-                <div className="h-2 rounded-full bg-secondary/40 overflow-hidden">
+                <div className="h-2 rounded-full bg-white/15 overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-500 bg-indigo-500" style={{ width: `${masteryPct}%` }} />
                 </div>
               </div>
@@ -535,8 +535,8 @@ export default function RevisionScheduler() {
           {masteredTopics.length === 0 && (
             <div className="text-center py-8">
               <p className="text-3xl mb-2">🎯</p>
-              <p className="text-[15px] text-muted-foreground">No mastered topics yet</p>
-              <p className="text-sm text-muted-foreground mt-1">Complete all revision intervals to master a topic</p>
+              <p className="text-[15px] text-white/70">No mastered topics yet</p>
+              <p className="text-sm text-white/60 mt-1">Complete all revision intervals to master a topic</p>
             </div>
           )}
           {masteredTopics.map(topic => (
@@ -578,7 +578,7 @@ export default function RevisionScheduler() {
           {stats.dueThisWeek > 0 && (
             <div>
               <span className="text-xs text-muted-foreground mb-1 block">This Week Progress</span>
-              <div className="h-3 rounded-full bg-secondary/40 overflow-hidden">
+              <div className="h-3 rounded-full bg-white/15 overflow-hidden">
                 <div className="h-full rounded-full bg-indigo-500 transition-all duration-500" style={{ width: `${Math.min((stats.completedThisWeek / stats.dueThisWeek) * 100, 100)}%` }} />
               </div>
               <span className="text-xs text-muted-foreground mt-1">{stats.completedThisWeek}/{stats.dueThisWeek} completed</span>

@@ -90,12 +90,12 @@ export default function HabitsTracker() {
         <table className="w-full text-sm min-w-[340px]">
           <thead>
             <tr>
-              <th className="text-left text-muted-foreground font-normal pb-3 pr-3 min-w-[100px] sm:min-w-[140px]"></th>
+              <th className="text-left font-normal pb-3 pr-3 min-w-[100px] sm:min-w-[140px]"></th>
               {DAYS.map((d, i) => (
                 <th
                   key={i}
-                  className={`text-center font-medium pb-3 px-1 ${
-                    i === todayIdx ? "text-habits" : "text-muted-foreground"
+                  className={`text-center font-bold pb-3 px-1 ${
+                    i === todayIdx ? "text-habits" : "text-white/70"
                   }`}
                 >
                   {d}
@@ -106,7 +106,7 @@ export default function HabitsTracker() {
           <tbody>
             {data.habits.map((habit) => (
               <tr key={habit} className="group">
-                <td className="py-1.5 pr-3 text-[15px] text-foreground/80">
+                <td className="py-1.5 pr-3 text-[15px] font-semibold text-white">
                   <div className="flex items-center justify-between gap-2 max-w-[100px] sm:max-w-[140px]">
                     <span className="truncate">{habit}</span>
                     <button
@@ -127,8 +127,8 @@ export default function HabitsTracker() {
                           checked
                             ? "bg-habits text-white"
                             : i === todayIdx
-                            ? "bg-secondary/80 border border-muted/50 hover:bg-habits/10"
-                            : "bg-secondary/40 border border-transparent hover:bg-secondary/70"
+                            ? "border-2 border-white/40 bg-transparent hover:bg-habits/20"
+                            : "border-2 border-white/25 bg-transparent hover:border-white/40"
                         } ${checked ? "animate-check-pop" : ""}`}
                       >
                         {checked && <Check className="w-4 h-4" />}
@@ -152,7 +152,7 @@ export default function HabitsTracker() {
         />
         <button
           onClick={addHabit}
-          className="btn-primary bg-habits/20 text-habits border border-habits/30 hover:bg-habits/30 shrink-0"
+          className="btn-primary bg-white text-habits border border-white/80 hover:bg-white/90 shrink-0 font-bold"
         >
           Add
         </button>

@@ -40,7 +40,7 @@ export default function DailyGoals() {
           </div>
           Today's Goals
         </h2>
-        <span className="text-sm font-mono text-muted-foreground">{filledCount}/3</span>
+        <span className="text-sm font-mono text-white/70">{filledCount}/3</span>
       </div>
 
       <div className="flex flex-col gap-3">
@@ -51,7 +51,7 @@ export default function DailyGoals() {
               value={goal}
               onChange={(e) => updateGoal(i, e.target.value)}
               placeholder={`Goal ${i + 1}`}
-              className="flex-1 min-w-0 bg-transparent border-b border-border/60 px-1 py-2 text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-goals/50 transition-colors"
+              className="flex-1 min-w-0 bg-transparent border-b border-white/20 px-1 py-2 text-[15px] text-white placeholder:text-white/40 focus:outline-none focus:border-goals/50 transition-colors"
             />
           </div>
         ))}

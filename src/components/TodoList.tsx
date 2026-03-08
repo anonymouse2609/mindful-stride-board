@@ -74,7 +74,7 @@ export default function TodoList() {
           placeholder="Add a task..."
           className="input-styled flex-1 min-w-0"
         />
-        <div className="flex rounded-xl overflow-hidden border border-border/60 bg-secondary/30 shrink-0 items-center">
+        <div className="flex rounded-xl overflow-hidden border border-white/20 bg-white/8 shrink-0 items-center">
           {(["high", "medium", "low"] as Priority[]).map((p) => (
             <button
               key={p}
@@ -89,7 +89,7 @@ export default function TodoList() {
         </div>
         <button
           onClick={addTodo}
-          className="icon-btn bg-secondary text-foreground hover:bg-muted shrink-0"
+          className="icon-btn bg-white/15 text-white hover:bg-white/25 shrink-0"
         >
           <Plus className="w-5 h-5" />
         </button>
@@ -99,8 +99,8 @@ export default function TodoList() {
         {sorted.length === 0 && (
           <div className="text-center py-8">
             <p className="text-3xl mb-2">📝</p>
-            <p className="text-[15px] text-muted-foreground">No tasks yet</p>
-            <p className="text-sm text-muted-foreground mt-1">Add your first task above</p>
+            <p className="text-[15px] text-white/70">No tasks yet</p>
+            <p className="text-sm text-white/60 mt-1">Add your first task above</p>
           </div>
         )}
         {sorted.map((todo) => (
@@ -114,14 +114,14 @@ export default function TodoList() {
               onClick={() => toggle(todo.id)}
               className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
                 todo.done
-                  ? "bg-accent/80 border-accent animate-check-pop"
-                  : "border-muted-foreground/30 hover:border-accent"
+                  ? "bg-white border-white animate-check-pop"
+                  : "border-white/50 hover:border-white/80"
               }`}
             >
-              {todo.done && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
+              {todo.done && <Check className="w-3.5 h-3.5 text-pomodoro" />}
             </button>
             <span className={`w-2 h-2 rounded-full shrink-0 ${priorityDot[todo.priority]}`} />
-            <span className={`flex-1 text-[15px] min-w-0 break-words ${todo.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+            <span className={`flex-1 text-[15px] min-w-0 break-words ${todo.done ? "line-through text-white/40" : "text-white"}`}>
               {todo.text}
             </span>
             <button onClick={() => remove(todo.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
