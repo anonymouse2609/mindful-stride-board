@@ -8,6 +8,7 @@ import FocusMusicPlayer from "@/components/FocusMusicPlayer";
 import WeeklyProgress from "@/components/WeeklyProgress";
 import NutritionTracker from "@/components/NutritionTracker";
 import GrowthChatbot, { type AppState } from "@/components/GrowthChatbot";
+import FocusScore from "@/components/FocusScore";
 
 function getAppState(): AppState {
   const todayKey = new Date().toISOString().split("T")[0];
@@ -116,6 +117,7 @@ const Index = () => {
           </p>
         </div>
 
+        <FocusScore />
         <QuoteSection />
 
         {/* Main Grid */}

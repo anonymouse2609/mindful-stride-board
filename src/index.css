@@ -154,6 +154,11 @@
     --section-glow: hsla(239, 84%, 67%, 0.12);
     background: linear-gradient(180deg, hsl(var(--chatbot-bg)), hsl(var(--card)));
   }
+  .section-focus {
+    --section-accent: hsl(var(--goals-accent));
+    --section-glow: hsla(217, 91%, 60%, 0.12);
+    background: linear-gradient(180deg, hsl(var(--goals-bg)), hsl(var(--card)));
+  }
 
   /* Button base styles */
   .btn-primary {
