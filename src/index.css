@@ -242,6 +242,7 @@
   .section-title-goals { color: hsl(var(--goals-accent-soft)); }
   .section-title-mood { color: hsl(var(--mood-accent-soft)); }
   .section-title-chatbot { color: hsl(var(--chatbot-accent-soft)); }
+  .section-title-revision { color: #4ade80; }
 
   /* Button base styles */
   .btn-primary {

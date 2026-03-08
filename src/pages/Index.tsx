@@ -135,6 +135,7 @@ const Index = () => {
         </div>
 
         <NutritionTracker />
+        <RevisionScheduler />
         <WeeklyProgress />
 
         <div className="text-center pb-4 sm:pb-6">
