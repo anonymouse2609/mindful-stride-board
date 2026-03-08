@@ -9,6 +9,7 @@ import WeeklyProgress from "@/components/WeeklyProgress";
 import NutritionTracker from "@/components/NutritionTracker";
 import GrowthChatbot, { type AppState } from "@/components/GrowthChatbot";
 import FocusScore from "@/components/FocusScore";
+import RevisionScheduler from "@/components/RevisionScheduler";
 
 function getAppState(): AppState {
   const todayKey = new Date().toISOString().split("T")[0];
@@ -134,6 +135,7 @@ const Index = () => {
         </div>
 
         <NutritionTracker />
+        <RevisionScheduler />
         <WeeklyProgress />
 
         <div className="text-center pb-4 sm:pb-6">
