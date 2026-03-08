@@ -441,31 +441,31 @@ export default function SubjectStudyTimer() {
 
       {/* ===== TIMER TAB ===== */}
       {activeTab === "timer" && (
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-4">
           {/* Subject selector */}
           <div className="flex items-center gap-2 w-full">
-            <select value={selectedSubjectId} onChange={e => setSelectedSubjectId(e.target.value)} className="flex-1 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" disabled={isRunning}>
+            <select value={selectedSubjectId} onChange={e => setSelectedSubjectId(e.target.value)} className="input-styled flex-1" disabled={isRunning}>
               {data.subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <button onClick={() => openSubjectModal()} className="p-2 rounded-lg bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors" title="Add subject" disabled={isRunning}>
-              <Plus className="w-3.5 h-3.5" />
+            <button onClick={() => openSubjectModal()} className="icon-btn bg-study/10 text-study hover:bg-study/20" title="Add subject" disabled={isRunning}>
+              <Plus className="w-5 h-5" />
             </button>
           </div>
 
           {/* Subject color indicator */}
           {selectedSubject && (
-            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: selectedSubject.color }} />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedSubject.color }} />
               <span>{selectedSubject.name} · Goal: {selectedSubject.weeklyGoalHours}h/week</span>
             </div>
           )}
 
           {/* Mode toggle */}
-          <div className="flex rounded-lg bg-secondary/40 p-0.5">
-            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); setTimeLeft(WORK_TIME); setFreeStudySeconds(0); } }} className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-colors ${mode === "pomodoro" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
+          <div className="flex rounded-xl bg-secondary/40 p-1">
+            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); setTimeLeft(WORK_TIME); setFreeStudySeconds(0); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               🍅 Pomodoro
             </button>
-            <button onClick={() => { if (!isRunning) { setMode("free"); setFreeStudySeconds(0); } }} className={`px-3 py-1.5 rounded-md text-[10px] font-medium transition-colors ${mode === "free" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("free"); setFreeStudySeconds(0); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               ⏱️ Free Study
             </button>
           </div>
