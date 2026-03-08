@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check } from "lucide-react";
+import { Check, Flame } from "lucide-react";
 
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 const DEFAULT_HABITS = ["💧 Drink water", "🏃 Exercise", "📚 Study", "😴 Sleep 7h+", "🧘 Meditate"];
@@ -78,19 +78,24 @@ export default function HabitsTracker() {
   const todayIdx = getTodayIndex();
 
   return (
-    <div className="glass-card p-4 sm:p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
-      <h2 className="text-sm font-medium text-foreground">Habits</h2>
+    <div className="section-card section-habits p-5 sm:p-6 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
+      <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+        <div className="w-8 h-8 rounded-xl bg-habits/10 flex items-center justify-center">
+          <Flame className="w-[18px] h-[18px] text-habits" />
+        </div>
+        Habits
+      </h2>
 
       <div className="-mx-1 overflow-x-auto">
-        <table className="w-full text-xs min-w-[320px]">
+        <table className="w-full text-sm min-w-[340px]">
           <thead>
             <tr>
-              <th className="text-left text-muted-foreground font-normal pb-2 pr-2 sm:pr-3 min-w-[90px] sm:min-w-[120px]"></th>
+              <th className="text-left text-muted-foreground font-normal pb-3 pr-3 min-w-[100px] sm:min-w-[140px]"></th>
               {DAYS.map((d, i) => (
                 <th
                   key={i}
-                  className={`text-center font-normal pb-2 px-0.5 sm:px-1 ${
-                    i === todayIdx ? "text-accent" : "text-muted-foreground"
+                  className={`text-center font-medium pb-3 px-1 ${
+                    i === todayIdx ? "text-habits" : "text-muted-foreground"
                   }`}
                 >
                   {d}
@@ -101,12 +106,12 @@ export default function HabitsTracker() {
           <tbody>
             {data.habits.map((habit) => (
               <tr key={habit} className="group">
-                <td className="py-1 pr-2 sm:pr-3 text-foreground/80 text-[11px] sm:text-xs">
-                  <div className="flex items-center justify-between gap-1 max-w-[90px] sm:max-w-[120px]">
+                <td className="py-1.5 pr-3 text-foreground/80 text-sm">
+                  <div className="flex items-center justify-between gap-2 max-w-[100px] sm:max-w-[140px]">
                     <span className="truncate">{habit}</span>
                     <button
                       onClick={() => removeHabit(habit)}
-                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all text-[10px] shrink-0"
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all text-sm shrink-0"
                     >
                       ×
                     </button>
@@ -115,18 +120,18 @@ export default function HabitsTracker() {
                 {DAYS.map((_, i) => {
                   const checked = data.grid[habit]?.[i] || false;
                   return (
-                    <td key={i} className="text-center py-1 px-0.5">
+                    <td key={i} className="text-center py-1.5 px-0.5">
                       <button
                         onClick={() => toggleDay(habit, i)}
-                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-md flex items-center justify-center mx-auto transition-all ${
+                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center mx-auto transition-all ${
                           checked
-                            ? "bg-accent/20 text-accent"
+                            ? "bg-habits/20 text-habits"
                             : i === todayIdx
-                            ? "bg-secondary/80 hover:bg-accent/10"
+                            ? "bg-secondary/80 hover:bg-habits/10"
                             : "bg-secondary/40 hover:bg-secondary/70"
                         } ${checked ? "animate-check-pop" : ""}`}
                       >
-                        {checked && <Check className="w-3 h-3" />}
+                        {checked && <Check className="w-4 h-4" />}
                       </button>
                     </td>
                   );
@@ -143,11 +148,11 @@ export default function HabitsTracker() {
           onChange={(e) => setNewHabit(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addHabit()}
           placeholder="Add habit..."
-          className="flex-1 min-w-0 bg-secondary/50 border border-border/60 rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+          className="input-styled flex-1 min-w-0"
         />
         <button
           onClick={addHabit}
-          className="px-3 py-1.5 rounded-lg bg-secondary text-muted-foreground text-xs hover:text-foreground transition-colors shrink-0"
+          className="btn-primary bg-habits/20 text-habits border border-habits/30 hover:bg-habits/30 shrink-0"
         >
           Add
         </button>

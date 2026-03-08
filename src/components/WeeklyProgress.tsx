@@ -46,46 +46,51 @@ export default function WeeklyProgress() {
 
   const stats = [
     {
-      icon: <Flame className="w-4 h-4" />,
+      icon: <Flame className="w-5 h-5" />,
       label: "Habits Completed",
       value: `${habits.completed}/${habits.total}`,
       pct: habitPct,
+      color: "hsl(var(--habits-accent))",
     },
     {
-      icon: <CheckCircle2 className="w-4 h-4" />,
+      icon: <CheckCircle2 className="w-5 h-5" />,
       label: "Tasks Done Today",
       value: `${todos.done}/${todos.total}`,
       pct: todoPct,
+      color: "hsl(var(--accent))",
     },
     {
-      icon: <Target className="w-4 h-4" />,
+      icon: <Target className="w-5 h-5" />,
       label: "Tracked Habits",
       value: `${habits.habits}`,
       pct: null,
+      color: "hsl(var(--goals-accent))",
     },
   ];
 
   return (
-    <div className="glass-card p-4 sm:p-5" style={{ animation: "fade-in 0.4s ease-out 0.4s forwards", opacity: 0 }}>
-      <h2 className="text-sm font-medium text-foreground flex items-center gap-2 mb-4">
-        <BarChart3 className="w-4 h-4 text-muted-foreground" />
+    <div className="section-card p-5 sm:p-6" style={{ "--section-accent": "hsl(var(--accent))", "--section-glow": "hsla(38, 70%, 55%, 0.12)", animation: "fade-in 0.4s ease-out 0.4s forwards", opacity: 0 } as React.CSSProperties & Record<string, string>}>
+      <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2 mb-5">
+        <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
+          <BarChart3 className="w-[18px] h-[18px] text-accent" />
+        </div>
         Weekly Progress
       </h2>
 
-      <div className="grid grid-cols-3 gap-3 sm:gap-4">
+      <div className="grid grid-cols-3 gap-4 sm:gap-6">
         {stats.map((s, i) => (
-          <div key={i} className="flex flex-col gap-1.5 sm:gap-2">
-            <div className="flex items-center gap-1.5 text-muted-foreground">
+          <div key={i} className="flex flex-col gap-2">
+            <div className="flex items-center gap-2" style={{ color: s.color }}>
               {s.icon}
-              <span className="text-[10px] sm:text-xs hidden sm:inline">{s.label}</span>
-              <span className="text-[10px] sm:hidden">{s.label.split(" ")[0]}</span>
+              <span className="text-sm hidden sm:inline text-muted-foreground">{s.label}</span>
+              <span className="text-sm sm:hidden text-muted-foreground">{s.label.split(" ")[0]}</span>
             </div>
-            <span className="text-lg sm:text-2xl font-semibold text-foreground tracking-tight">{s.value}</span>
+            <span className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
             {s.pct !== null && (
-              <div className="w-full h-1 sm:h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div className="w-full h-2 sm:h-2.5 rounded-full bg-secondary overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-accent transition-all duration-700"
-                  style={{ width: `${s.pct}%` }}
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${s.pct}%`, backgroundColor: s.color }}
                 />
               </div>
             )}

@@ -12,7 +12,6 @@ import GrowthChatbot, { type AppState } from "@/components/GrowthChatbot";
 function getAppState(): AppState {
   const todayKey = new Date().toISOString().split("T")[0];
 
-  // Habits
   let habitsCompleted = 0, habitsTotal = 0, habitNames = "";
   try {
     const raw = localStorage.getItem("dashboard-habits");
@@ -28,7 +27,6 @@ function getAppState(): AppState {
     }
   } catch {}
 
-  // Nutrition
   let nutritionState = { calories: 0, caloriesGoal: 2000, protein: 0, carbs: 0, fat: 0, mealsCount: 0 };
   try {
     const raw = localStorage.getItem("dashboard-nutrition");
@@ -48,7 +46,6 @@ function getAppState(): AppState {
     }
   } catch {}
 
-  // Study timer
   let studyState = { sessions: 0, isRunning: false, todayMinutes: 0 };
   try {
     const raw = localStorage.getItem("dashboard-study-timer");
@@ -61,7 +58,6 @@ function getAppState(): AppState {
     }
   } catch {}
 
-  // Todos
   let todosState = { completed: 0, total: 0 };
   try {
     const raw = localStorage.getItem("dashboard-todos");
@@ -93,7 +89,6 @@ const Index = () => {
 
   const [appState, setAppState] = useState<AppState>(getAppState);
 
-  // Refresh app state periodically so chatbot has current data
   useEffect(() => {
     const interval = setInterval(() => setAppState(getAppState()), 5000);
     return () => clearInterval(interval);
@@ -101,8 +96,6 @@ const Index = () => {
 
   const handleChatAction = useCallback((action: string, param: string | null) => {
     if (action === "SEARCH_FOOD" && param) {
-      // Scroll to nutrition tracker
-      const el = document.querySelector('[class*="nutrition"]') || document.querySelector('h2');
       const nutritionSection = Array.from(document.querySelectorAll('h2')).find(h => h.textContent?.includes('Nutrition'));
       nutritionSection?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (action === "START_POMODORO") {
@@ -111,14 +104,14 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background px-3 py-6 sm:px-6 md:px-8 lg:px-16 md:py-8">
-      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+    <div className="min-h-screen bg-background px-4 py-8 sm:px-6 md:px-10 lg:px-20 md:py-10 animate-page-enter">
+      <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
         <div style={{ animation: "fade-in 0.4s ease-out forwards" }}>
-          <h1 className="text-xl sm:text-2xl font-semibold text-foreground tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
             {greeting}.
           </h1>
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+          <p className="text-sm text-muted-foreground mt-1">
             {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
           </p>
         </div>
@@ -126,13 +119,13 @@ const Index = () => {
         <QuoteSection />
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div className="space-y-3 sm:space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="space-y-4 sm:space-y-6">
             <SubjectStudyTimer />
             <DailyGoals />
             <FocusMusicPlayer />
           </div>
-          <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             <TodoList />
             <HabitsTracker />
           </div>
@@ -141,8 +134,8 @@ const Index = () => {
         <NutritionTracker />
         <WeeklyProgress />
 
-        <div className="text-center pb-2 sm:pb-4">
-          <p className="text-[10px] text-muted-foreground/40">Stay focused. Stay consistent.</p>
+        <div className="text-center pb-4 sm:pb-6">
+          <p className="text-sm text-muted-foreground/40">Stay focused. Stay consistent.</p>
         </div>
       </div>
 
