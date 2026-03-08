@@ -151,13 +151,13 @@
   .section-card::after {
     content: '';
     position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 150px;
-    height: 150px;
+    top: -30px;
+    right: -30px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background: radial-gradient(circle, var(--section-orb, transparent) 0%, transparent 70%);
-    opacity: 0.15;
+    opacity: 0.25;
     pointer-events: none;
     z-index: 0;
   }
