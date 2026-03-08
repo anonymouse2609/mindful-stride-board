@@ -651,7 +651,7 @@ export default function SubjectStudyTimer() {
             <div className="text-center py-8">
               <p className="text-3xl mb-2">📚</p>
               <p className="text-[15px] text-muted-foreground">No sessions recorded yet</p>
-              <p className="text-sm text-muted-foreground/60 mt-1">Start studying to see your history</p>
+              <p className="text-sm text-muted-foreground mt-1">Start studying to see your history</p>
             </div>
           )}
         </div>

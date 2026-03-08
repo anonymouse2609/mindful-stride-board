@@ -35,7 +35,7 @@ export default function QuoteSection() {
       <p className="text-[15px] text-muted-foreground italic leading-relaxed">
         "{quote.text}"
       </p>
-      <p className="mt-1.5 text-sm text-muted-foreground/50">— {quote.author}</p>
+      <p className="mt-1.5 text-sm text-muted-foreground">— {quote.author}</p>
     </div>
   );
 }

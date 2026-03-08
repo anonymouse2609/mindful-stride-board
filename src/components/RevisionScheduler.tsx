@@ -536,7 +536,7 @@ export default function RevisionScheduler() {
             <div className="text-center py-8">
               <p className="text-3xl mb-2">🎯</p>
               <p className="text-[15px] text-muted-foreground">No mastered topics yet</p>
-              <p className="text-sm text-muted-foreground/60 mt-1">Complete all revision intervals to master a topic</p>
+              <p className="text-sm text-muted-foreground mt-1">Complete all revision intervals to master a topic</p>
             </div>
           )}
           {masteredTopics.map(topic => (
