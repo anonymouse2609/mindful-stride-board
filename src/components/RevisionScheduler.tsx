@@ -579,7 +579,7 @@ export default function RevisionScheduler() {
             <div>
               <span className="text-xs text-muted-foreground mb-1 block">This Week Progress</span>
               <div className="h-3 rounded-full bg-secondary/40 overflow-hidden">
-                <div className="h-full rounded-full bg-green-500 transition-all duration-500" style={{ width: `${Math.min((stats.completedThisWeek / stats.dueThisWeek) * 100, 100)}%` }} />
+                <div className="h-full rounded-full bg-indigo-500 transition-all duration-500" style={{ width: `${Math.min((stats.completedThisWeek / stats.dueThisWeek) * 100, 100)}%` }} />
               </div>
               <span className="text-xs text-muted-foreground mt-1">{stats.completedThisWeek}/{stats.dueThisWeek} completed</span>
             </div>
