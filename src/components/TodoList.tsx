@@ -59,9 +59,9 @@ export default function TodoList() {
 
   return (
     <div className="section-card section-music" style={{ animation: "fade-in 0.4s ease-out 0.2s forwards", opacity: "0" } as React.CSSProperties & Record<string, string>}>
-      <h2 className="text-[18px] font-semibold flex items-center gap-2 mb-4" style={{ color: "#ffffff" }}>
-        <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-          <ListTodo className="w-[22px] h-[22px] text-white" />
+      <h2 className="text-[18px] font-semibold section-title-pomodoro flex items-center gap-2 mb-4">
+        <div className="w-8 h-8 rounded-xl bg-pomodoro/15 flex items-center justify-center">
+          <ListTodo className="w-[22px] h-[22px] text-pomodoro" />
         </div>
         Tasks
       </h2>

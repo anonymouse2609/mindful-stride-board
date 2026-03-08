@@ -80,8 +80,8 @@ export default function HabitsTracker() {
   return (
     <div className="section-card section-habits flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
       <h2 className="text-[18px] font-semibold section-title-habits flex items-center gap-2">
-        <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-          <Flame className="w-[22px] h-[22px] text-white" />
+        <div className="w-8 h-8 rounded-xl bg-habits/15 flex items-center justify-center">
+          <Flame className="w-[22px] h-[22px] text-habits" />
         </div>
         Habits
       </h2>

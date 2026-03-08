@@ -425,8 +425,8 @@ export default function SubjectStudyTimer() {
       {/* Header + Tabs */}
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-semibold section-title-study flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-            <BookOpen className="w-[22px] h-[22px] text-white" />
+          <div className="w-8 h-8 rounded-xl bg-study/15 flex items-center justify-center">
+            <BookOpen className="w-[22px] h-[22px] text-study" />
           </div>
           Study Timer
         </h2>

@@ -328,8 +328,8 @@ export default function RevisionScheduler() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-[18px] font-semibold section-title-revision flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-            <Calendar className="w-[22px] h-[22px] text-white" />
+          <div className="w-8 h-8 rounded-xl bg-revision/15 flex items-center justify-center">
+            <Calendar className="w-[22px] h-[22px] text-revision" />
           </div>
           Revision Scheduler
         </h2>
