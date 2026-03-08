@@ -161,13 +161,13 @@ function SubjectPieChart({ segments }: { segments: { color: string; pct: number;
   let offset = 0;
   const filtered = segments.filter(s => s.pct > 0);
   if (filtered.length === 0) return (
-    <div className="w-20 h-20 rounded-full border-2 border-dashed border-border flex items-center justify-center">
-      <span className="text-[9px] text-muted-foreground">No data</span>
+    <div className="w-24 h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+      <span className="text-sm text-muted-foreground">No data</span>
     </div>
   );
   return (
-    <div className="flex flex-col items-center gap-1.5">
-      <svg viewBox="0 0 100 100" className="w-20 h-20 -rotate-90">
+    <div className="flex flex-col items-center gap-2">
+      <svg viewBox="0 0 100 100" className="w-24 h-24 -rotate-90">
         {filtered.map((seg, i) => {
           const dash = (seg.pct / 100) * circumference;
           const gap = circumference - dash;
@@ -175,10 +175,10 @@ function SubjectPieChart({ segments }: { segments: { color: string; pct: number;
           return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={seg.color} strokeWidth="10" strokeDasharray={`${dash} ${gap}`} strokeDashoffset={so} className="transition-all duration-500" />;
         })}
       </svg>
-      <div className="flex flex-wrap gap-x-2 gap-y-0.5 justify-center">
+      <div className="flex flex-wrap gap-x-3 gap-y-1 justify-center">
         {filtered.map((seg, i) => (
-          <span key={i} className="text-[9px] text-muted-foreground flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: seg.color }} />
+          <span key={i} className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: seg.color }} />
             {seg.label} {Math.round(seg.pct)}%
           </span>
         ))}
