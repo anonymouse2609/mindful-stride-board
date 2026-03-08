@@ -1260,8 +1260,8 @@ export default function NutritionTracker() {
       {data.log.length === 0 && (
         <div className="text-center py-6">
           <p className="text-3xl mb-2">🍽️</p>
-          <p className="text-[15px] text-muted-foreground">No food logged yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Search and add foods to start tracking</p>
+          <p className="text-[15px] text-white/70">No food logged yet</p>
+          <p className="text-sm text-white/60 mt-1">Search and add foods to start tracking</p>
         </div>
       )}
 
