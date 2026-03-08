@@ -40,7 +40,7 @@ export default function DailyGoals() {
           </div>
           Today's Goals
         </h2>
-        <span className="text-sm font-mono text-muted-foreground">{filledCount}/3</span>
+        <span className="text-sm font-mono text-white/70">{filledCount}/3</span>
       </div>
 
       <div className="flex flex-col gap-3">

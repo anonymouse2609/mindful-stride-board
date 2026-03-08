@@ -516,7 +516,64 @@
   .light .input-styled {
     background: rgba(255, 255, 255, 0.6);
   }
-}
+
+  /* ===== DARK MODE CONTRAST FIX FOR CARD ELEMENTS ===== */
+  :root .section-card .input-styled,
+  .dark .section-card .input-styled {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+  :root .section-card .input-styled::placeholder,
+  .dark .section-card .input-styled::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  :root .section-card .input-styled:focus,
+  .dark .section-card .input-styled:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+  :root .section-card select.input-styled option,
+  .dark .section-card select.input-styled option {
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+  }
+
+  /* Progress bar tracks inside cards */
+  :root .section-card .progress-track,
+  .dark .section-card .progress-track,
+  :root .section-card .bg-secondary,
+  .dark .section-card .bg-secondary {
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+  :root .section-card .bg-secondary\/40,
+  .dark .section-card .bg-secondary\/40 {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+  :root .section-card .bg-secondary\/60,
+  .dark .section-card .bg-secondary\/60 {
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+  :root .section-card .bg-secondary\/30,
+  .dark .section-card .bg-secondary\/30 {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+  :root .section-card .bg-secondary\/20,
+  .dark .section-card .bg-secondary\/20 {
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  /* Dividers */
+  :root .section-card .border-border,
+  .dark .section-card .border-border {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Tab bar inside cards */
+  :root .section-card .tab-bar,
+  .dark .section-card .tab-bar {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
 
 @keyframes fade-in {
   0% { opacity: 0; transform: translateY(8px); }

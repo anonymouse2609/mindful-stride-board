@@ -152,7 +152,7 @@ export default function HabitsTracker() {
         />
         <button
           onClick={addHabit}
-          className="btn-primary bg-habits/20 text-habits border border-habits/30 hover:bg-habits/30 shrink-0"
+          className="btn-primary bg-white text-habits border border-white/80 hover:bg-white/90 shrink-0 font-bold"
         >
           Add
         </button>

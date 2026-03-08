@@ -89,7 +89,7 @@ export default function TodoList() {
         </div>
         <button
           onClick={addTodo}
-          className="icon-btn bg-secondary text-foreground hover:bg-muted shrink-0"
+          className="icon-btn bg-white/15 text-white hover:bg-white/25 shrink-0"
         >
           <Plus className="w-5 h-5" />
         </button>

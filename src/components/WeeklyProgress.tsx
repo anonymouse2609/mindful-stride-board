@@ -87,7 +87,7 @@ export default function WeeklyProgress() {
             </div>
             <span className="text-2xl sm:text-3xl font-bold tracking-tight" style={{ color: s.color }}>{s.value}</span>
             {s.pct !== null && (
-              <div className="w-full h-2 sm:h-2.5 rounded-full bg-secondary overflow-hidden">
+              <div className="w-full h-2 sm:h-2.5 rounded-full bg-white/15 overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700"
                   style={{ width: `${s.pct}%`, backgroundColor: s.color }}
