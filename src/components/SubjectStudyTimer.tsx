@@ -568,7 +568,7 @@ export default function SubjectStudyTimer() {
                   </div>
                   <span className="text-muted-foreground">{formatDuration(s.mins)} / {s.weeklyGoalHours}h — {Math.round(s.pct)}%</span>
                 </div>
-                <div className="w-full h-2.5 rounded-full bg-secondary overflow-hidden">
+                <div className="w-full h-2.5 rounded-full bg-white/15 overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-500" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
                 </div>
                 {s.allTimeMins > 0 && (
