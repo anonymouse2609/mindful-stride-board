@@ -287,7 +287,6 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
                       isUser
                         ? "bg-[hsl(221,83%,53%)] text-white rounded-br-md"
                         : "rounded-bl-md" } `} style={!isUser ? { background: "hsl(240, 12%, 10%)", color: "hsl(220, 13%, 91%)" } : undefined}>
-                    }`}>
                       {msg.content.split(/(\*\*.*?\*\*)/).map((part, j) => {
                         if (part.startsWith("**") && part.endsWith("**")) {
                           return <strong key={j}>{part.slice(2, -2)}</strong>;
