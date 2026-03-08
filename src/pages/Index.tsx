@@ -128,7 +128,7 @@ const Index = () => {
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
           <div className="space-y-3 sm:space-y-4">
-            <PomodoroTimer />
+            <SubjectStudyTimer />
             <DailyGoals />
             <FocusMusicPlayer />
           </div>
