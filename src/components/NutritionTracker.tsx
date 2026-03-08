@@ -1117,18 +1117,18 @@ export default function NutritionTracker() {
 
       {/* My Foods list */}
       {showMyFoods && (
-        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-1.5 animate-fade-in">
-          <span className="text-[11px] text-muted-foreground font-medium mb-1">My Custom Foods</span>
+        <div className="bg-nutrition/5 border border-nutrition/10 rounded-xl p-4 flex flex-col gap-2 animate-fade-in">
+          <span className="text-sm text-nutrition font-medium mb-1">My Custom Foods</span>
           {customFoods.map((f) => (
-            <div key={f.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/60">
+            <div key={f.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40">
               <div>
-                <span className="text-xs text-foreground">{f.name}</span>
-                {f.unitLabel && <span className="text-[10px] text-muted-foreground ml-1.5">per {f.unitLabel} ≈{f.gramsPerUnit}g</span>}
-                <div className="text-[10px] text-muted-foreground">{f.calories}cal · {f.protein}p · {f.carbs}c · {f.fat}f</div>
+                <span className="text-[15px] text-foreground">{f.name}</span>
+                {f.unitLabel && <span className="text-sm text-muted-foreground ml-2">per {f.unitLabel} ≈{f.gramsPerUnit}g</span>}
+                <div className="text-sm text-muted-foreground">{f.calories}cal · {f.protein}p · {f.carbs}c · {f.fat}f</div>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => openCustomModal(f)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
-                <button onClick={() => deleteCustomFood(f.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                <button onClick={() => openCustomModal(f)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => deleteCustomFood(f.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
               </div>
             </div>
           ))}
