@@ -35,7 +35,7 @@ const INTERVALS: Record<Difficulty, number[]> = {
 };
 
 const DIFF_COLORS: Record<Difficulty, { bg: string; text: string; label: string }> = {
-  easy: { bg: "bg-green-500/15", text: "text-green-400", label: "Easy" },
+  easy: { bg: "bg-cyan-500/15", text: "text-cyan-400", label: "Easy" },
   medium: { bg: "bg-amber-500/15", text: "text-amber-400", label: "Medium" },
   hard: { bg: "bg-red-500/15", text: "text-red-400", label: "Hard" },
 };
