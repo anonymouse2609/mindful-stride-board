@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,55 +6,54 @@
 
 @layer base {
   :root {
-    --background: 230 25% 9%;
-    --foreground: 40 20% 92%;
+    --background: 228 14% 8%;
+    --foreground: 0 0% 93%;
 
-    --card: 230 20% 12%;
-    --card-foreground: 40 20% 92%;
+    --card: 228 12% 11%;
+    --card-foreground: 0 0% 93%;
 
-    --popover: 230 20% 12%;
-    --popover-foreground: 40 20% 92%;
+    --popover: 228 12% 11%;
+    --popover-foreground: 0 0% 93%;
 
-    --primary: 38 92% 60%;
-    --primary-foreground: 230 25% 9%;
+    --primary: 0 0% 93%;
+    --primary-foreground: 228 14% 8%;
 
-    --secondary: 230 18% 18%;
-    --secondary-foreground: 40 20% 85%;
+    --secondary: 228 10% 15%;
+    --secondary-foreground: 0 0% 80%;
 
-    --muted: 230 15% 16%;
-    --muted-foreground: 230 10% 50%;
+    --muted: 228 8% 18%;
+    --muted-foreground: 228 5% 45%;
 
-    --accent: 38 92% 60%;
-    --accent-foreground: 230 25% 9%;
+    --accent: 38 70% 55%;
+    --accent-foreground: 228 14% 8%;
 
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 40 20% 92%;
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 93%;
 
-    --success: 152 60% 45%;
-    --success-foreground: 230 25% 9%;
+    --success: 152 50% 42%;
+    --success-foreground: 228 14% 8%;
 
-    --warning: 38 92% 60%;
-    --high: 0 72% 55%;
-    --medium: 38 92% 60%;
-    --low: 200 60% 50%;
+    --high: 0 60% 55%;
+    --medium: 38 70% 55%;
+    --low: 210 50% 55%;
 
-    --border: 230 15% 20%;
-    --input: 230 15% 20%;
-    --ring: 38 92% 60%;
+    --border: 228 8% 16%;
+    --input: 228 8% 16%;
+    --ring: 0 0% 50%;
 
-    --radius: 0.75rem;
+    --radius: 0.625rem;
 
-    --font-display: 'Space Grotesk', sans-serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    --sidebar-background: 230 20% 12%;
-    --sidebar-foreground: 40 20% 92%;
-    --sidebar-primary: 38 92% 60%;
-    --sidebar-primary-foreground: 230 25% 9%;
-    --sidebar-accent: 230 18% 18%;
-    --sidebar-accent-foreground: 40 20% 85%;
-    --sidebar-border: 230 15% 20%;
-    --sidebar-ring: 38 92% 60%;
+    --sidebar-background: 228 12% 11%;
+    --sidebar-foreground: 0 0% 93%;
+    --sidebar-primary: 0 0% 93%;
+    --sidebar-primary-foreground: 228 14% 8%;
+    --sidebar-accent: 228 10% 15%;
+    --sidebar-accent-foreground: 0 0% 80%;
+    --sidebar-border: 228 8% 16%;
+    --sidebar-ring: 0 0% 50%;
   }
 }
 
@@ -64,12 +63,9 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-display);
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    letter-spacing: -0.01em;
   }
 
   code, .font-mono {
@@ -79,36 +75,21 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl shadow-lg;
-  }
-
-  .glow-amber {
-    box-shadow: 0 0 20px hsl(38 92% 60% / 0.15), 0 0 60px hsl(38 92% 60% / 0.05);
+    @apply bg-card border border-border/60 rounded-xl;
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-[hsl(28,85%,65%)];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 }
 
 @keyframes fade-in {
-  0% { opacity: 0; transform: translateY(10px); }
+  0% { opacity: 0; transform: translateY(8px); }
   100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fade-in-scale {
-  0% { opacity: 0; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 hsl(38 92% 60% / 0.4); }
-  70% { box-shadow: 0 0 0 10px hsl(38 92% 60% / 0); }
-  100% { box-shadow: 0 0 0 0 hsl(38 92% 60% / 0); }
 }
 
 @keyframes check-pop {
   0% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+  50% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
