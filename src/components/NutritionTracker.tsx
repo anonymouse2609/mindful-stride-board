@@ -756,9 +756,36 @@ const FOODS: FoodItem[] = [
 ];
 
 const STORAGE_KEY = "dashboard-nutrition";
+const CUSTOM_FOODS_KEY = "dashboard-custom-foods";
+const RECIPES_KEY = "dashboard-recipes";
 const todayKey = () => new Date().toISOString().split("T")[0];
 
 const DEFAULT_GOALS: MacroGoals = { calories: 2000, protein: 80, carbs: 250, fat: 65 };
+
+interface CustomFood extends FoodItem {
+  id: string;
+  unitLabel?: string;
+  gramsPerUnit?: number;
+}
+
+interface RecipeIngredient {
+  food: FoodItem;
+  grams: number;
+}
+
+interface Recipe {
+  id: string;
+  name: string;
+  ingredients: RecipeIngredient[];
+  servings: number;
+  // per 100g macros (computed)
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  totalGrams: number;
+}
 
 interface StoredData {
   date: string;
@@ -777,10 +804,17 @@ function loadData(): StoredData {
   } catch {}
   return { date: todayKey(), log: [], goals: DEFAULT_GOALS };
 }
+function saveData(data: StoredData) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
-function saveData(data: StoredData) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function loadCustomFoods(): CustomFood[] {
+  try { const r = localStorage.getItem(CUSTOM_FOODS_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
 }
+function saveCustomFoods(foods: CustomFood[]) { localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(foods)); }
+
+function loadRecipes(): Recipe[] {
+  try { const r = localStorage.getItem(RECIPES_KEY); return r ? JSON.parse(r) : []; } catch { return []; }
+}
+function saveRecipes(recipes: Recipe[]) { localStorage.setItem(RECIPES_KEY, JSON.stringify(recipes)); }
 
 function MacroBar({ label, current, goal, color }: { label: string; current: number; goal: number; color: string }) {
   const pct = Math.min((current / goal) * 100, 100);
@@ -795,80 +829,53 @@ function MacroBar({ label, current, goal, color }: { label: string; current: num
         </span>
       </div>
       <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-500 ${over ? "bg-destructive" : ""}`}
-          style={{ width: `${pct}%`, backgroundColor: over ? undefined : color }}
-        />
+        <div className={`h-full rounded-full transition-all duration-500 ${over ? "bg-destructive" : ""}`} style={{ width: `${pct}%`, backgroundColor: over ? undefined : color }} />
       </div>
     </div>
   );
 }
 
-const PIE_COLORS = {
-  protein: "hsl(200, 60%, 50%)",
-  carbs: "hsl(38, 70%, 55%)",
-  fat: "hsl(0, 60%, 55%)",
-};
+const PIE_COLORS = { protein: "hsl(200, 60%, 50%)", carbs: "hsl(38, 70%, 55%)", fat: "hsl(0, 60%, 55%)" };
 
 function MacroPieChart({ protein, carbs, fat }: { protein: number; carbs: number; fat: number }) {
-  const proteinCal = protein * 4;
-  const carbsCal = carbs * 4;
-  const fatCal = fat * 9;
+  const proteinCal = protein * 4, carbsCal = carbs * 4, fatCal = fat * 9;
   const total = proteinCal + carbsCal + fatCal;
-
-  if (total === 0) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
-          <span className="text-[10px] text-muted-foreground">No data</span>
-        </div>
+  if (total === 0) return (
+    <div className="flex items-center justify-center">
+      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+        <span className="text-[10px] text-muted-foreground">No data</span>
       </div>
-    );
-  }
-
-  const pPct = (proteinCal / total) * 100;
-  const cPct = (carbsCal / total) * 100;
-  const fPct = (fatCal / total) * 100;
-
-  const r = 42;
-  const cx = 50;
-  const cy = 50;
-  const circumference = 2 * Math.PI * r;
-
-  const segments = [
-    { pct: pPct, color: PIE_COLORS.protein, label: "P" },
-    { pct: cPct, color: PIE_COLORS.carbs, label: "C" },
-    { pct: fPct, color: PIE_COLORS.fat, label: "F" },
-  ];
-
+    </div>
+  );
+  const pPct = (proteinCal / total) * 100, cPct = (carbsCal / total) * 100, fPct = (fatCal / total) * 100;
+  const r = 42, cx = 50, cy = 50, circumference = 2 * Math.PI * r;
+  const segments = [{ pct: pPct, color: PIE_COLORS.protein }, { pct: cPct, color: PIE_COLORS.carbs }, { pct: fPct, color: PIE_COLORS.fat }];
   let offset = 0;
-
   return (
     <div className="flex flex-col items-center gap-2">
       <svg viewBox="0 0 100 100" className="w-20 h-20 sm:w-24 sm:h-24 -rotate-90">
-        {segments.map((seg, i) => {
-          const dash = (seg.pct / 100) * circumference;
-          const gap = circumference - dash;
-          const strokeOffset = -offset;
-          offset += dash;
-          return (
-            <circle
-              key={i}
-              cx={cx} cy={cy} r={r}
-              fill="none"
-              stroke={seg.color}
-              strokeWidth="12"
-              strokeDasharray={`${dash} ${gap}`}
-              strokeDashoffset={strokeOffset}
-              className="transition-all duration-500"
-            />
-          );
-        })}
+        {segments.map((seg, i) => { const dash = (seg.pct / 100) * circumference; const gap = circumference - dash; const so = -offset; offset += dash; return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={seg.color} strokeWidth="12" strokeDasharray={`${dash} ${gap}`} strokeDashoffset={so} className="transition-all duration-500" />; })}
       </svg>
       <div className="flex gap-3 text-[10px]">
         <span style={{ color: PIE_COLORS.protein }}>● P {Math.round(pPct)}%</span>
         <span style={{ color: PIE_COLORS.carbs }}>● C {Math.round(cPct)}%</span>
         <span style={{ color: PIE_COLORS.fat }}>● F {Math.round(fPct)}%</span>
+      </div>
+    </div>
+  );
+}
+
+// Modal wrapper
+function Modal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto p-5 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+        </div>
+        {children}
       </div>
     </div>
   );
@@ -884,99 +891,264 @@ export default function NutritionTracker() {
   const [showGoals, setShowGoals] = useState(false);
   const [editGoals, setEditGoals] = useState<MacroGoals>(data.goals);
 
+  // Custom foods
+  const [customFoods, setCustomFoods] = useState<CustomFood[]>(loadCustomFoods);
+  const [showCustomModal, setShowCustomModal] = useState(false);
+  const [editingCustom, setEditingCustom] = useState<CustomFood | null>(null);
+  const [showMyFoods, setShowMyFoods] = useState(false);
+  const [cf, setCf] = useState({ name: "", calories: "", protein: "", carbs: "", fat: "", fiber: "", unitLabel: "", gramsPerUnit: "" });
+
+  // Recipes
+  const [recipes, setRecipes] = useState<Recipe[]>(loadRecipes);
+  const [showRecipeModal, setShowRecipeModal] = useState(false);
+  const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [showMyRecipes, setShowMyRecipes] = useState(false);
+  const [recipeName, setRecipeName] = useState("");
+  const [recipeServings, setRecipeServings] = useState("1");
+  const [recipeIngredients, setRecipeIngredients] = useState<RecipeIngredient[]>([]);
+  const [recipeSearch, setRecipeSearch] = useState("");
+  const [recipeShowDrop, setRecipeShowDrop] = useState(false);
+
   useEffect(() => { saveData(data); }, [data]);
+  useEffect(() => { saveCustomFoods(customFoods); }, [customFoods]);
+  useEffect(() => { saveRecipes(recipes); }, [recipes]);
 
-  const selectedUnit = selected ? UNIT_MAP[selected.name] : null;
+  // Build combined unit map with custom food units
+  const dynamicUnitMap: Record<string, UnitInfo> = { ...UNIT_MAP };
+  customFoods.forEach((f) => { if (f.unitLabel && f.gramsPerUnit) dynamicUnitMap[f.name] = { unitLabel: f.unitLabel, gramsPerUnit: f.gramsPerUnit }; });
+  recipes.forEach((r) => { dynamicUnitMap[r.name] = { unitLabel: "serving", gramsPerUnit: r.totalGrams / r.servings }; });
+
+  const selectedUnit = selected ? dynamicUnitMap[selected.name] : null;
   const hasUnit = !!selectedUnit;
-
-  // Auto-switch to gram mode for items without unit mappings
   const effectiveGramMode = !hasUnit || useGramMode;
+  const computedGrams = effectiveGramMode ? parseFloat(quantity) : (parseFloat(quantity) || 0) * (selectedUnit?.gramsPerUnit || 0);
 
-  const computedGrams = effectiveGramMode
-    ? parseFloat(quantity)
-    : (parseFloat(quantity) || 0) * (selectedUnit?.gramsPerUnit || 0);
+  // All foods combined
+  const allFoods: (FoodItem & { tag?: string })[] = [
+    ...FOODS,
+    ...customFoods.map((f) => ({ ...f, tag: "Custom" })),
+    ...recipes.map((r) => ({ name: r.name, calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat, fiber: r.fiber, tag: "🍳 Recipe" })),
+  ];
 
   const filtered = search.length > 0
-    ? FOODS.filter((f) => f.name.toLowerCase().includes(search.toLowerCase())).slice(0, 8)
+    ? allFoods.filter((f) => f.name.toLowerCase().includes(search.toLowerCase())).slice(0, 10)
     : [];
 
   const selectFood = (food: FoodItem) => {
     setSelected(food);
     setSearch(food.name);
     setShowDropdown(false);
-    const unit = UNIT_MAP[food.name];
-    if (unit) {
-      setUseGramMode(false);
-      setQuantity("1");
-    } else {
-      setUseGramMode(true);
-      setQuantity("100");
-    }
+    const unit = dynamicUnitMap[food.name];
+    if (unit) { setUseGramMode(false); setQuantity("1"); } else { setUseGramMode(true); setQuantity("100"); }
   };
 
   const addEntry = () => {
     if (!selected || !quantity) return;
     const g = computedGrams;
     if (isNaN(g) || g <= 0) return;
-    const entry: LogEntry = { id: Date.now().toString(), food: selected, grams: g };
-    setData((prev) => ({ ...prev, log: [...prev.log, entry] }));
-    setSearch("");
-    setSelected(null);
-    setQuantity("1");
-    setUseGramMode(false);
+    setData((prev) => ({ ...prev, log: [...prev.log, { id: Date.now().toString(), food: selected, grams: g }] }));
+    setSearch(""); setSelected(null); setQuantity("1"); setUseGramMode(false);
   };
 
-  const removeEntry = (id: string) => {
-    setData((prev) => ({ ...prev, log: prev.log.filter((e) => e.id !== id) }));
+  const removeEntry = (id: string) => { setData((prev) => ({ ...prev, log: prev.log.filter((e) => e.id !== id) })); };
+  const resetLog = () => { setData((prev) => ({ ...prev, log: [] })); };
+  const handleSaveGoals = () => { setData((prev) => ({ ...prev, goals: editGoals })); setShowGoals(false); };
+
+  const totals = data.log.reduce((acc, entry) => {
+    const m = entry.grams / 100;
+    return { calories: acc.calories + entry.food.calories * m, protein: acc.protein + entry.food.protein * m, carbs: acc.carbs + entry.food.carbs * m, fat: acc.fat + entry.food.fat * m, fiber: acc.fiber + entry.food.fiber * m };
+  }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
+
+  // Custom food handlers
+  const openCustomModal = (food?: CustomFood) => {
+    if (food) {
+      setEditingCustom(food);
+      setCf({ name: food.name, calories: String(food.calories), protein: String(food.protein), carbs: String(food.carbs), fat: String(food.fat), fiber: String(food.fiber), unitLabel: food.unitLabel || "", gramsPerUnit: food.gramsPerUnit ? String(food.gramsPerUnit) : "" });
+    } else {
+      setEditingCustom(null);
+      setCf({ name: "", calories: "", protein: "", carbs: "", fat: "", fiber: "", unitLabel: "", gramsPerUnit: "" });
+    }
+    setShowCustomModal(true);
   };
 
-  const resetLog = () => {
-    setData((prev) => ({ ...prev, log: [] }));
+  const saveCustomFood = () => {
+    if (!cf.name || !cf.calories) return;
+    const food: CustomFood = {
+      id: editingCustom?.id || Date.now().toString(),
+      name: cf.name, calories: Number(cf.calories), protein: Number(cf.protein) || 0, carbs: Number(cf.carbs) || 0,
+      fat: Number(cf.fat) || 0, fiber: Number(cf.fiber) || 0,
+      unitLabel: cf.unitLabel || undefined, gramsPerUnit: cf.gramsPerUnit ? Number(cf.gramsPerUnit) : undefined,
+    };
+    if (editingCustom) {
+      setCustomFoods((prev) => prev.map((f) => f.id === editingCustom.id ? food : f));
+    } else {
+      setCustomFoods((prev) => [...prev, food]);
+    }
+    setShowCustomModal(false);
   };
 
-  const handleSaveGoals = () => {
-    setData((prev) => ({ ...prev, goals: editGoals }));
-    setShowGoals(false);
+  const deleteCustomFood = (id: string) => { setCustomFoods((prev) => prev.filter((f) => f.id !== id)); };
+
+  // Recipe handlers
+  const allFoodsForRecipe = [...FOODS, ...customFoods];
+  const recipeFiltered = recipeSearch.length > 0
+    ? allFoodsForRecipe.filter((f) => f.name.toLowerCase().includes(recipeSearch.toLowerCase())).slice(0, 8)
+    : [];
+
+  const addRecipeIngredient = (food: FoodItem) => {
+    const unit = dynamicUnitMap[food.name];
+    const grams = unit ? unit.gramsPerUnit : 100;
+    setRecipeIngredients((prev) => [...prev, { food, grams }]);
+    setRecipeSearch("");
+    setRecipeShowDrop(false);
   };
 
-  const totals = data.log.reduce(
-    (acc, entry) => {
-      const m = entry.grams / 100;
-      return {
-        calories: acc.calories + entry.food.calories * m,
-        protein: acc.protein + entry.food.protein * m,
-        carbs: acc.carbs + entry.food.carbs * m,
-        fat: acc.fat + entry.food.fat * m,
-        fiber: acc.fiber + entry.food.fiber * m,
-      };
-    },
-    { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 }
-  );
+  const updateIngredientGrams = (idx: number, grams: number) => {
+    setRecipeIngredients((prev) => prev.map((ing, i) => i === idx ? { ...ing, grams } : ing));
+  };
+
+  const removeIngredient = (idx: number) => {
+    setRecipeIngredients((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const recipeTotals = recipeIngredients.reduce((acc, ing) => {
+    const m = ing.grams / 100;
+    return { calories: acc.calories + ing.food.calories * m, protein: acc.protein + ing.food.protein * m, carbs: acc.carbs + ing.food.carbs * m, fat: acc.fat + ing.food.fat * m, fiber: acc.fiber + ing.food.fiber * m, grams: acc.grams + ing.grams };
+  }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, grams: 0 });
+
+  const servingsNum = Math.max(1, Number(recipeServings) || 1);
+  const perServing = {
+    calories: recipeTotals.calories / servingsNum,
+    protein: recipeTotals.protein / servingsNum,
+    carbs: recipeTotals.carbs / servingsNum,
+    fat: recipeTotals.fat / servingsNum,
+    fiber: recipeTotals.fiber / servingsNum,
+    grams: recipeTotals.grams / servingsNum,
+  };
+
+  const openRecipeModal = (recipe?: Recipe) => {
+    if (recipe) {
+      setEditingRecipe(recipe);
+      setRecipeName(recipe.name);
+      setRecipeServings(String(recipe.servings));
+      setRecipeIngredients(recipe.ingredients);
+    } else {
+      setEditingRecipe(null);
+      setRecipeName("");
+      setRecipeServings("1");
+      setRecipeIngredients([]);
+    }
+    setRecipeSearch("");
+    setShowRecipeModal(true);
+  };
+
+  const saveRecipe = () => {
+    if (!recipeName || recipeIngredients.length === 0) return;
+    const totalG = recipeTotals.grams;
+    // Store macros per 100g for compatibility with the main tracker
+    const per100 = totalG > 0 ? {
+      calories: (recipeTotals.calories / totalG) * 100,
+      protein: (recipeTotals.protein / totalG) * 100,
+      carbs: (recipeTotals.carbs / totalG) * 100,
+      fat: (recipeTotals.fat / totalG) * 100,
+      fiber: (recipeTotals.fiber / totalG) * 100,
+    } : { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+
+    const recipe: Recipe = {
+      id: editingRecipe?.id || Date.now().toString(),
+      name: recipeName, ingredients: recipeIngredients, servings: servingsNum, totalGrams: totalG,
+      ...per100,
+    };
+    if (editingRecipe) {
+      setRecipes((prev) => prev.map((r) => r.id === editingRecipe.id ? recipe : r));
+    } else {
+      setRecipes((prev) => [...prev, recipe]);
+    }
+    setShowRecipeModal(false);
+  };
+
+  const deleteRecipe = (id: string) => { setRecipes((prev) => prev.filter((r) => r.id !== id)); };
+
+  const totalFoodCount = FOODS.length + customFoods.length + recipes.length;
 
   return (
     <div className="glass-card p-4 sm:p-5 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-foreground">🥗 Nutrition Tracker <span className="text-[10px] text-muted-foreground font-normal ml-1">{FOODS.length} foods</span></h2>
+        <h2 className="text-sm font-medium text-foreground">🥗 Nutrition Tracker <span className="text-[10px] text-muted-foreground font-normal ml-1">{totalFoodCount} foods</span></h2>
         <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => { setShowGoals(!showGoals); setEditGoals(data.goals); }}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
-            title="Set macro goals"
-          >
+          <button onClick={() => openRecipeModal()} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Build a Recipe">
+            <ChefHat className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => openCustomModal()} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Create Custom Food">
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+          <button onClick={() => { setShowGoals(!showGoals); setEditGoals(data.goals); }} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Set macro goals">
             <Settings2 className="w-3.5 h-3.5" />
           </button>
           {data.log.length > 0 && (
-            <button
-              onClick={resetLog}
-              className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary/60 transition-colors"
-              title="Reset daily log"
-            >
+            <button onClick={resetLog} className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary/60 transition-colors" title="Reset daily log">
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
       </div>
+
+      {/* My Foods / My Recipes links */}
+      {(customFoods.length > 0 || recipes.length > 0) && (
+        <div className="flex gap-3 text-[10px]">
+          {customFoods.length > 0 && (
+            <button onClick={() => setShowMyFoods(!showMyFoods)} className="text-accent hover:underline">
+              My Foods ({customFoods.length})
+            </button>
+          )}
+          {recipes.length > 0 && (
+            <button onClick={() => setShowMyRecipes(!showMyRecipes)} className="text-accent hover:underline">
+              My Recipes ({recipes.length})
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* My Foods list */}
+      {showMyFoods && (
+        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-1.5 animate-fade-in">
+          <span className="text-[11px] text-muted-foreground font-medium mb-1">My Custom Foods</span>
+          {customFoods.map((f) => (
+            <div key={f.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/60">
+              <div>
+                <span className="text-xs text-foreground">{f.name}</span>
+                {f.unitLabel && <span className="text-[10px] text-muted-foreground ml-1.5">per {f.unitLabel} ≈{f.gramsPerUnit}g</span>}
+                <div className="text-[10px] text-muted-foreground">{f.calories}cal · {f.protein}p · {f.carbs}c · {f.fat}f</div>
+              </div>
+              <div className="flex gap-1">
+                <button onClick={() => openCustomModal(f)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
+                <button onClick={() => deleteCustomFood(f.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* My Recipes list */}
+      {showMyRecipes && (
+        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-1.5 animate-fade-in">
+          <span className="text-[11px] text-muted-foreground font-medium mb-1">My Recipes</span>
+          {recipes.map((r) => (
+            <div key={r.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/60">
+              <div>
+                <span className="text-xs text-foreground">🍳 {r.name}</span>
+                <span className="text-[10px] text-muted-foreground ml-1.5">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
+                <div className="text-[10px] text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
+              </div>
+              <div className="flex gap-1">
+                <button onClick={() => openRecipeModal(r)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
+                <button onClick={() => deleteRecipe(r.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Goals editor */}
       {showGoals && (
@@ -986,21 +1158,11 @@ export default function NutritionTracker() {
             {(["calories", "protein", "carbs", "fat"] as const).map((key) => (
               <div key={key} className="flex flex-col gap-1">
                 <label className="text-[10px] text-muted-foreground capitalize">{key}</label>
-                <input
-                  type="number"
-                  value={editGoals[key]}
-                  onChange={(e) => setEditGoals({ ...editGoals, [key]: Number(e.target.value) })}
-                  className="bg-secondary border border-border/60 rounded-md px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40 w-full"
-                />
+                <input type="number" value={editGoals[key]} onChange={(e) => setEditGoals({ ...editGoals, [key]: Number(e.target.value) })} className="bg-secondary border border-border/60 rounded-md px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40 w-full" />
               </div>
             ))}
           </div>
-          <button
-            onClick={handleSaveGoals}
-            className="self-end px-3 py-1 rounded-md bg-accent text-accent-foreground text-[11px] font-medium hover:opacity-90 transition-opacity"
-          >
-            Save Goals
-          </button>
+          <button onClick={handleSaveGoals} className="self-end px-3 py-1 rounded-md bg-accent text-accent-foreground text-[11px] font-medium hover:opacity-90 transition-opacity">Save Goals</button>
         </div>
       )}
 
@@ -1011,9 +1173,7 @@ export default function NutritionTracker() {
           <MacroBar label="Protein" current={totals.protein} goal={data.goals.protein} color="hsl(200, 60%, 50%)" />
           <MacroBar label="Carbs" current={totals.carbs} goal={data.goals.carbs} color="hsl(38, 70%, 55%)" />
           <MacroBar label="Fat" current={totals.fat} goal={data.goals.fat} color="hsl(0, 60%, 55%)" />
-          <div className="col-span-2 text-[11px] text-muted-foreground">
-            Fiber: <span className="text-foreground font-medium">{Math.round(totals.fiber)}g</span>
-          </div>
+          <div className="col-span-2 text-[11px] text-muted-foreground">Fiber: <span className="text-foreground font-medium">{Math.round(totals.fiber)}g</span></div>
         </div>
         <MacroPieChart protein={totals.protein} carbs={totals.carbs} fat={totals.fat} />
       </div>
@@ -1022,30 +1182,20 @@ export default function NutritionTracker() {
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelected(null); }}
-            onFocus={() => setShowDropdown(true)}
-            placeholder="Search food..."
-            className="w-full bg-secondary/50 border border-border/60 rounded-lg pl-8 pr-8 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-          />
-          {search && (
-            <button onClick={() => { setSearch(""); setSelected(null); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
+          <input value={search} onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelected(null); }} onFocus={() => setShowDropdown(true)} placeholder="Search food..." className="w-full bg-secondary/50 border border-border/60 rounded-lg pl-8 pr-8 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+          {search && (<button onClick={() => { setSearch(""); setSelected(null); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="w-3.5 h-3.5" /></button>)}
           {showDropdown && filtered.length > 0 && !selected && (
             <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-20 py-1 max-h-48 overflow-y-auto">
-              {filtered.map((f) => {
-                const unit = UNIT_MAP[f.name];
+              {filtered.map((f: any) => {
+                const unit = dynamicUnitMap[f.name];
                 return (
-                  <button
-                    key={f.name}
-                    onClick={() => selectFood(f)}
-                    className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between"
-                  >
-                    <span>{f.name} {unit && <span className="text-muted-foreground text-[10px]">per {unit.unitLabel} ≈{unit.gramsPerUnit}g</span>}</span>
-                    <span className="text-muted-foreground">{f.calories} cal</span>
+                  <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between items-center gap-2">
+                    <span className="flex items-center gap-1.5 min-w-0">
+                      <span className="truncate">{f.name}</span>
+                      {f.tag && <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"}`}>{f.tag}</span>}
+                      {unit && <span className="text-muted-foreground text-[10px] shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
+                    </span>
+                    <span className="text-muted-foreground shrink-0">{f.calories} cal</span>
                   </button>
                 );
               })}
@@ -1055,43 +1205,20 @@ export default function NutritionTracker() {
         <div className="flex flex-col gap-1">
           <div className="flex gap-2 items-center">
             <div className="relative">
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                placeholder={effectiveGramMode ? "grams" : "How many?"}
-                className="w-24 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-                min="0.1"
-                step={effectiveGramMode ? "1" : "0.5"}
-              />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
-                {effectiveGramMode ? "g" : "×"}
-              </span>
+              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder={effectiveGramMode ? "grams" : "How many?"} className="w-24 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" min="0.1" step={effectiveGramMode ? "1" : "0.5"} />
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{effectiveGramMode ? "g" : "×"}</span>
             </div>
-            <button
-              onClick={addEntry}
-              disabled={!selected}
-              className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-            >
+            <button onClick={addEntry} disabled={!selected} className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
               <Plus className="w-3.5 h-3.5" />
             </button>
           </div>
-          {/* Unit toggle & conversion info */}
           {selected && hasUnit && (
             <div className="flex flex-col gap-0.5">
-              <button
-                onClick={() => {
-                  setUseGramMode(!useGramMode);
-                  setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100));
-                }}
-                className="text-[10px] text-accent hover:underline self-start"
-              >
+              <button onClick={() => { setUseGramMode(!useGramMode); setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100)); }} className="text-[10px] text-accent hover:underline self-start">
                 {effectiveGramMode ? `Use ${selectedUnit!.unitLabel} count` : "Enter grams instead"}
               </button>
               {!effectiveGramMode && quantity && parseFloat(quantity) > 0 && (
-                <span className="text-[10px] text-muted-foreground">
-                  {quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g
-                </span>
+                <span className="text-[10px] text-muted-foreground">{quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g</span>
               )}
             </div>
           )}
@@ -1108,16 +1235,13 @@ export default function NutritionTracker() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-xs text-foreground truncate">{entry.food.name}</span>
-                    <span className="text-[10px] text-muted-foreground shrink-0">{entry.grams}g</span>
+                    <span className="text-[10px] text-muted-foreground shrink-0">{Math.round(entry.grams)}g</span>
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">
                     {Math.round(entry.food.calories * m)} cal · {Math.round(entry.food.protein * m)}p · {Math.round(entry.food.carbs * m)}c · {Math.round(entry.food.fat * m)}f
                   </div>
                 </div>
-                <button
-                  onClick={() => removeEntry(entry.id)}
-                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0"
-                >
+                <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
                   <Trash2 className="w-3 h-3" />
                 </button>
               </div>
@@ -1126,9 +1250,123 @@ export default function NutritionTracker() {
         </div>
       )}
 
-      {data.log.length === 0 && (
-        <p className="text-[11px] text-muted-foreground text-center py-3">Search and add foods to start tracking</p>
-      )}
+      {data.log.length === 0 && (<p className="text-[11px] text-muted-foreground text-center py-3">Search and add foods to start tracking</p>)}
+
+      {/* Custom Food Modal */}
+      <Modal open={showCustomModal} onClose={() => setShowCustomModal(false)} title={editingCustom ? "Edit Custom Food" : "Create Custom Food"}>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] text-muted-foreground">Food Name *</label>
+            <input value={cf.name} onChange={(e) => setCf({ ...cf, name: e.target.value })} placeholder="e.g. My Chocolate Milk" className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-muted-foreground">Serving Unit (optional)</label>
+              <input value={cf.unitLabel} onChange={(e) => setCf({ ...cf, unitLabel: e.target.value })} placeholder="e.g. glass, piece, bowl" className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-muted-foreground">Grams per unit</label>
+              <input type="number" value={cf.gramsPerUnit} onChange={(e) => setCf({ ...cf, gramsPerUnit: e.target.value })} placeholder="e.g. 300" className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+            </div>
+          </div>
+          <span className="text-[10px] text-muted-foreground font-medium">Macros per 100g</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {(["calories", "protein", "carbs", "fat", "fiber"] as const).map((key) => (
+              <div key={key} className="flex flex-col gap-1">
+                <label className="text-[10px] text-muted-foreground capitalize">{key}{key === "calories" ? " *" : ""}</label>
+                <input type="number" value={cf[key]} onChange={(e) => setCf({ ...cf, [key]: e.target.value })} className="bg-secondary border border-border/60 rounded-md px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+              </div>
+            ))}
+          </div>
+          <button onClick={saveCustomFood} disabled={!cf.name || !cf.calories} className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">
+            {editingCustom ? "Update Food" : "Save Food"}
+          </button>
+        </div>
+      </Modal>
+
+      {/* Recipe Builder Modal */}
+      <Modal open={showRecipeModal} onClose={() => setShowRecipeModal(false)} title={editingRecipe ? "Edit Recipe" : "🍳 Build a Recipe"}>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] text-muted-foreground">Recipe Name *</label>
+            <input value={recipeName} onChange={(e) => setRecipeName(e.target.value)} placeholder="e.g. Ghee Khakra, Protein Shake" className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+          </div>
+
+          {/* Ingredient search */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] text-muted-foreground">Add Ingredients</label>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
+              <input value={recipeSearch} onChange={(e) => { setRecipeSearch(e.target.value); setRecipeShowDrop(true); }} onFocus={() => setRecipeShowDrop(true)} placeholder="Search food to add..." className="w-full bg-secondary border border-border/60 rounded-md pl-7 pr-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+              {recipeShowDrop && recipeFiltered.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-30 py-1 max-h-36 overflow-y-auto">
+                  {recipeFiltered.map((f) => {
+                    const unit = dynamicUnitMap[f.name];
+                    return (
+                      <button key={f.name} onClick={() => addRecipeIngredient(f)} className="w-full text-left px-3 py-1.5 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between">
+                        <span>{f.name} {unit && <span className="text-[10px] text-muted-foreground">≈{unit.gramsPerUnit}g/{unit.unitLabel}</span>}</span>
+                        <span className="text-muted-foreground">{f.calories} cal</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Ingredients list */}
+          {recipeIngredients.length > 0 && (
+            <div className="flex flex-col gap-1.5 bg-secondary/30 rounded-lg p-2">
+              {recipeIngredients.map((ing, idx) => {
+                const unit = dynamicUnitMap[ing.food.name];
+                const m = ing.grams / 100;
+                return (
+                  <div key={idx} className="flex items-center gap-2 text-xs">
+                    <span className="flex-1 text-foreground truncate">{ing.food.name}</span>
+                    <input type="number" value={ing.grams} onChange={(e) => updateIngredientGrams(idx, Number(e.target.value))} className="w-16 bg-secondary border border-border/60 rounded px-2 py-1 text-xs text-foreground text-right focus:outline-none" min="1" />
+                    <span className="text-[10px] text-muted-foreground w-4">g</span>
+                    {unit && <span className="text-[10px] text-muted-foreground">≈{(ing.grams / unit.gramsPerUnit).toFixed(1)} {unit.unitLabel}</span>}
+                    <span className="text-[10px] text-muted-foreground">{Math.round(ing.food.calories * m)}cal</span>
+                    <button onClick={() => removeIngredient(idx)} className="text-muted-foreground hover:text-destructive"><X className="w-3 h-3" /></button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Servings */}
+          <div className="flex items-center gap-2">
+            <label className="text-[10px] text-muted-foreground">This makes</label>
+            <input type="number" value={recipeServings} onChange={(e) => setRecipeServings(e.target.value)} className="w-14 bg-secondary border border-border/60 rounded-md px-2 py-1 text-xs text-foreground text-center focus:outline-none" min="1" />
+            <span className="text-[10px] text-muted-foreground">serving{servingsNum > 1 ? "s" : ""}</span>
+          </div>
+
+          {/* Per serving summary */}
+          {recipeIngredients.length > 0 && (
+            <div className="bg-secondary/50 rounded-lg p-3">
+              <span className="text-[10px] text-muted-foreground font-medium">Per Serving ({Math.round(perServing.grams)}g)</span>
+              <div className="grid grid-cols-5 gap-2 mt-1.5">
+                {[
+                  { label: "Cal", value: perServing.calories },
+                  { label: "Protein", value: perServing.protein },
+                  { label: "Carbs", value: perServing.carbs },
+                  { label: "Fat", value: perServing.fat },
+                  { label: "Fiber", value: perServing.fiber },
+                ].map((m) => (
+                  <div key={m.label} className="text-center">
+                    <div className="text-xs font-medium text-foreground">{Math.round(m.value)}</div>
+                    <div className="text-[9px] text-muted-foreground">{m.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button onClick={saveRecipe} disabled={!recipeName || recipeIngredients.length === 0} className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">
+            {editingRecipe ? "Update Recipe" : "Save Recipe"}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
