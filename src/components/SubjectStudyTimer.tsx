@@ -425,14 +425,14 @@ export default function SubjectStudyTimer() {
       {/* Header + Tabs */}
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-semibold section-title-study flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-study/10 flex items-center justify-center">
-            <BookOpen className="w-[18px] h-[18px] text-study" />
+          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+            <BookOpen className="w-[22px] h-[22px] text-white" />
           </div>
           Study Timer
         </h2>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 tab-bar">
           {(["timer", "stats", "history"] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-3 py-2 rounded-xl text-sm font-medium transition-all min-h-[36px] ${activeTab === tab ? "bg-study/15 text-study" : "text-muted-foreground hover:text-foreground"}`}>
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`px-3 py-2 text-sm font-medium transition-all min-h-[36px] ${activeTab === tab ? "tab-active" : "tab-inactive"}`}>
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}

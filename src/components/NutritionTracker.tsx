@@ -1076,7 +1076,7 @@ export default function NutritionTracker() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-semibold section-title-nutrition flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-nutrition/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
             <span className="text-lg">🥗</span>
           </div>
           Nutrition Tracker <span className="text-sm text-muted-foreground font-normal ml-1">{totalFoodCount} foods</span>

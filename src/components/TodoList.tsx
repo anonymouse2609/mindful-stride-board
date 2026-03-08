@@ -59,9 +59,9 @@ export default function TodoList() {
 
   return (
     <div className="section-card" style={{ "--section-accent": "hsl(var(--accent))", "--section-glow": "hsla(38, 70%, 55%, 0.12)", animation: "fade-in 0.4s ease-out 0.2s forwards", opacity: "0" } as React.CSSProperties & Record<string, string>}>
-      <h2 className="text-[18px] font-semibold flex items-center gap-2 mb-4" style={{ color: "hsl(var(--accent))" }}>
-        <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
-          <ListTodo className="w-[18px] h-[18px] text-accent" />
+      <h2 className="text-[18px] font-semibold flex items-center gap-2 mb-4" style={{ color: "#ffffff" }}>
+        <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
+          <ListTodo className="w-[22px] h-[22px] text-white" />
         </div>
         Tasks
       </h2>
