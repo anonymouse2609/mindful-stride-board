@@ -227,6 +227,12 @@
     --section-orb: #f59e0b;
     background: linear-gradient(135deg, #1c1208 0%, #422006 30%, #0d0d14 100%);
   }
+  .section-revision {
+    --section-accent: #22c55e;
+    --section-glow: rgba(34, 197, 94, 0.15);
+    --section-orb: #22c55e;
+    background: linear-gradient(135deg, #0f1a10 0%, #166534 30%, #0d0d14 100%);
+  }
 
   /* Section heading text colors */
   .section-title-focus { color: hsl(var(--focus-accent-soft)); }
