@@ -521,58 +521,58 @@ export default function SubjectStudyTimer() {
 
       {/* ===== STATS TAB ===== */}
       {activeTab === "stats" && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           {/* Top stats */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-secondary/40 rounded-lg p-2.5 text-center">
-              <div className="text-lg font-semibold text-foreground">{formatDuration(todayTotalMin)}</div>
-              <div className="text-[9px] text-muted-foreground">Today</div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-secondary/40 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-study">{formatDuration(todayTotalMin)}</div>
+              <div className="text-sm text-muted-foreground mt-1">Today</div>
             </div>
-            <div className="bg-secondary/40 rounded-lg p-2.5 text-center">
-              <div className="text-lg font-semibold text-foreground">{formatDuration(weekTotalMin)}</div>
-              <div className="text-[9px] text-muted-foreground">This Week</div>
+            <div className="bg-secondary/40 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-study">{formatDuration(weekTotalMin)}</div>
+              <div className="text-sm text-muted-foreground mt-1">This Week</div>
             </div>
-            <div className="bg-secondary/40 rounded-lg p-2.5 text-center">
-              <div className="text-lg font-semibold text-foreground flex items-center justify-center gap-1"><Flame className="w-4 h-4" />{streak}</div>
-              <div className="text-[9px] text-muted-foreground">Day Streak</div>
+            <div className="bg-secondary/40 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-study flex items-center justify-center gap-1"><Flame className="w-5 h-5" />{streak}</div>
+              <div className="text-sm text-muted-foreground mt-1">Day Streak</div>
             </div>
           </div>
 
           {/* Pie chart + best day */}
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-5">
             <SubjectPieChart segments={pieSegments} />
-            <div className="flex-1 flex flex-col gap-1.5 text-[10px]">
+            <div className="flex-1 flex flex-col gap-2 text-sm">
               {bestDay && (
-                <div className="flex items-center gap-1.5 text-muted-foreground">
-                  <Trophy className="w-3 h-3" /> Best day: <strong className="text-foreground">{getDayName(bestDay[0])} ({formatDuration(bestDay[1])})</strong>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Trophy className="w-4 h-4 text-study" /> Best day: <strong className="text-foreground">{getDayName(bestDay[0])} ({formatDuration(bestDay[1])})</strong>
                 </div>
               )}
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <Clock className="w-3 h-3" /> Best time: <strong className="text-foreground">{bestTimeLabel}</strong>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Clock className="w-4 h-4 text-study" /> Best time: <strong className="text-foreground">{bestTimeLabel}</strong>
               </div>
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <BookOpen className="w-3 h-3" /> Sessions: <strong className="text-foreground">{weekSessions.length}</strong>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <BookOpen className="w-4 h-4 text-study" /> Sessions: <strong className="text-foreground">{weekSessions.length}</strong>
               </div>
             </div>
           </div>
 
           {/* Subject progress bars */}
-          <div className="flex flex-col gap-2">
-            <span className="text-[11px] text-muted-foreground font-medium">Weekly Progress by Subject</span>
+          <div className="flex flex-col gap-3">
+            <span className="text-sm text-muted-foreground font-medium">Weekly Progress by Subject</span>
             {subjectStats.map(s => (
-              <div key={s.id} className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                    <span className="text-foreground">{s.name}</span>
+              <div key={s.id} className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: s.color }} />
+                    <span className="text-foreground font-medium">{s.name}</span>
                   </div>
                   <span className="text-muted-foreground">{formatDuration(s.mins)} / {s.weeklyGoalHours}h — {Math.round(s.pct)}%</span>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+                <div className="w-full h-2.5 rounded-full bg-secondary overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-500" style={{ width: `${s.pct}%`, backgroundColor: s.color }} />
                 </div>
                 {s.allTimeMins > 0 && (
-                  <span className="text-[9px] text-muted-foreground ml-3.5">All time: {formatDuration(s.allTimeMins)}</span>
+                  <span className="text-sm text-muted-foreground ml-5">All time: {formatDuration(s.allTimeMins)}</span>
                 )}
               </div>
             ))}
@@ -580,30 +580,30 @@ export default function SubjectStudyTimer() {
 
           {/* Insights */}
           {insights.length > 0 && (
-            <div className="flex flex-col gap-1.5 bg-secondary/30 rounded-lg p-3">
-              <span className="text-[11px] text-muted-foreground font-medium flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Insights</span>
+            <div className="flex flex-col gap-2 bg-study/5 border border-study/10 rounded-xl p-4">
+              <span className="text-sm text-study font-medium flex items-center gap-1.5"><AlertTriangle className="w-4 h-4" /> Insights</span>
               {insights.map((ins, i) => (
-                <span key={i} className="text-[10px] text-foreground">{ins}</span>
+                <span key={i} className="text-sm text-foreground">{ins}</span>
               ))}
             </div>
           )}
 
           {/* Manage subjects */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] text-muted-foreground font-medium">Subjects</span>
-              <button onClick={() => openSubjectModal()} className="text-[10px] text-accent hover:underline">+ Add</button>
+              <span className="text-sm text-muted-foreground font-medium">Subjects</span>
+              <button onClick={() => openSubjectModal()} className="text-sm text-study hover:underline font-medium">+ Add</button>
             </div>
             {data.subjects.map(s => (
-              <div key={s.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/40">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                  <span className="text-xs text-foreground">{s.name}</span>
-                  <span className="text-[9px] text-muted-foreground">{s.weeklyGoalHours}h/wk</span>
+              <div key={s.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40 transition-colors">
+                <div className="flex items-center gap-3">
+                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: s.color }} />
+                  <span className="text-[15px] text-foreground">{s.name}</span>
+                  <span className="text-sm text-muted-foreground">{s.weeklyGoalHours}h/wk</span>
                 </div>
                 <div className="flex gap-1">
-                  <button onClick={() => openSubjectModal(s)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
-                  <button onClick={() => deleteSubject(s.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                  <button onClick={() => openSubjectModal(s)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
+                  <button onClick={() => deleteSubject(s.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
             ))}
