@@ -878,12 +878,23 @@ export default function NutritionTracker() {
   const [data, setData] = useState<StoredData>(loadData);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [grams, setGrams] = useState("100");
+  const [quantity, setQuantity] = useState("1");
+  const [useGramMode, setUseGramMode] = useState(false);
   const [selected, setSelected] = useState<FoodItem | null>(null);
   const [showGoals, setShowGoals] = useState(false);
   const [editGoals, setEditGoals] = useState<MacroGoals>(data.goals);
 
   useEffect(() => { saveData(data); }, [data]);
+
+  const selectedUnit = selected ? UNIT_MAP[selected.name] : null;
+  const hasUnit = !!selectedUnit;
+
+  // Auto-switch to gram mode for items without unit mappings
+  const effectiveGramMode = !hasUnit || useGramMode;
+
+  const computedGrams = effectiveGramMode
+    ? parseFloat(quantity)
+    : (parseFloat(quantity) || 0) * (selectedUnit?.gramsPerUnit || 0);
 
   const filtered = search.length > 0
     ? FOODS.filter((f) => f.name.toLowerCase().includes(search.toLowerCase())).slice(0, 8)
@@ -893,17 +904,26 @@ export default function NutritionTracker() {
     setSelected(food);
     setSearch(food.name);
     setShowDropdown(false);
+    const unit = UNIT_MAP[food.name];
+    if (unit) {
+      setUseGramMode(false);
+      setQuantity("1");
+    } else {
+      setUseGramMode(true);
+      setQuantity("100");
+    }
   };
 
   const addEntry = () => {
-    if (!selected || !grams) return;
-    const g = parseFloat(grams);
+    if (!selected || !quantity) return;
+    const g = computedGrams;
     if (isNaN(g) || g <= 0) return;
     const entry: LogEntry = { id: Date.now().toString(), food: selected, grams: g };
     setData((prev) => ({ ...prev, log: [...prev.log, entry] }));
     setSearch("");
     setSelected(null);
-    setGrams("100");
+    setQuantity("1");
+    setUseGramMode(false);
   };
 
   const removeEntry = (id: string) => {
