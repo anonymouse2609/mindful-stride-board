@@ -414,7 +414,7 @@ const FocusScore = () => {
               ))}
             </div>
 
-            <p className="text-xs text-muted-foreground flex items-center gap-1 justify-center sm:justify-start">
+            <p className="text-xs text-focus flex items-center gap-1 justify-center sm:justify-start">
               Tap for details <ChevronRight className="w-3 h-3" />
             </p>
           </div>
