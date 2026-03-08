@@ -32,32 +32,32 @@ export default function DailyGoals() {
   const filledCount = goals.filter((g) => g.trim()).length;
 
   return (
-    <div className="glass-card p-6 flex flex-col gap-4" style={{ animation: "fade-in 0.6s ease-out 0.15s forwards", opacity: 0 }}>
+    <div className="glass-card p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.15s forwards", opacity: 0 }}>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <Target className="w-5 h-5 text-primary" />
+        <h2 className="text-sm font-medium text-foreground flex items-center gap-1.5">
+          <Target className="w-4 h-4 text-muted-foreground" />
           Today's Goals
         </h2>
-        <span className="text-xs font-mono text-muted-foreground">{filledCount}/3</span>
+        <span className="text-[11px] font-mono text-muted-foreground">{filledCount}/3</span>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {goals.map((goal, i) => (
-          <div key={i} className="flex items-center gap-3">
-            <span className="text-primary font-bold text-sm w-5 text-center">{i + 1}</span>
+          <div key={i} className="flex items-center gap-2.5">
+            <span className="text-accent text-xs font-medium w-4 text-center">{i + 1}</span>
             <input
               value={goal}
               onChange={(e) => updateGoal(i, e.target.value)}
-              placeholder={`Goal ${i + 1}...`}
-              className="flex-1 bg-secondary/50 border border-border rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+              placeholder={`Goal ${i + 1}`}
+              className="flex-1 bg-transparent border-b border-border/60 px-1 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent/50 transition-colors"
             />
           </div>
         ))}
       </div>
 
       {filledCount === 3 && (
-        <p className="text-xs text-success text-center font-medium animate-fade-in">
-          ✨ All goals set — crush it today!
+        <p className="text-[11px] text-accent text-center animate-fade-in">
+          All goals set — make it happen ✨
         </p>
       )}
     </div>
