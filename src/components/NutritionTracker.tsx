@@ -1072,10 +1072,10 @@ export default function NutritionTracker() {
   const totalFoodCount = FOODS.length + customFoods.length + recipes.length;
 
   return (
-    <div className="section-card section-nutrition p-5 sm:p-6 flex flex-col gap-5" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: "0" } as React.CSSProperties}>
+    <div className="section-card section-nutrition flex flex-col gap-5" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: "0" } as React.CSSProperties}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+        <h2 className="text-[18px] font-semibold section-title-nutrition flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-nutrition/10 flex items-center justify-center">
             <span className="text-lg">🥗</span>
           </div>
