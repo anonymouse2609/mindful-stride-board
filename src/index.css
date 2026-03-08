@@ -119,32 +119,17 @@
   }
 
   .section-card {
-    background: hsl(var(--card));
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: var(--radius);
+    border: 1px solid var(--section-border, rgba(255, 255, 255, 0.1));
+    border-radius: 20px;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     padding: 24px;
-  }
-
-  @media (max-width: 640px) {
-    .section-card {
-      padding: 16px;
-    }
+    color: #f1f5f9;
   }
 
   .section-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--section-accent);
-    border-radius: var(--radius) var(--radius) 0 0;
-    z-index: 1;
+    display: none;
   }
 
   /* Glow orb pseudo-element */
@@ -163,75 +148,95 @@
   }
 
   .section-card:hover {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 25px var(--section-glow);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--section-hover-border, rgba(255, 255, 255, 0.2));
     transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--section-glow, transparent);
   }
 
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 
-  /* Section-specific styles — bright top-down spotlight gradients */
+  /* Section-specific styles — solid vibrant backgrounds, no fade */
   .section-focus {
     --section-accent: hsl(var(--focus-accent));
-    --section-glow: hsla(239, 84%, 67%, 0.2);
+    --section-glow: hsla(239, 84%, 67%, 0.25);
     --section-orb: #818cf8;
-    background: linear-gradient(180deg, #4f46e5 0%, #1e1b4b 40%, #0d0d14 100%);
+    --section-border: #4f46e5;
+    --section-hover-border: #818cf8;
+    background: #1e1b4b;
   }
   .section-study {
     --section-accent: hsl(var(--study-accent));
-    --section-glow: hsla(25, 95%, 53%, 0.2);
+    --section-glow: hsla(25, 95%, 53%, 0.25);
     --section-orb: #fb923c;
-    background: linear-gradient(180deg, #ea580c 0%, #431407 40%, #0d0d14 100%);
+    --section-border: #ea580c;
+    --section-hover-border: #fb923c;
+    background: #1c0a00;
   }
   .section-nutrition {
     --section-accent: hsl(var(--nutrition-accent));
-    --section-glow: hsla(160, 60%, 45%, 0.2);
+    --section-glow: hsla(160, 60%, 45%, 0.25);
     --section-orb: #34d399;
-    background: linear-gradient(180deg, #059669 0%, #064e3b 40%, #0d0d14 100%);
+    --section-border: #059669;
+    --section-hover-border: #34d399;
+    background: #022c1e;
   }
   .section-habits {
     --section-accent: hsl(var(--habits-accent));
-    --section-glow: hsla(271, 91%, 65%, 0.2);
+    --section-glow: hsla(271, 91%, 65%, 0.25);
     --section-orb: #c084fc;
-    background: linear-gradient(180deg, #9333ea 0%, #3b0764 40%, #0d0d14 100%);
+    --section-border: #9333ea;
+    --section-hover-border: #c084fc;
+    background: #1a0533;
   }
   .section-goals {
     --section-accent: hsl(var(--goals-accent));
-    --section-glow: hsla(217, 91%, 60%, 0.2);
+    --section-glow: hsla(217, 91%, 60%, 0.25);
     --section-orb: #60a5fa;
-    background: linear-gradient(180deg, #2563eb 0%, #1e3a8a 40%, #0d0d14 100%);
+    --section-border: #2563eb;
+    --section-hover-border: #60a5fa;
+    background: #0c1547;
   }
   .section-mood {
     --section-accent: hsl(var(--mood-accent));
-    --section-glow: hsla(350, 89%, 60%, 0.2);
+    --section-glow: hsla(350, 89%, 60%, 0.25);
     --section-orb: #fb7185;
-    background: linear-gradient(180deg, #e11d48 0%, #881337 40%, #0d0d14 100%);
+    --section-border: #e11d48;
+    --section-hover-border: #fb7185;
+    background: #2d0a16;
   }
   .section-chatbot {
     --section-accent: hsl(var(--chatbot-accent));
-    --section-glow: hsla(263, 70%, 50%, 0.2);
+    --section-glow: hsla(263, 70%, 50%, 0.25);
     --section-orb: #a78bfa;
-    background: linear-gradient(180deg, #7c3aed 0%, #2e1065 40%, #0d0d14 100%);
+    --section-border: #7c3aed;
+    --section-hover-border: #a78bfa;
+    background: #1a0840;
   }
   .section-music {
     --section-accent: hsl(var(--accent));
-    --section-glow: hsla(38, 70%, 55%, 0.2);
+    --section-glow: hsla(38, 70%, 55%, 0.25);
     --section-orb: #fbbf24;
-    background: linear-gradient(180deg, #d97706 0%, #451a03 40%, #0d0d14 100%);
+    --section-border: #d97706;
+    --section-hover-border: #fbbf24;
+    background: #1a1000;
   }
   .section-weekly {
     --section-accent: hsl(var(--accent));
-    --section-glow: hsla(38, 70%, 55%, 0.2);
+    --section-glow: hsla(38, 70%, 55%, 0.25);
     --section-orb: #fbbf24;
-    background: linear-gradient(180deg, #d97706 0%, #451a03 40%, #0d0d14 100%);
+    --section-border: #d97706;
+    --section-hover-border: #fbbf24;
+    background: #1a1000;
   }
   .section-revision {
     --section-accent: #22c55e;
-    --section-glow: rgba(34, 197, 94, 0.2);
+    --section-glow: rgba(34, 197, 94, 0.25);
     --section-orb: #4ade80;
-    background: linear-gradient(180deg, #16a34a 0%, #14532d 40%, #0d0d14 100%);
+    --section-border: #16a34a;
+    --section-hover-border: #4ade80;
+    background: #052e16;
   }
 
   /* Section heading text colors — pure white on bright card tops */
