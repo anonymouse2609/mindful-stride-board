@@ -15,7 +15,7 @@ export default function FocusMusicPlayer() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="glass-card p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.25s forwards", opacity: 0 }}>
+    <div className="glass-card p-4 sm:p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.25s forwards", opacity: 0 }}>
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-medium text-foreground flex items-center gap-2">
           <Music className="w-4 h-4 text-muted-foreground" />
@@ -24,7 +24,7 @@ export default function FocusMusicPlayer() {
         <div className="relative">
           <button
             onClick={() => setOpen(!open)}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors bg-secondary/60 px-2.5 py-1.5 rounded-lg"
+            className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors bg-secondary/60 px-2 sm:px-2.5 py-1.5 rounded-lg"
           >
             {station.label}
             <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
@@ -50,7 +50,7 @@ export default function FocusMusicPlayer() {
       {!isPlaying ? (
         <button
           onClick={() => setIsPlaying(true)}
-          className="w-full py-8 rounded-lg bg-secondary/40 border border-border/40 text-muted-foreground text-xs hover:text-foreground hover:bg-secondary/60 transition-all flex flex-col items-center gap-2"
+          className="w-full py-6 sm:py-8 rounded-lg bg-secondary/40 border border-border/40 text-muted-foreground text-xs hover:text-foreground hover:bg-secondary/60 transition-all flex flex-col items-center gap-2"
         >
           <Music className="w-5 h-5" />
           Click to start {station.label}

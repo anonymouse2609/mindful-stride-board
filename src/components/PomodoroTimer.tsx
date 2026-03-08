@@ -68,7 +68,7 @@ export default function PomodoroTimer() {
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="glass-card p-5 flex flex-col items-center gap-4" style={{ animation: "fade-in 0.4s ease-out 0.1s forwards", opacity: 0 }}>
+    <div className="glass-card p-4 sm:p-5 flex flex-col items-center gap-3 sm:gap-4" style={{ animation: "fade-in 0.4s ease-out 0.1s forwards", opacity: 0 }}>
       <div className="flex items-center justify-between w-full">
         <h2 className="text-sm font-medium text-foreground">
           {isBreak ? (
@@ -78,7 +78,7 @@ export default function PomodoroTimer() {
         <span className="text-[11px] font-mono text-muted-foreground">{sessions} sessions</span>
       </div>
 
-      <div className="relative w-32 h-32 flex items-center justify-center">
+      <div className="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center">
         <svg className="absolute inset-0 -rotate-90" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(var(--secondary))" strokeWidth="4" />
           <circle
@@ -90,7 +90,7 @@ export default function PomodoroTimer() {
             className="transition-all duration-1000 ease-linear"
           />
         </svg>
-        <span className="text-2xl font-mono font-medium text-foreground tracking-wider">
+        <span className="text-xl sm:text-2xl font-mono font-medium text-foreground tracking-wider">
           {minutes}:{seconds}
         </span>
       </div>

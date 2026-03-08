@@ -66,22 +66,23 @@ export default function WeeklyProgress() {
   ];
 
   return (
-    <div className="glass-card p-5" style={{ animation: "fade-in 0.4s ease-out 0.4s forwards", opacity: 0 }}>
+    <div className="glass-card p-4 sm:p-5" style={{ animation: "fade-in 0.4s ease-out 0.4s forwards", opacity: 0 }}>
       <h2 className="text-sm font-medium text-foreground flex items-center gap-2 mb-4">
         <BarChart3 className="w-4 h-4 text-muted-foreground" />
         Weekly Progress
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {stats.map((s, i) => (
-          <div key={i} className="flex flex-col gap-2">
-            <div className="flex items-center gap-2 text-muted-foreground">
+          <div key={i} className="flex flex-col gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
               {s.icon}
-              <span className="text-xs">{s.label}</span>
+              <span className="text-[10px] sm:text-xs hidden sm:inline">{s.label}</span>
+              <span className="text-[10px] sm:hidden">{s.label.split(" ")[0]}</span>
             </div>
-            <span className="text-2xl font-semibold text-foreground tracking-tight">{s.value}</span>
+            <span className="text-lg sm:text-2xl font-semibold text-foreground tracking-tight">{s.value}</span>
             {s.pct !== null && (
-              <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div className="w-full h-1 sm:h-1.5 rounded-full bg-secondary overflow-hidden">
                 <div
                   className="h-full rounded-full bg-accent transition-all duration-700"
                   style={{ width: `${s.pct}%` }}
