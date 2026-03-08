@@ -78,18 +78,18 @@ export default function HabitsTracker() {
   const todayIdx = getTodayIndex();
 
   return (
-    <div className="glass-card p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
+    <div className="glass-card p-4 sm:p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
       <h2 className="text-sm font-medium text-foreground">Habits</h2>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+      <div className="-mx-1 overflow-x-auto">
+        <table className="w-full text-xs min-w-[320px]">
           <thead>
             <tr>
-              <th className="text-left text-muted-foreground font-normal pb-2 pr-3 min-w-[120px]"></th>
+              <th className="text-left text-muted-foreground font-normal pb-2 pr-2 sm:pr-3 min-w-[90px] sm:min-w-[120px]"></th>
               {DAYS.map((d, i) => (
                 <th
                   key={i}
-                  className={`text-center font-normal pb-2 w-8 ${
+                  className={`text-center font-normal pb-2 px-0.5 sm:px-1 ${
                     i === todayIdx ? "text-accent" : "text-muted-foreground"
                   }`}
                 >
@@ -101,12 +101,12 @@ export default function HabitsTracker() {
           <tbody>
             {data.habits.map((habit) => (
               <tr key={habit} className="group">
-                <td className="py-1 pr-3 text-foreground/80 text-xs truncate max-w-[120px]">
-                  <div className="flex items-center justify-between">
-                    <span>{habit}</span>
+                <td className="py-1 pr-2 sm:pr-3 text-foreground/80 text-[11px] sm:text-xs">
+                  <div className="flex items-center justify-between gap-1 max-w-[90px] sm:max-w-[120px]">
+                    <span className="truncate">{habit}</span>
                     <button
                       onClick={() => removeHabit(habit)}
-                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all text-[10px] ml-1"
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all text-[10px] shrink-0"
                     >
                       ×
                     </button>
@@ -115,10 +115,10 @@ export default function HabitsTracker() {
                 {DAYS.map((_, i) => {
                   const checked = data.grid[habit]?.[i] || false;
                   return (
-                    <td key={i} className="text-center py-1">
+                    <td key={i} className="text-center py-1 px-0.5">
                       <button
                         onClick={() => toggleDay(habit, i)}
-                        className={`w-6 h-6 rounded-md flex items-center justify-center transition-all ${
+                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-md flex items-center justify-center mx-auto transition-all ${
                           checked
                             ? "bg-accent/20 text-accent"
                             : i === todayIdx
@@ -143,11 +143,11 @@ export default function HabitsTracker() {
           onChange={(e) => setNewHabit(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addHabit()}
           placeholder="Add habit..."
-          className="flex-1 bg-secondary/50 border border-border/60 rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+          className="flex-1 min-w-0 bg-secondary/50 border border-border/60 rounded-lg px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
         />
         <button
           onClick={addHabit}
-          className="px-3 py-1.5 rounded-lg bg-secondary text-muted-foreground text-xs hover:text-foreground transition-colors"
+          className="px-3 py-1.5 rounded-lg bg-secondary text-muted-foreground text-xs hover:text-foreground transition-colors shrink-0"
         >
           Add
         </button>

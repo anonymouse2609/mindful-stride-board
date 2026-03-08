@@ -58,7 +58,7 @@ export default function TodoList() {
   });
 
   return (
-    <div className="glass-card p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.2s forwards", opacity: 0 }}>
+    <div className="glass-card p-4 sm:p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.2s forwards", opacity: 0 }}>
       <h2 className="text-sm font-medium text-foreground">Tasks</h2>
 
       <div className="flex gap-2">
@@ -67,9 +67,9 @@ export default function TodoList() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addTodo()}
           placeholder="Add a task..."
-          className="flex-1 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+          className="flex-1 min-w-0 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
         />
-        <div className="flex rounded-lg overflow-hidden border border-border/60 bg-secondary/30">
+        <div className="flex rounded-lg overflow-hidden border border-border/60 bg-secondary/30 shrink-0">
           {(["high", "medium", "low"] as Priority[]).map((p) => (
             <button
               key={p}
@@ -84,20 +84,20 @@ export default function TodoList() {
         </div>
         <button
           onClick={addTodo}
-          className="p-2 rounded-lg bg-secondary text-foreground hover:bg-muted transition-colors"
+          className="p-2 rounded-lg bg-secondary text-foreground hover:bg-muted transition-colors shrink-0"
         >
           <Plus className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      <div className="flex flex-col gap-1 max-h-60 overflow-y-auto">
+      <div className="flex flex-col gap-1 max-h-60 overflow-y-auto -mx-1 px-1">
         {sorted.length === 0 && (
           <p className="text-xs text-muted-foreground text-center py-6">No tasks yet</p>
         )}
         {sorted.map((todo) => (
           <div
             key={todo.id}
-            className={`group flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all ${
+            className={`group flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 py-2 rounded-lg transition-all ${
               todo.done ? "opacity-40" : "hover:bg-secondary/50"
             }`}
           >
@@ -112,10 +112,10 @@ export default function TodoList() {
               {todo.done && <Check className="w-2.5 h-2.5 text-accent-foreground" />}
             </button>
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${priorityDot[todo.priority]}`} />
-            <span className={`flex-1 text-xs ${todo.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+            <span className={`flex-1 text-xs min-w-0 break-words ${todo.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
               {todo.text}
             </span>
-            <button onClick={() => remove(todo.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all">
+            <button onClick={() => remove(todo.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
               <Trash2 className="w-3 h-3" />
             </button>
           </div>
