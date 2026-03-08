@@ -5,6 +5,7 @@ import HabitsTracker from "@/components/HabitsTracker";
 import DailyGoals from "@/components/DailyGoals";
 import FocusMusicPlayer from "@/components/FocusMusicPlayer";
 import WeeklyProgress from "@/components/WeeklyProgress";
+import NutritionTracker from "@/components/NutritionTracker";
 
 const Index = () => {
   const now = new Date();
@@ -41,6 +42,9 @@ const Index = () => {
             <HabitsTracker />
           </div>
         </div>
+
+        {/* Nutrition Tracker */}
+        <NutritionTracker />
 
         {/* Weekly Progress */}
         <WeeklyProgress />
