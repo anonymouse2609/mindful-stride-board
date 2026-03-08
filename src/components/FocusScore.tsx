@@ -403,7 +403,7 @@ const FocusScore = () => {
               ].map(c => (
                 <div key={c.label} className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground w-16 text-right">{c.label}</span>
-                  <div className="flex-1 h-2 rounded-full bg-secondary/60 overflow-hidden">
+                  <div className="flex-1 h-3.5 rounded-full bg-secondary/60 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${(c.val / c.max) * 100}%`, background: c.color }}
