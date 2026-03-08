@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Sparkles, X, Send, ArrowDown } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { Sparkles, X, Send } from "lucide-react";
 
 export interface AppState {
   habits?: boolean;
@@ -28,190 +27,207 @@ export interface AppState {
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  quickReplies?: string[];
 }
 
-interface QuickReply {
-  text: string;
+interface BotRule {
+  keywords: string[];
+  response: (state: AppState) => { text: string; quickReplies?: string[] };
 }
 
-function parseQuickReplies(content: string): { cleanContent: string; quickReplies: QuickReply[] } {
-  const lines = content.split("\n");
-  const quickReplies: QuickReply[] = [];
-  const contentLines: string[] = [];
+const RULES: BotRule[] = [
+  // Greetings
+  { keywords: ["hi", "hello", "hey", "sup", "yo", "hola"],
+    response: () => ({ text: "Hey! 👋 I'm your Growth assistant. I can help you navigate the app, explain features, and track your progress. What would you like to do?", quickReplies: ["How am I doing today?", "Log food", "Start Pomodoro"] }) },
 
-  for (const line of lines) {
-    if (line.trim().startsWith("QUICK_REPLY:")) {
-      quickReplies.push({ text: line.trim().replace("QUICK_REPLY:", "").trim() });
-    } else {
-      contentLines.push(line);
+  // How am I doing / status / summary
+  { keywords: ["how am i doing", "my status", "summary", "progress today", "daily summary", "today's progress"],
+    response: (s) => {
+      const lines: string[] = ["📊 **Here's your day so far:**"];
+      if (s.habits) lines.push(`• Habits: ${s.habitsCompleted}/${s.habitsTotal} completed`);
+      if (s.nutrition) lines.push(`• Nutrition: ${Math.round(s.nutrition.calories)}/${s.nutrition.caloriesGoal} cal logged (${s.nutrition.mealsCount} items)`);
+      if (s.pomodoro) lines.push(`• Study: ${s.pomodoro.sessions} Pomodoro sessions`);
+      if (s.todos) lines.push(`• Tasks: ${s.todos.completed}/${s.todos.total} done`);
+      const nudges: string[] = [];
+      if (s.nutrition?.mealsCount === 0) nudges.push("Log a meal");
+      if (s.habits && s.habitsCompleted! < s.habitsTotal!) nudges.push("Check habits");
+      if (s.pomodoro?.sessions === 0) nudges.push("Start Pomodoro");
+      return { text: lines.join("\n"), quickReplies: nudges.length > 0 ? nudges : ["Motivate me"] };
+    }
+  },
+
+  // Navigation - Pomodoro
+  { keywords: ["pomodoro", "timer", "study session", "start studying", "focus timer", "start pomodoro", "open pomodoro"],
+    response: () => ({ text: "⏱️ The **Pomodoro Timer** is at the top-left of your dashboard. It runs 25-minute work sessions with 5-minute breaks.\n\nScroll up to find it! Click Play to start a session.", quickReplies: ["How does Pomodoro work?", "Show my macros"] }) },
+
+  // Navigation - Habits
+  { keywords: ["habit", "habits", "my habits", "show habits", "open habits", "where is habits", "habit tracker"],
+    response: (s) => ({ text: `✅ The **Habits Tracker** is in the right column of your dashboard. You have ${s.habitsTotal || 5} habits set up — ${s.habitsCompleted || 0} checked today.\n\nScroll to the right column to find it!`, quickReplies: ["How do I add a habit?", "How am I doing today?"] }) },
+
+  // Navigation - Nutrition
+  { keywords: ["nutrition", "food", "macros", "calories", "log food", "track food", "diet", "meal", "nutrition tracker", "where is nutrition"],
+    response: () => ({ text: "🥗 The **Nutrition Tracker** is below the main grid on your dashboard. You can search from 450+ vegetarian foods and log meals.\n\nScroll down to find it! Use the search bar to find any food.", quickReplies: ["How do I log food?", "Create custom food", "Build a recipe"] }) },
+
+  // Navigation - Todos
+  { keywords: ["todo", "task", "tasks", "to do", "to-do", "show tasks", "open tasks", "my tasks"],
+    response: (s) => ({ text: `📝 The **Todo List** is in the right column at the top. You have ${s.todos?.completed || 0}/${s.todos?.total || 0} tasks done today.\n\nScroll to the right column to manage your tasks!`, quickReplies: ["Show habits", "How am I doing today?"] }) },
+
+  // Navigation - Goals
+  { keywords: ["goal", "goals", "daily goals", "my goals", "open goals"],
+    response: () => ({ text: "🎯 **Daily Goals** are below the Pomodoro timer on the left side. Set your targets for the day and track them!\n\nScroll to the left column to find it.", quickReplies: ["Open Pomodoro", "How am I doing today?"] }) },
+
+  // Navigation - Music
+  { keywords: ["music", "focus music", "study music", "play music", "ambient", "lo-fi"],
+    response: () => ({ text: "🎵 The **Focus Music Player** is in the left column, below Daily Goals. Play ambient study music to help you concentrate!\n\nScroll down in the left column to find it.", quickReplies: ["Start Pomodoro", "How am I doing today?"] }) },
+
+  // Navigation - Weekly Progress
+  { keywords: ["weekly", "progress", "weekly progress", "week", "show progress"],
+    response: () => ({ text: "📈 **Weekly Progress** is at the bottom of your dashboard. It shows an overview of your entire week's performance.\n\nScroll to the very bottom to see it!", quickReplies: ["How am I doing today?", "Show habits"] }) },
+
+  // Navigation - Quote
+  { keywords: ["quote", "motivation quote", "daily quote", "quote of the day"],
+    response: () => ({ text: "💬 The **Quote of the Day** is right at the top of your dashboard, below the greeting. A fresh motivational quote every day!", quickReplies: ["Motivate me", "How am I doing today?"] }) },
+
+  // Show macros
+  { keywords: ["show macros", "my macros", "macro summary", "macros today", "show my macros"],
+    response: (s) => {
+      if (!s.nutrition || s.nutrition.mealsCount === 0) {
+        return { text: "📊 You haven't logged any food today yet! Head to the Nutrition Tracker and search for a food to start logging.", quickReplies: ["How do I log food?", "Open nutrition tracker"] };
+      }
+      return { text: `📊 **Today's Macros:**\n• Calories: ${Math.round(s.nutrition.calories)}/${s.nutrition.caloriesGoal}\n• Protein: ${Math.round(s.nutrition.protein)}g\n• Carbs: ${Math.round(s.nutrition.carbs)}g\n• Fat: ${Math.round(s.nutrition.fat)}g\n\nKeep it up! 💪`, quickReplies: ["Log more food", "How am I doing today?"] };
+    }
+  },
+
+  // How to log food
+  { keywords: ["how do i log", "how to log food", "how to add food", "how to track food", "log a meal"],
+    response: () => ({ text: "🍽️ **To log food:**\n1. Scroll down to the Nutrition Tracker\n2. Type a food name in the search bar (e.g. 'roti', 'banana')\n3. Select the food from the dropdown\n4. Enter quantity (count or grams)\n5. Click the + button to add it\n\nThe macros update automatically!", quickReplies: ["Create custom food", "Build a recipe", "Show macros"] }) },
+
+  // Custom food
+  { keywords: ["custom food", "create food", "add my own food", "make food", "create custom"],
+    response: () => ({ text: "🆕 **To create a custom food:**\n1. Go to the Nutrition Tracker\n2. Click the **+** button in the header (next to the ⚙️ icon)\n3. Enter the food name, optional unit (glass/piece/bowl), and macros per 100g\n4. Click Save — it appears in search with a 'Custom' badge!\n\nYou can edit/delete custom foods from the 'My Foods' link.", quickReplies: ["Build a recipe", "How do I log food?"] }) },
+
+  // Recipe builder
+  { keywords: ["recipe", "build recipe", "combo", "recipe builder", "create recipe", "make recipe"],
+    response: () => ({ text: "🍳 **To build a recipe:**\n1. Go to the Nutrition Tracker\n2. Click the **chef hat** icon (🍳) in the header\n3. Name your recipe (e.g. 'Ghee Khakra')\n4. Search & add ingredients with quantities\n5. Set how many servings it makes\n6. Save — it appears in food search with a 🍳 badge!\n\nMacros are auto-calculated per serving.", quickReplies: ["Create custom food", "Log food"] }) },
+
+  // Add habit
+  { keywords: ["add habit", "new habit", "create habit"],
+    response: () => ({ text: "✏️ To add a new habit, go to the **Habits Tracker** (right column) and look for the edit/add option. You can customize your daily habit list there!\n\nDefault habits include water, exercise, study, sleep, and meditation.", quickReplies: ["Show habits", "How am I doing today?"] }) },
+
+  // How does Pomodoro work
+  { keywords: ["how does pomodoro", "what is pomodoro", "pomodoro technique", "explain pomodoro"],
+    response: () => ({ text: "🍅 **The Pomodoro Technique:**\n• Work for 25 minutes with full focus\n• Take a 5-minute break\n• Repeat! Each cycle = 1 session\n\nIt helps you stay productive without burning out. The timer is at the top-left of your dashboard.", quickReplies: ["Start Pomodoro", "How am I doing today?"] }) },
+
+  // Motivate me
+  { keywords: ["motivate", "motivation", "inspire", "i'm lazy", "demotivated", "unmotivated", "i need motivation"],
+    response: () => {
+      const quotes = [
+        "🔥 \"The only way to do great work is to love what you do.\" — Steve Jobs\n\nYou've got this! Even one small step forward counts.",
+        "💪 \"It does not matter how slowly you go as long as you do not stop.\" — Confucius\n\nStart with just 5 minutes. Momentum will follow.",
+        "🌟 \"Success is the sum of small efforts repeated day in and day out.\" — Robert Collier\n\nEvery habit you check, every meal you log — it all adds up!",
+        "🚀 \"The secret of getting ahead is getting started.\" — Mark Twain\n\nPick one thing right now and do it. Future you will be grateful.",
+        "⭐ \"You don't have to be perfect. You just have to show up.\"\n\nConsistency beats intensity. Let's keep the streak going!",
+        "🎯 \"A year from now you'll wish you had started today.\"\n\nDon't wait for the perfect moment — start now!",
+        "🧠 \"Discipline is choosing between what you want now and what you want most.\"\n\nYour goals are worth the effort. Stay focused!",
+      ];
+      return { text: quotes[Math.floor(Math.random() * quotes.length)], quickReplies: ["Start Pomodoro", "Log breakfast", "How am I doing today?"] };
+    }
+  },
+
+  // What can you do
+  { keywords: ["what can you do", "help", "features", "what do you do", "capabilities", "commands"],
+    response: () => ({ text: "🤖 **Here's what I can help with:**\n\n• **Navigate** — 'open pomodoro', 'show habits', 'where is nutrition'\n• **Explain features** — 'how do I log food?', 'how does pomodoro work?'\n• **Daily summary** — 'how am I doing today?', 'show my macros'\n• **Motivate** — 'motivate me'\n• **Guide** — 'create custom food', 'build a recipe'\n\nJust type naturally!", quickReplies: ["How am I doing today?", "Motivate me", "Show macros"] }) },
+
+  // RSI / terms
+  { keywords: ["what is rsi", "rsi meaning", "what does rsi mean"],
+    response: () => ({ text: "📈 **RSI (Relative Strength Index)** is a momentum indicator used in stock trading. It ranges from 0-100 — above 70 means overbought (might drop), below 30 means oversold (might rise).\n\nIt helps you gauge if a stock is overvalued or undervalued!", quickReplies: ["How am I doing today?", "Open nutrition tracker"] }) },
+
+  // Watchlist
+  { keywords: ["watchlist", "my watchlist", "stocks", "show watchlist"],
+    response: () => ({ text: "📋 This app focuses on productivity and nutrition tracking. Stock watchlists aren't a current feature — but I can help with everything else here!\n\nWant to check your habits, macros, or start studying?", quickReplies: ["How am I doing today?", "Show macros"] }) },
+
+  // Thank you
+  { keywords: ["thank", "thanks", "thank you", "thx", "ty"],
+    response: () => ({ text: "You're welcome! 😊 Happy to help anytime. Keep crushing your goals! 💪", quickReplies: ["How am I doing today?", "Motivate me"] }) },
+
+  // Bye
+  { keywords: ["bye", "goodbye", "see you", "later", "cya"],
+    response: () => ({ text: "See you later! 👋 Keep up the great work. I'll be here whenever you need me!", quickReplies: ["How am I doing today?"] }) },
+];
+
+function getResponse(input: string, state: AppState): { text: string; quickReplies: string[] } {
+  const lower = input.toLowerCase().trim();
+
+  for (const rule of RULES) {
+    if (rule.keywords.some((kw) => lower.includes(kw))) {
+      const result = rule.response(state);
+      return { text: result.text, quickReplies: result.quickReplies || [] };
     }
   }
 
-  return { cleanContent: contentLines.join("\n").trim(), quickReplies };
+  // Fallback
+  return {
+    text: "🤔 I'm not sure about that, but I can help you navigate the app, explain features, or give you a daily summary! Try asking something like 'how am I doing today?' or 'how do I log food?'",
+    quickReplies: ["What can you do?", "How am I doing today?", "Motivate me"],
+  };
 }
-
-function parseActions(content: string): { action: string | null; param: string | null } {
-  const match = content.match(/ACTION:(\w+)(?::(.+))?/);
-  if (match) return { action: match[1], param: match[2] || null };
-  return { action: null, param: null };
-}
-
-function TypingIndicator() {
-  return (
-    <div className="flex items-center gap-1 px-3 py-2">
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce"
-          style={{ animationDelay: `${i * 150}ms`, animationDuration: "800ms" }}
-        />
-      ))}
-    </div>
-  );
-}
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 export default function GrowthChatbot({ appState, onAction }: { appState: AppState; onAction?: (action: string, param: string | null) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [quickReplies, setQuickReplies] = useState<QuickReply[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  useEffect(() => { scrollToBottom(); }, [messages, isLoading, scrollToBottom]);
+  useEffect(() => { scrollToBottom(); }, [messages, isTyping, scrollToBottom]);
 
   useEffect(() => {
     if (isOpen && !hasGreeted) {
-      // Generate contextual greeting
       const hour = new Date().getHours();
       let greeting = "Hey! 👋 I'm your Growth assistant. ";
-      
       const nudges: string[] = [];
+      const replies: string[] = [];
+
       if (appState.nutrition && appState.nutrition.mealsCount === 0) {
         nudges.push("You haven't logged any meals today — want to add breakfast?");
+        replies.push("Log breakfast");
       }
-      if (appState.habits && appState.habitsCompleted === 0) {
-        nudges.push(`You have ${appState.habitsTotal} habits unchecked today.`);
+      if (appState.habits && appState.habitsCompleted! < appState.habitsTotal!) {
+        nudges.push(`You have ${appState.habitsTotal! - appState.habitsCompleted!} habits unchecked.`);
+        replies.push("Show habits");
       }
-      if (appState.pomodoro && appState.pomodoro.sessions === 0 && hour >= 12) {
-        nudges.push("You haven't studied today yet — want to start a Pomodoro?");
-      }
-
-      if (nudges.length > 0) {
-        greeting += nudges[0];
-      } else {
-        greeting += "How can I help you today?";
+      if (appState.pomodoro?.sessions === 0 && hour >= 10) {
+        nudges.push("No study sessions yet today!");
+        replies.push("Start Pomodoro");
       }
 
-      const replies: QuickReply[] = [];
-      if (appState.nutrition?.mealsCount === 0) replies.push({ text: "Log breakfast" });
-      if (appState.pomodoro?.sessions === 0) replies.push({ text: "Start Pomodoro" });
-      replies.push({ text: "How am I doing today?" });
+      greeting += nudges.length > 0 ? nudges[0] : "How can I help you today?";
+      replies.push("How am I doing today?");
 
-      setMessages([{ role: "assistant", content: greeting }]);
-      setQuickReplies(replies.slice(0, 3));
+      setMessages([{ role: "assistant", content: greeting, quickReplies: replies.slice(0, 3) }]);
       setHasGreeted(true);
     }
   }, [isOpen, hasGreeted, appState]);
 
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+  const sendMessage = (text: string) => {
+    if (!text.trim() || isTyping) return;
 
     const userMsg: ChatMessage = { role: "user", content: text.trim() };
-    const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
-    setQuickReplies([]);
-    setIsLoading(true);
+    setIsTyping(true);
 
-    let assistantSoFar = "";
-    const upsertAssistant = (chunk: string) => {
-      assistantSoFar += chunk;
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant" && prev.length === updatedMessages.length + 1) {
-          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
-        }
-        return [...prev, { role: "assistant", content: assistantSoFar }];
-      });
-    };
-
-    try {
-      const resp = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
-          appState,
-        }),
-      });
-
-      if (!resp.ok) {
-        const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.error || `Error ${resp.status}`);
-      }
-
-      if (!resp.body) throw new Error("No stream body");
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
-      let streamDone = false;
-
-      while (!streamDone) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") { streamDone = true; break; }
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) upsertAssistant(content);
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
-          }
-        }
-      }
-
-      // Parse quick replies and actions from final content
-      const { cleanContent, quickReplies: qr } = parseQuickReplies(assistantSoFar);
-      const { action, param } = parseActions(assistantSoFar);
-
-      // Update final message with clean content
-      setMessages((prev) => prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: cleanContent } : m)));
-      setQuickReplies(qr);
-
-      if (action && onAction) {
-        onAction(action, param);
-      }
-    } catch (e) {
-      console.error("Chat error:", e);
-      const errorMsg = e instanceof Error ? e.message : "Something went wrong";
-      setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ ${errorMsg}. Please try again.` }]);
-    } finally {
-      setIsLoading(false);
-    }
+    // Simulate brief typing delay for natural feel
+    setTimeout(() => {
+      const { text: responseText, quickReplies } = getResponse(text, appState);
+      setMessages((prev) => [...prev, { role: "assistant", content: responseText, quickReplies }]);
+      setIsTyping(false);
+    }, 400 + Math.random() * 400);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -256,28 +272,41 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
             {messages.map((msg, i) => {
               const isUser = msg.role === "user";
               return (
-                <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed ${
-                    isUser
-                      ? "bg-accent text-accent-foreground rounded-br-md"
-                      : "bg-secondary/60 text-foreground rounded-bl-md"
-                  }`}>
-                    {isUser ? (
-                      <p>{msg.content}</p>
-                    ) : (
-                      <div className="prose prose-sm prose-invert max-w-none [&>p]:m-0 [&>p]:text-xs [&>ul]:text-xs [&>ol]:text-xs [&>ul]:my-1 [&>ol]:my-1 [&>li]:my-0">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
-                      </div>
-                    )}
+                <div key={i}>
+                  <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
+                      isUser
+                        ? "bg-accent text-accent-foreground rounded-br-md"
+                        : "bg-secondary/60 text-foreground rounded-bl-md"
+                    }`}>
+                      {msg.content.split(/(\*\*.*?\*\*)/).map((part, j) => {
+                        if (part.startsWith("**") && part.endsWith("**")) {
+                          return <strong key={j}>{part.slice(2, -2)}</strong>;
+                        }
+                        return <span key={j}>{part}</span>;
+                      })}
+                    </div>
                   </div>
+                  {/* Quick replies for this message */}
+                  {msg.role === "assistant" && msg.quickReplies && msg.quickReplies.length > 0 && i === messages.length - 1 && !isTyping && (
+                    <div className="flex flex-wrap gap-1.5 mt-2 ml-1">
+                      {msg.quickReplies.map((qr, j) => (
+                        <button key={j} onClick={() => sendMessage(qr)} className="px-3 py-1.5 rounded-full bg-secondary/60 border border-border/40 text-[10px] text-foreground hover:bg-secondary hover:border-accent/40 transition-all">
+                          {qr}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
 
-            {isLoading && (
+            {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-secondary/60 rounded-2xl rounded-bl-md">
-                  <TypingIndicator />
+                <div className="bg-secondary/60 rounded-2xl rounded-bl-md px-3 py-2 flex items-center gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: `${i * 150}ms`, animationDuration: "800ms" }} />
+                  ))}
                 </div>
               </div>
             )}
@@ -285,37 +314,17 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick replies */}
-          {quickReplies.length > 0 && !isLoading && (
-            <div className="px-3 pb-2 flex flex-wrap gap-1.5">
-              {quickReplies.map((qr, i) => (
-                <button
-                  key={i}
-                  onClick={() => sendMessage(qr.text)}
-                  className="px-3 py-1.5 rounded-full bg-secondary/60 border border-border/40 text-[10px] text-foreground hover:bg-secondary hover:border-accent/40 transition-all"
-                >
-                  {qr.text}
-                </button>
-              ))}
-            </div>
-          )}
-
           {/* Input */}
           <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-border bg-secondary/20">
             <div className="flex items-center gap-2">
               <input
-                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything..."
                 className="flex-1 bg-secondary/50 border border-border/60 rounded-xl px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-                disabled={isLoading}
+                disabled={isTyping}
               />
-              <button
-                type="submit"
-                disabled={!input.trim() || isLoading}
-                className="p-2 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-              >
+              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
                 <Send className="w-3.5 h-3.5" />
               </button>
             </div>
