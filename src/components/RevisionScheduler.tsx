@@ -351,10 +351,10 @@ export default function RevisionScheduler() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 overflow-x-auto -mx-1 px-1">
+      <div className="flex gap-1 overflow-x-auto -mx-1 px-1 tab-bar">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap min-h-[36px] ${tab === t.key ? "bg-green-500/15 text-green-400" : "text-muted-foreground hover:text-foreground"}`}>
+            className={`px-3 py-2 text-sm font-medium transition-all whitespace-nowrap min-h-[36px] ${tab === t.key ? "tab-active" : "tab-inactive"}`}>
             {t.label}
           </button>
         ))}
