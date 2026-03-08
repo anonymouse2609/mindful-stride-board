@@ -127,8 +127,8 @@ export default function HabitsTracker() {
                           checked
                             ? "bg-habits text-white"
                             : i === todayIdx
-                            ? "bg-secondary/80 border border-muted/50 hover:bg-habits/10"
-                            : "bg-secondary/40 border border-transparent hover:bg-secondary/70"
+                            ? "border-2 border-white/40 bg-transparent hover:bg-habits/20"
+                            : "border-2 border-white/25 bg-transparent hover:border-white/40"
                         } ${checked ? "animate-check-pop" : ""}`}
                       >
                         {checked && <Check className="w-4 h-4" />}
