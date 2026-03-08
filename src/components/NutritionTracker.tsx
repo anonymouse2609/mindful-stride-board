@@ -828,7 +828,7 @@ function MacroBar({ label, current, goal, color }: { label: string; current: num
           <span className="text-muted-foreground font-normal">/{goal}{label === "Calories" ? "" : "g"}</span>
         </span>
       </div>
-      <div className="w-full h-3.5 rounded-full bg-secondary overflow-hidden">
+      <div className="w-full h-3.5 rounded-full bg-white/15 overflow-hidden">
         <div className={`h-full rounded-full transition-all duration-500 ${over ? "bg-destructive" : ""}`} style={{ width: `${pct}%`, backgroundColor: over ? undefined : color }} />
       </div>
     </div>
