@@ -17,6 +17,7 @@ export interface AppState {
   pomodoro?: {
     sessions: number;
     isRunning: boolean;
+    todayMinutes?: number;
   };
   todos?: {
     completed: number;
