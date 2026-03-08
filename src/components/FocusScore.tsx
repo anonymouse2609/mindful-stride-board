@@ -362,7 +362,7 @@ const FocusScore = () => {
           </div>
           {streak > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60">
-              <Flame className="w-4 h-4 text-study" />
+              <Flame className="w-4 h-4 text-pomodoro" />
               <span className="text-sm font-semibold text-foreground">{streak} day streak</span>
             </div>
           )}
