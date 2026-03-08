@@ -842,8 +842,8 @@ function MacroPieChart({ protein, carbs, fat }: { protein: number; carbs: number
   const total = proteinCal + carbsCal + fatCal;
   if (total === 0) return (
     <div className="flex items-center justify-center">
-      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
-        <span className="text-[10px] text-muted-foreground">No data</span>
+      <div className="w-24 h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+        <span className="text-sm text-muted-foreground">No data</span>
       </div>
     </div>
   );
@@ -852,11 +852,11 @@ function MacroPieChart({ protein, carbs, fat }: { protein: number; carbs: number
   const segments = [{ pct: pPct, color: PIE_COLORS.protein }, { pct: cPct, color: PIE_COLORS.carbs }, { pct: fPct, color: PIE_COLORS.fat }];
   let offset = 0;
   return (
-    <div className="flex flex-col items-center gap-2">
-      <svg viewBox="0 0 100 100" className="w-20 h-20 sm:w-24 sm:h-24 -rotate-90">
+    <div className="flex flex-col items-center gap-2.5">
+      <svg viewBox="0 0 100 100" className="w-24 h-24 -rotate-90">
         {segments.map((seg, i) => { const dash = (seg.pct / 100) * circumference; const gap = circumference - dash; const so = -offset; offset += dash; return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={seg.color} strokeWidth="12" strokeDasharray={`${dash} ${gap}`} strokeDashoffset={so} className="transition-all duration-500" />; })}
       </svg>
-      <div className="flex gap-3 text-[10px]">
+      <div className="flex gap-4 text-sm">
         <span style={{ color: PIE_COLORS.protein }}>● P {Math.round(pPct)}%</span>
         <span style={{ color: PIE_COLORS.carbs }}>● C {Math.round(cPct)}%</span>
         <span style={{ color: PIE_COLORS.fat }}>● F {Math.round(fPct)}%</span>
