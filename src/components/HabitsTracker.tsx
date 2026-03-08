@@ -78,8 +78,8 @@ export default function HabitsTracker() {
   const todayIdx = getTodayIndex();
 
   return (
-    <div className="section-card section-habits p-5 sm:p-6 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
-      <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+    <div className="section-card section-habits flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
+      <h2 className="text-[18px] font-semibold section-title-habits flex items-center gap-2">
         <div className="w-8 h-8 rounded-xl bg-habits/10 flex items-center justify-center">
           <Flame className="w-[18px] h-[18px] text-habits" />
         </div>
