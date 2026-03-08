@@ -56,7 +56,7 @@ export default {
         high: "hsl(var(--high))",
         medium: "hsl(var(--medium))",
         low: "hsl(var(--low))",
-        // Section accent colors
+        // Section accent colors — NO GREEN
         focus: "hsl(var(--focus-accent))",
         study: "hsl(var(--study-accent))",
         nutrition: "hsl(var(--nutrition-accent))",
@@ -64,6 +64,8 @@ export default {
         goals: "hsl(var(--goals-accent))",
         mood: "hsl(var(--mood-accent))",
         chatbotAccent: "hsl(var(--chatbot-accent))",
+        revision: "hsl(var(--revision-accent))",
+        pomodoro: "hsl(var(--pomodoro-accent))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
