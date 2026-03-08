@@ -324,16 +324,16 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-border bg-secondary/20">
+          <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-border" style={{ background: "hsla(240, 10%, 8%, 0.6)" }}>
             <div className="flex items-center gap-2">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything..."
-                className="flex-1 bg-secondary/50 border border-border/60 rounded-xl px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+                className="flex-1 rounded-xl px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-chatbotAccent/40" style={{ background: "hsl(240, 12%, 8%)", color: "hsl(220, 13%, 91%)", border: "1px solid rgba(255,255,255,0.07)" }}
                 disabled={isTyping}
               />
-              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
+              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-chatbotAccent text-white hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
                 <Send className="w-3.5 h-3.5" />
               </button>
             </div>
