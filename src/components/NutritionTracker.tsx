@@ -1172,13 +1172,15 @@ export default function NutritionTracker() {
       )}
 
       {/* Macro bars + Pie chart */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start">
-        <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2 w-full">
-          <MacroBar label="Calories" current={totals.calories} goal={data.goals.calories} color="hsl(var(--accent))" />
-          <MacroBar label="Protein" current={totals.protein} goal={data.goals.protein} color="hsl(200, 60%, 50%)" />
-          <MacroBar label="Carbs" current={totals.carbs} goal={data.goals.carbs} color="hsl(38, 70%, 55%)" />
-          <MacroBar label="Fat" current={totals.fat} goal={data.goals.fat} color="hsl(0, 60%, 55%)" />
-          <div className="col-span-2 text-[11px] text-muted-foreground">Fiber: <span className="text-foreground font-medium">{Math.round(totals.fiber)}g</span></div>
+      <div className="flex flex-col sm:flex-row gap-5 items-start">
+        <div className="flex-1 grid grid-cols-2 gap-x-5 gap-y-3 w-full">
+          <MacroBar label="Calories" current={totals.calories} goal={data.goals.calories} color="hsl(25, 95%, 53%)" />
+          <MacroBar label="Protein" current={totals.protein} goal={data.goals.protein} color="hsl(217, 91%, 60%)" />
+          <MacroBar label="Carbs" current={totals.carbs} goal={data.goals.carbs} color="hsl(45, 80%, 50%)" />
+          <MacroBar label="Fat" current={totals.fat} goal={data.goals.fat} color="hsl(350, 89%, 60%)" />
+          <div className="col-span-2">
+            <MacroBar label="Fiber" current={totals.fiber} goal={30} color="hsl(160, 60%, 45%)" />
+          </div>
         </div>
         <MacroPieChart protein={totals.protein} carbs={totals.carbs} fat={totals.fat} />
       </div>
