@@ -7,28 +7,28 @@
 @layer base {
   :root {
     --background: 240 15% 5%;
-    --foreground: 0 0% 93%;
+    --foreground: 220 13% 91%;
 
     --card: 240 12% 8%;
-    --card-foreground: 0 0% 93%;
+    --card-foreground: 220 13% 91%;
 
     --popover: 240 12% 8%;
-    --popover-foreground: 0 0% 93%;
+    --popover-foreground: 220 13% 91%;
 
-    --primary: 0 0% 93%;
+    --primary: 220 13% 91%;
     --primary-foreground: 240 15% 5%;
 
     --secondary: 240 10% 12%;
-    --secondary-foreground: 0 0% 80%;
+    --secondary-foreground: 220 8% 70%;
 
     --muted: 240 8% 16%;
-    --muted-foreground: 240 5% 50%;
+    --muted-foreground: 215 16% 47%;
 
     --accent: 38 70% 55%;
     --accent-foreground: 240 15% 5%;
 
     --destructive: 0 60% 50%;
-    --destructive-foreground: 0 0% 93%;
+    --destructive-foreground: 220 13% 91%;
 
     --success: 152 50% 42%;
     --success-foreground: 240 15% 5%;
@@ -38,19 +38,36 @@
     --low: 210 50% 55%;
 
     /* Section accent colors */
+    --focus-accent: 239 84% 67%;
+    --focus-accent-soft: 239 68% 70%;
     --study-accent: 25 95% 53%;
+    --study-accent-soft: 29 93% 63%;
     --nutrition-accent: 160 60% 45%;
-    --habits-accent: 263 70% 50%;
+    --nutrition-accent-soft: 158 60% 55%;
+    --habits-accent: 271 91% 65%;
+    --habits-accent-soft: 270 76% 72%;
     --goals-accent: 217 91% 60%;
+    --goals-accent-soft: 213 94% 68%;
     --mood-accent: 350 89% 60%;
-    --chatbot-accent: 239 84% 67%;
+    --mood-accent-soft: 351 83% 69%;
+    --chatbot-accent: 263 70% 50%;
+    --chatbot-accent-soft: 259 60% 68%;
 
     /* Section tinted backgrounds */
-    --study-bg: 25 30% 7%;
-    --nutrition-bg: 160 25% 6%;
-    --habits-bg: 263 25% 7%;
-    --goals-bg: 217 25% 7%;
-    --chatbot-bg: 239 25% 7%;
+    --focus-bg-from: 240 30% 10%;
+    --focus-bg-to: 240 15% 5%;
+    --study-bg-from: 25 40% 7%;
+    --study-bg-to: 240 15% 5%;
+    --nutrition-bg-from: 155 35% 6%;
+    --nutrition-bg-to: 240 15% 5%;
+    --habits-bg-from: 270 30% 8%;
+    --habits-bg-to: 240 15% 5%;
+    --goals-bg-from: 217 35% 8%;
+    --goals-bg-to: 240 15% 5%;
+    --mood-bg-from: 350 30% 7%;
+    --mood-bg-to: 240 15% 5%;
+    --chatbot-bg-from: 260 25% 7%;
+    --chatbot-bg-to: 240 15% 5%;
 
     --border: 240 8% 14%;
     --input: 240 8% 14%;
@@ -62,11 +79,11 @@
     --font-mono: 'JetBrains Mono', monospace;
 
     --sidebar-background: 240 12% 8%;
-    --sidebar-foreground: 0 0% 93%;
-    --sidebar-primary: 0 0% 93%;
+    --sidebar-foreground: 220 13% 91%;
+    --sidebar-primary: 220 13% 91%;
     --sidebar-primary-foreground: 240 15% 5%;
     --sidebar-accent: 240 10% 12%;
-    --sidebar-accent-foreground: 0 0% 80%;
+    --sidebar-accent-foreground: 220 8% 70%;
     --sidebar-border: 240 8% 14%;
     --sidebar-ring: 0 0% 50%;
   }
@@ -81,6 +98,7 @@
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
     letter-spacing: -0.01em;
+    color: hsl(220, 13%, 91%);
   }
 
   code, .font-mono {
@@ -107,6 +125,14 @@
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    padding: 24px;
+  }
+
+  @media (max-width: 640px) {
+    .section-card {
+      padding: 16px;
+    }
   }
 
   .section-card::before {
@@ -121,44 +147,70 @@
   }
 
   .section-card:hover {
-    box-shadow: 0 0 25px var(--section-glow);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 25px var(--section-glow);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
   }
 
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60;
   }
 
-  /* Section-specific backgrounds */
-  .section-study { 
+  /* Section-specific styles */
+  .section-focus {
+    --section-accent: hsl(var(--focus-accent));
+    --section-glow: hsla(239, 84%, 67%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--focus-bg-from)), hsl(var(--focus-bg-to)));
+  }
+  .section-study {
     --section-accent: hsl(var(--study-accent));
-    --section-glow: hsla(25, 95%, 53%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--study-bg)), hsl(var(--card)));
+    --section-glow: hsla(25, 95%, 53%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--study-bg-from)), hsl(var(--study-bg-to)));
   }
   .section-nutrition {
     --section-accent: hsl(var(--nutrition-accent));
-    --section-glow: hsla(160, 60%, 45%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--nutrition-bg)), hsl(var(--card)));
+    --section-glow: hsla(160, 60%, 45%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--nutrition-bg-from)), hsl(var(--nutrition-bg-to)));
   }
   .section-habits {
     --section-accent: hsl(var(--habits-accent));
-    --section-glow: hsla(263, 70%, 50%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--habits-bg)), hsl(var(--card)));
+    --section-glow: hsla(271, 91%, 65%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--habits-bg-from)), hsl(var(--habits-bg-to)));
   }
   .section-goals {
     --section-accent: hsl(var(--goals-accent));
-    --section-glow: hsla(217, 91%, 60%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--goals-bg)), hsl(var(--card)));
+    --section-glow: hsla(217, 91%, 60%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--goals-bg-from)), hsl(var(--goals-bg-to)));
+  }
+  .section-mood {
+    --section-accent: hsl(var(--mood-accent));
+    --section-glow: hsla(350, 89%, 60%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--mood-bg-from)), hsl(var(--mood-bg-to)));
   }
   .section-chatbot {
     --section-accent: hsl(var(--chatbot-accent));
-    --section-glow: hsla(239, 84%, 67%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--chatbot-bg)), hsl(var(--card)));
+    --section-glow: hsla(263, 70%, 50%, 0.15);
+    background: linear-gradient(180deg, hsl(var(--chatbot-bg-from)), hsl(var(--chatbot-bg-to)));
   }
-  .section-focus {
-    --section-accent: hsl(var(--goals-accent));
-    --section-glow: hsla(217, 91%, 60%, 0.12);
-    background: linear-gradient(180deg, hsl(var(--goals-bg)), hsl(var(--card)));
+  .section-music {
+    --section-accent: hsl(var(--accent));
+    --section-glow: hsla(38, 70%, 55%, 0.12);
+    background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--card)));
   }
+  .section-weekly {
+    --section-accent: hsl(var(--accent));
+    --section-glow: hsla(38, 70%, 55%, 0.12);
+    background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--card)));
+  }
+
+  /* Section heading text colors */
+  .section-title-focus { color: hsl(var(--focus-accent-soft)); }
+  .section-title-study { color: hsl(var(--study-accent-soft)); }
+  .section-title-nutrition { color: hsl(var(--nutrition-accent-soft)); }
+  .section-title-habits { color: hsl(var(--habits-accent-soft)); }
+  .section-title-goals { color: hsl(var(--goals-accent-soft)); }
+  .section-title-mood { color: hsl(var(--mood-accent-soft)); }
+  .section-title-chatbot { color: hsl(var(--chatbot-accent-soft)); }
 
   /* Button base styles */
   .btn-primary {
@@ -191,7 +243,8 @@
 
   /* Inputs */
   .input-styled {
-    @apply rounded-xl text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none transition-all;
+    @apply rounded-xl text-[15px] placeholder:text-muted-foreground focus:outline-none transition-all;
+    color: hsl(220, 13%, 91%);
     min-height: 48px;
     padding: 12px 16px;
     background: hsl(var(--secondary) / 0.5);

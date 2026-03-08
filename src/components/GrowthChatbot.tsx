@@ -250,7 +250,7 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 z-50 w-12 h-12 rounded-full bg-accent text-accent-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center group"
+          className="fixed bottom-5 right-5 z-50 w-12 h-12 rounded-full bg-chatbotAccent text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center group"
           aria-label="Open chat assistant"
         >
           <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
@@ -259,15 +259,15 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300" style={{ background: "hsl(240, 15%, 5%)" }}>
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-secondary/30">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ background: "hsla(260, 25%, 12%, 0.6)" }}>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
-                <Sparkles className="w-3.5 h-3.5 text-accent-foreground" />
+              <div className="w-7 h-7 rounded-full bg-chatbotAccent flex items-center justify-center">
+                <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold text-foreground">Growth AI</h3>
+                <h3 className="text-xs font-semibold section-title-chatbot">Growth AI</h3>
                 <p className="text-[9px] text-muted-foreground">Your personal assistant</p>
               </div>
             </div>
@@ -285,9 +285,8 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
                   <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
                       isUser
-                        ? "bg-accent text-accent-foreground rounded-br-md"
-                        : "bg-secondary/60 text-foreground rounded-bl-md"
-                    }`}>
+                        ? "bg-[hsl(221,83%,53%)] text-white rounded-br-md"
+                        : "rounded-bl-md" } `} style={!isUser ? { background: "hsl(240, 12%, 10%)", color: "hsl(220, 13%, 91%)" } : undefined}>
                       {msg.content.split(/(\*\*.*?\*\*)/).map((part, j) => {
                         if (part.startsWith("**") && part.endsWith("**")) {
                           return <strong key={j}>{part.slice(2, -2)}</strong>;
@@ -324,16 +323,16 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-border bg-secondary/20">
+          <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-border" style={{ background: "hsla(240, 10%, 8%, 0.6)" }}>
             <div className="flex items-center gap-2">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything..."
-                className="flex-1 bg-secondary/50 border border-border/60 rounded-xl px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+                className="flex-1 rounded-xl px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-chatbotAccent/40" style={{ background: "hsl(240, 12%, 8%)", color: "hsl(220, 13%, 91%)", border: "1px solid rgba(255,255,255,0.07)" }}
                 disabled={isTyping}
               />
-              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
+              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-chatbotAccent text-white hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
                 <Send className="w-3.5 h-3.5" />
               </button>
             </div>

@@ -158,10 +158,10 @@ function saveData(data: FocusScoreData) {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 81) return "hsl(var(--nutrition-accent))";
-  if (score >= 61) return "hsl(var(--goals-accent))";
+  if (score >= 81) return "hsl(160, 60%, 45%)";
+  if (score >= 61) return "hsl(217, 91%, 60%)";
   if (score >= 41) return "hsl(38, 90%, 55%)";
-  return "hsl(var(--destructive))";
+  return "hsl(0, 60%, 50%)";
 }
 
 function getScoreColorClass(score: number): string {
@@ -180,10 +180,10 @@ function getVerdict(score: number): string {
 }
 
 function getBarColor(score: number): string {
-  if (score >= 81) return "hsl(var(--nutrition-accent))";
-  if (score >= 61) return "hsl(var(--goals-accent))";
+  if (score >= 81) return "hsl(160, 60%, 45%)";
+  if (score >= 61) return "hsl(217, 91%, 60%)";
   if (score >= 41) return "hsl(38, 90%, 55%)";
-  return "hsl(var(--destructive))";
+  return "hsl(0, 60%, 50%)";
 }
 
 // ===== COMPONENT =====
@@ -324,14 +324,15 @@ const FocusScore = () => {
     <>
       {/* Main Score Ring */}
       <div
-        className="section-card section-focus p-6 sm:p-8 cursor-pointer group"
+        className="section-card section-focus cursor-pointer group"
         onClick={() => setShowBreakdown(true)}
-        style={{ "--section-accent": "hsl(var(--goals-accent))", "--section-glow": "hsla(217, 91%, 60%, 0.12)" } as React.CSSProperties}
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-goals" />
-            <h2 className="text-[20px] font-bold text-foreground">Focus Score</h2>
+            <div className="w-8 h-8 rounded-xl bg-focus/10 flex items-center justify-center">
+              <Zap className="w-[18px] h-[18px] text-focus" />
+            </div>
+            <h2 className="text-[18px] font-semibold section-title-focus">Focus Score</h2>
           </div>
           {streak > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60">
@@ -357,7 +358,7 @@ const FocusScore = () => {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-4xl font-bold font-mono ${getScoreColorClass(score)}`}>{score}</span>
+              <span className="text-4xl font-bold font-mono text-foreground">{score}</span>
               <span className="text-[11px] text-muted-foreground">/ 100</span>
             </div>
           </div>

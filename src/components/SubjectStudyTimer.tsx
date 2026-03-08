@@ -419,12 +419,12 @@ export default function SubjectStudyTimer() {
   const activeColor = selectedSubject?.color || "hsl(var(--accent))";
 
   return (
-    <div className="section-card section-study p-5 sm:p-6 flex flex-col gap-5 relative" style={{ animation: "fade-in 0.4s ease-out 0.1s forwards", opacity: "0" } as React.CSSProperties}>
+    <div className="section-card section-study flex flex-col gap-5 relative" style={{ animation: "fade-in 0.4s ease-out 0.1s forwards", opacity: "0" } as React.CSSProperties}>
       <CelebrationOverlay show={showCelebration} />
 
       {/* Header + Tabs */}
       <div className="flex items-center justify-between">
-        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+        <h2 className="text-[18px] font-semibold section-title-study flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-study/10 flex items-center justify-center">
             <BookOpen className="w-[18px] h-[18px] text-study" />
           </div>

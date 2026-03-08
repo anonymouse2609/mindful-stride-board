@@ -57,6 +57,7 @@ export default {
         medium: "hsl(var(--medium))",
         low: "hsl(var(--low))",
         // Section accent colors
+        focus: "hsl(var(--focus-accent))",
         study: "hsl(var(--study-accent))",
         nutrition: "hsl(var(--nutrition-accent))",
         habits: "hsl(var(--habits-accent))",

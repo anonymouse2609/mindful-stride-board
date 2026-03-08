@@ -78,8 +78,8 @@ export default function HabitsTracker() {
   const todayIdx = getTodayIndex();
 
   return (
-    <div className="section-card section-habits p-5 sm:p-6 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
-      <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+    <div className="section-card section-habits flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.3s forwards", opacity: 0 }}>
+      <h2 className="text-[18px] font-semibold section-title-habits flex items-center gap-2">
         <div className="w-8 h-8 rounded-xl bg-habits/10 flex items-center justify-center">
           <Flame className="w-[18px] h-[18px] text-habits" />
         </div>
@@ -106,7 +106,7 @@ export default function HabitsTracker() {
           <tbody>
             {data.habits.map((habit) => (
               <tr key={habit} className="group">
-                <td className="py-1.5 pr-3 text-foreground/80 text-sm">
+                <td className="py-1.5 pr-3 text-[15px]" style={{ color: "hsl(220, 13%, 91%)" }}>
                   <div className="flex items-center justify-between gap-2 max-w-[100px] sm:max-w-[140px]">
                     <span className="truncate">{habit}</span>
                     <button
@@ -120,15 +120,15 @@ export default function HabitsTracker() {
                 {DAYS.map((_, i) => {
                   const checked = data.grid[habit]?.[i] || false;
                   return (
-                    <td key={i} className="text-center py-1.5 px-0.5">
+                     <td key={i} className="text-center py-1.5 px-0.5">
                       <button
                         onClick={() => toggleDay(habit, i)}
                         className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center mx-auto transition-all ${
                           checked
-                            ? "bg-habits/20 text-habits"
+                            ? "bg-habits text-white"
                             : i === todayIdx
-                            ? "bg-secondary/80 hover:bg-habits/10"
-                            : "bg-secondary/40 hover:bg-secondary/70"
+                            ? "bg-secondary/80 border border-muted/50 hover:bg-habits/10"
+                            : "bg-secondary/40 border border-transparent hover:bg-secondary/70"
                         } ${checked ? "animate-check-pop" : ""}`}
                       >
                         {checked && <Check className="w-4 h-4" />}
