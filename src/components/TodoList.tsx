@@ -74,7 +74,7 @@ export default function TodoList() {
           placeholder="Add a task..."
           className="input-styled flex-1 min-w-0"
         />
-        <div className="flex rounded-xl overflow-hidden border border-border/60 bg-secondary/30 shrink-0 items-center">
+        <div className="flex rounded-xl overflow-hidden border border-white/20 bg-white/8 shrink-0 items-center">
           {(["high", "medium", "low"] as Priority[]).map((p) => (
             <button
               key={p}
