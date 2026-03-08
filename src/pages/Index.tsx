@@ -81,7 +81,7 @@ function getAppState(): AppState {
     habitsTotal,
     habitNames,
     nutrition: nutritionState,
-    pomodoro: pomodoroState,
+    pomodoro: studyState,
     todos: todosState,
   };
 }
