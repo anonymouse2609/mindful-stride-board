@@ -142,7 +142,33 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
     }
   } catch {}
 
-  return { score: study + nutrition + habits + energy, breakdown: { study, nutrition, habits, energy }, nudges };
+  // Revision bonus/penalty
+  let revisionBonus = 0;
+  try {
+    const raw = localStorage.getItem("dashboard-revision");
+    if (raw) {
+      const revData = JSON.parse(raw);
+      const topics = revData.topics || [];
+      const dueToday = topics.filter((t: any) => !t.mastered && t.nextDue <= todayKey);
+      if (dueToday.length > 0) {
+        const allDone = dueToday.every((t: any) => (t.revisionLog || []).some((r: any) => r.date === todayKey));
+        if (allDone) {
+          revisionBonus = 10;
+        } else {
+          // Check overdue > 2 days
+          const overdueCount = dueToday.filter((t: any) => {
+            const diff = Math.floor((new Date(todayKey).getTime() - new Date(t.nextDue).getTime()) / 86400000);
+            return diff > 2 && !(t.revisionLog || []).some((r: any) => r.date === todayKey);
+          }).length;
+          if (overdueCount > 0) revisionBonus = -5;
+          nudges.push("Complete your revision topics for 10 bonus points");
+        }
+      }
+    }
+  } catch {}
+
+  const total = Math.max(0, Math.min(100, study + nutrition + habits + energy + revisionBonus));
+  return { score: total, breakdown: { study, nutrition, habits, energy }, nudges };
 }
 
 function loadData(): FocusScoreData {
