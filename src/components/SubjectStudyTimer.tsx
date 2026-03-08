@@ -659,24 +659,24 @@ export default function SubjectStudyTimer() {
 
       {/* Subject Modal */}
       <Modal open={showSubjectModal} onClose={() => setShowSubjectModal(false)} title={editingSubject ? "Edit Subject" : "Add Subject"}>
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">Subject Name *</label>
-            <input value={sf.name} onChange={e => setSf({ ...sf, name: e.target.value })} placeholder="e.g. Mathematics" className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">Subject Name *</label>
+            <input value={sf.name} onChange={e => setSf({ ...sf, name: e.target.value })} placeholder="e.g. Mathematics" className="input-styled" />
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">Color</label>
-            <div className="flex gap-2">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">Color</label>
+            <div className="flex gap-2.5">
               {SUBJECT_COLORS.map(c => (
-                <button key={c.value} onClick={() => setSf({ ...sf, color: c.value })} className={`w-7 h-7 rounded-full border-2 transition-all ${sf.color === c.value ? "border-foreground scale-110" : "border-transparent"}`} style={{ backgroundColor: c.value }} title={c.name} />
+                <button key={c.value} onClick={() => setSf({ ...sf, color: c.value })} className={`w-8 h-8 rounded-full border-2 transition-all ${sf.color === c.value ? "border-foreground scale-110" : "border-transparent"}`} style={{ backgroundColor: c.value }} title={c.name} />
               ))}
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">Weekly Goal (hours)</label>
-            <input type="number" value={sf.weeklyGoalHours} onChange={e => setSf({ ...sf, weeklyGoalHours: e.target.value })} className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40 w-24" min="1" />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">Weekly Goal (hours)</label>
+            <input type="number" value={sf.weeklyGoalHours} onChange={e => setSf({ ...sf, weeklyGoalHours: e.target.value })} className="input-styled w-28" min="1" />
           </div>
-          <button onClick={saveSubject} disabled={!sf.name} className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-30">
+          <button onClick={saveSubject} disabled={!sf.name} className="btn-primary bg-study text-white hover:opacity-90 disabled:opacity-30">
             {editingSubject ? "Update" : "Add Subject"}
           </button>
         </div>
@@ -684,28 +684,28 @@ export default function SubjectStudyTimer() {
 
       {/* Manual Session Modal */}
       <Modal open={showManualModal} onClose={() => setShowManualModal(false)} title="Add Manual Session">
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">Subject</label>
-            <select value={manualSession.subjectId} onChange={e => setManualSession({ ...manualSession, subjectId: e.target.value })} className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">Subject</label>
+            <select value={manualSession.subjectId} onChange={e => setManualSession({ ...manualSession, subjectId: e.target.value })} className="input-styled">
               {data.subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-muted-foreground">Date</label>
-              <input type="date" value={manualSession.date} onChange={e => setManualSession({ ...manualSession, date: e.target.value })} className="bg-secondary border border-border/60 rounded-md px-2 py-2 text-xs text-foreground focus:outline-none" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm text-muted-foreground">Date</label>
+              <input type="date" value={manualSession.date} onChange={e => setManualSession({ ...manualSession, date: e.target.value })} className="input-styled" />
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-muted-foreground">Start Time</label>
-              <input type="time" value={manualSession.startTime} onChange={e => setManualSession({ ...manualSession, startTime: e.target.value })} className="bg-secondary border border-border/60 rounded-md px-2 py-2 text-xs text-foreground focus:outline-none" />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm text-muted-foreground">Start Time</label>
+              <input type="time" value={manualSession.startTime} onChange={e => setManualSession({ ...manualSession, startTime: e.target.value })} className="input-styled" />
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-muted-foreground">Duration (minutes)</label>
-            <input type="number" value={manualSession.durationMinutes} onChange={e => setManualSession({ ...manualSession, durationMinutes: e.target.value })} className="bg-secondary border border-border/60 rounded-md px-3 py-2 text-xs text-foreground focus:outline-none w-24" min="1" />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm text-muted-foreground">Duration (minutes)</label>
+            <input type="number" value={manualSession.durationMinutes} onChange={e => setManualSession({ ...manualSession, durationMinutes: e.target.value })} className="input-styled w-28" min="1" />
           </div>
-          <button onClick={addManualSession} disabled={!manualSession.subjectId} className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-30">
+          <button onClick={addManualSession} disabled={!manualSession.subjectId} className="btn-primary bg-study text-white hover:opacity-90 disabled:opacity-30">
             Add Session
           </button>
         </div>
