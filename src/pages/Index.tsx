@@ -10,6 +10,7 @@ import NutritionTracker from "@/components/NutritionTracker";
 import GrowthChatbot, { type AppState } from "@/components/GrowthChatbot";
 import FocusScore from "@/components/FocusScore";
 import RevisionScheduler from "@/components/RevisionScheduler";
+import ThemeToggle from "@/components/ThemeToggle";
 
 function getAppState(): AppState {
   const todayKey = new Date().toISOString().split("T")[0];
@@ -109,13 +110,16 @@ const Index = () => {
     <div className="min-h-screen bg-background px-4 py-8 sm:px-6 md:px-10 lg:px-20 md:py-10 animate-page-enter">
       <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
-        <div style={{ animation: "fade-in 0.4s ease-out forwards" }}>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-            {greeting}.
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-          </p>
+        <div className="flex items-center justify-between" style={{ animation: "fade-in 0.4s ease-out forwards" }}>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+              {greeting}.
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
 
         <FocusScore />
