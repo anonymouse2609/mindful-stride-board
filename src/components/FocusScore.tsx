@@ -355,8 +355,8 @@ const FocusScore = () => {
       >
         <div className="flex items-center justify-between mb-4">
          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">
-              <Zap className="w-[22px] h-[22px] text-white" />
+            <div className="w-8 h-8 rounded-xl bg-focus/15 flex items-center justify-center">
+              <Zap className="w-[22px] h-[22px] text-focus" />
             </div>
             <h2 className="text-[18px] font-semibold section-title-focus">Focus Score</h2>
           </div>
