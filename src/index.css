@@ -234,15 +234,35 @@
     background: linear-gradient(180deg, #16a34a 0%, #14532d 40%, #0d0d14 100%);
   }
 
-  /* Section heading text colors */
-  .section-title-focus { color: hsl(var(--focus-accent-soft)); }
-  .section-title-study { color: hsl(var(--study-accent-soft)); }
-  .section-title-nutrition { color: hsl(var(--nutrition-accent-soft)); }
-  .section-title-habits { color: hsl(var(--habits-accent-soft)); }
-  .section-title-goals { color: hsl(var(--goals-accent-soft)); }
-  .section-title-mood { color: hsl(var(--mood-accent-soft)); }
-  .section-title-chatbot { color: hsl(var(--chatbot-accent-soft)); }
-  .section-title-revision { color: #4ade80; }
+  /* Section heading text colors — pure white on bright card tops */
+  .section-title-focus { color: #ffffff; }
+  .section-title-study { color: #ffffff; }
+  .section-title-nutrition { color: #ffffff; }
+  .section-title-habits { color: #ffffff; }
+  .section-title-goals { color: #ffffff; }
+  .section-title-mood { color: #ffffff; }
+  .section-title-chatbot { color: #ffffff; }
+  .section-title-revision { color: #ffffff; }
+
+  /* Tab bar styles */
+  .tab-bar {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+  .tab-active {
+    background: #ffffff;
+    color: #0d0d14;
+    font-weight: 600;
+    border-radius: calc(var(--radius) - 4px);
+  }
+  .tab-inactive {
+    color: #94a3b8;
+    border-radius: calc(var(--radius) - 4px);
+  }
+  .tab-inactive:hover {
+    color: #e2e8f0;
+  }
 
   /* Button base styles */
   .btn-primary {
