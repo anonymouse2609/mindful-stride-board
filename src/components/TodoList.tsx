@@ -121,7 +121,7 @@ export default function TodoList() {
               {todo.done && <Check className="w-3.5 h-3.5 text-pomodoro" />}
             </button>
             <span className={`w-2 h-2 rounded-full shrink-0 ${priorityDot[todo.priority]}`} />
-            <span className={`flex-1 text-[15px] min-w-0 break-words ${todo.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+            <span className={`flex-1 text-[15px] min-w-0 break-words ${todo.done ? "line-through text-white/40" : "text-white"}`}>
               {todo.text}
             </span>
             <button onClick={() => remove(todo.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
