@@ -368,7 +368,7 @@ export default function RevisionScheduler() {
               <p className="text-3xl mb-2">🌟</p>
               <p className="text-[15px] text-foreground font-medium">No revisions due today — enjoy your day!</p>
               {nextDueTopic && (
-                <p className="text-sm text-muted-foreground mt-1">Next revision: <span className="text-green-400">{nextDueTopic.name}</span> on {nextDueTopic.nextDue}</p>
+                <p className="text-sm text-muted-foreground mt-1">Next revision: <span className="text-indigo-400">{nextDueTopic.name}</span> on {nextDueTopic.nextDue}</p>
               )}
             </div>
           )}
