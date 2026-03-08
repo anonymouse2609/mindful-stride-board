@@ -1137,18 +1137,18 @@ export default function NutritionTracker() {
 
       {/* My Recipes list */}
       {showMyRecipes && (
-        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-1.5 animate-fade-in">
-          <span className="text-[11px] text-muted-foreground font-medium mb-1">My Recipes</span>
+        <div className="bg-nutrition/5 border border-nutrition/10 rounded-xl p-4 flex flex-col gap-2 animate-fade-in">
+          <span className="text-sm text-nutrition font-medium mb-1">My Recipes</span>
           {recipes.map((r) => (
-            <div key={r.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/60">
+            <div key={r.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40">
               <div>
-                <span className="text-xs text-foreground">🍳 {r.name}</span>
-                <span className="text-[10px] text-muted-foreground ml-1.5">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
-                <div className="text-[10px] text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
+                <span className="text-[15px] text-foreground">🍳 {r.name}</span>
+                <span className="text-sm text-muted-foreground ml-2">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
+                <div className="text-sm text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => openRecipeModal(r)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
-                <button onClick={() => deleteRecipe(r.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                <button onClick={() => openRecipeModal(r)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => deleteRecipe(r.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
               </div>
             </div>
           ))}
@@ -1157,17 +1157,17 @@ export default function NutritionTracker() {
 
       {/* Goals editor */}
       {showGoals && (
-        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-2 animate-fade-in">
-          <span className="text-[11px] text-muted-foreground font-medium">Daily Macro Goals</span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="bg-secondary/40 rounded-xl p-4 flex flex-col gap-3 animate-fade-in">
+          <span className="text-sm text-muted-foreground font-medium">Daily Macro Goals</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {(["calories", "protein", "carbs", "fat"] as const).map((key) => (
-              <div key={key} className="flex flex-col gap-1">
-                <label className="text-[10px] text-muted-foreground capitalize">{key}</label>
-                <input type="number" value={editGoals[key]} onChange={(e) => setEditGoals({ ...editGoals, [key]: Number(e.target.value) })} className="bg-secondary border border-border/60 rounded-md px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40 w-full" />
+              <div key={key} className="flex flex-col gap-1.5">
+                <label className="text-sm text-muted-foreground capitalize">{key}</label>
+                <input type="number" value={editGoals[key]} onChange={(e) => setEditGoals({ ...editGoals, [key]: Number(e.target.value) })} className="input-styled" />
               </div>
             ))}
           </div>
-          <button onClick={handleSaveGoals} className="self-end px-3 py-1 rounded-md bg-accent text-accent-foreground text-[11px] font-medium hover:opacity-90 transition-opacity">Save Goals</button>
+          <button onClick={handleSaveGoals} className="self-end btn-primary bg-nutrition text-white hover:opacity-90">Save Goals</button>
         </div>
       )}
 
