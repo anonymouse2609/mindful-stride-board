@@ -1101,14 +1101,14 @@ export default function NutritionTracker() {
 
       {/* My Foods / My Recipes links */}
       {(customFoods.length > 0 || recipes.length > 0) && (
-        <div className="flex gap-3 text-[10px]">
+        <div className="flex gap-4 text-sm">
           {customFoods.length > 0 && (
-            <button onClick={() => setShowMyFoods(!showMyFoods)} className="text-accent hover:underline">
+            <button onClick={() => setShowMyFoods(!showMyFoods)} className="text-nutrition hover:underline font-medium">
               My Foods ({customFoods.length})
             </button>
           )}
           {recipes.length > 0 && (
-            <button onClick={() => setShowMyRecipes(!showMyRecipes)} className="text-accent hover:underline">
+            <button onClick={() => setShowMyRecipes(!showMyRecipes)} className="text-nutrition hover:underline font-medium">
               My Recipes ({recipes.length})
             </button>
           )}
