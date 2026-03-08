@@ -250,7 +250,7 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-5 right-5 z-50 w-12 h-12 rounded-full bg-accent text-accent-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center group"
+          className="fixed bottom-5 right-5 z-50 w-12 h-12 rounded-full bg-chatbotAccent text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center group"
           aria-label="Open chat assistant"
         >
           <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
