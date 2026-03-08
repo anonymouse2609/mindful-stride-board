@@ -1072,23 +1072,28 @@ export default function NutritionTracker() {
   const totalFoodCount = FOODS.length + customFoods.length + recipes.length;
 
   return (
-    <div className="glass-card p-4 sm:p-5 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: 0 }}>
+    <div className="section-card section-nutrition p-5 sm:p-6 flex flex-col gap-5" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: "0" } as React.CSSProperties}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-foreground">🥗 Nutrition Tracker <span className="text-[10px] text-muted-foreground font-normal ml-1">{totalFoodCount} foods</span></h2>
+        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-nutrition/10 flex items-center justify-center">
+            <span className="text-lg">🥗</span>
+          </div>
+          Nutrition Tracker <span className="text-sm text-muted-foreground font-normal ml-1">{totalFoodCount} foods</span>
+        </h2>
         <div className="flex items-center gap-1.5">
-          <button onClick={() => openRecipeModal()} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Build a Recipe">
-            <ChefHat className="w-3.5 h-3.5" />
+          <button onClick={() => openRecipeModal()} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20 transition-colors" title="Build a Recipe">
+            <ChefHat className="w-[18px] h-[18px]" />
           </button>
-          <button onClick={() => openCustomModal()} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Create Custom Food">
-            <Plus className="w-3.5 h-3.5" />
+          <button onClick={() => openCustomModal()} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20 transition-colors" title="Create Custom Food">
+            <Plus className="w-[18px] h-[18px]" />
           </button>
-          <button onClick={() => { setShowGoals(!showGoals); setEditGoals(data.goals); }} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Set macro goals">
-            <Settings2 className="w-3.5 h-3.5" />
+          <button onClick={() => { setShowGoals(!showGoals); setEditGoals(data.goals); }} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors" title="Set macro goals">
+            <Settings2 className="w-[18px] h-[18px]" />
           </button>
           {data.log.length > 0 && (
-            <button onClick={resetLog} className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary/60 transition-colors" title="Reset daily log">
-              <RotateCcw className="w-3.5 h-3.5" />
+            <button onClick={resetLog} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-secondary/50 text-muted-foreground hover:text-destructive transition-colors" title="Reset daily log">
+              <RotateCcw className="w-[18px] h-[18px]" />
             </button>
           )}
         </div>
