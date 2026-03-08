@@ -344,7 +344,7 @@ export default function RevisionScheduler() {
               ⭐ {masteredTopics.length} mastered
             </span>
           )}
-          <button onClick={() => { setEditingTopic(null); setForm({ name: "", subject: "", difficulty: "medium", dateFirstStudied: todayKey() }); setShowAdd(true); }} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-green-500/10 text-green-400 hover:bg-green-500/20">
+          <button onClick={() => { setEditingTopic(null); setForm({ name: "", subject: "", difficulty: "medium", dateFirstStudied: todayKey() }); setShowAdd(true); }} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20">
             <Plus className="w-[18px] h-[18px]" />
           </button>
         </div>
