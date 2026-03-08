@@ -48,9 +48,18 @@ function getAppState(): AppState {
     }
   } catch {}
 
-  // Pomodoro
-  let pomodoroState = { sessions: 0, isRunning: false };
-  // Pomodoro state is in component state, we can't easily read it. Use defaults.
+  // Study timer
+  let studyState = { sessions: 0, isRunning: false, todayMinutes: 0 };
+  try {
+    const raw = localStorage.getItem("dashboard-study-timer");
+    if (raw) {
+      const data = JSON.parse(raw);
+      const today = new Date().toISOString().split("T")[0];
+      const todaySessions = (data.sessions || []).filter((s: any) => s.date === today);
+      studyState.sessions = todaySessions.length;
+      studyState.todayMinutes = todaySessions.reduce((a: number, s: any) => a + (s.durationMinutes || 0), 0);
+    }
+  } catch {}
 
   // Todos
   let todosState = { completed: 0, total: 0 };
