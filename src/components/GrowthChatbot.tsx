@@ -268,7 +268,7 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-white">Growth AI</h3>
-                <p className="text-[9px] text-white/60">Your personal assistant</p>
+                <p className="text-[9px] text-foreground/50">Your personal assistant</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
