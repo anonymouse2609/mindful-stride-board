@@ -628,7 +628,7 @@ export default function RevisionScheduler() {
                   <input type="date" value={form.dateFirstStudied} onChange={e => setForm({ ...form, dateFirstStudied: e.target.value })} className="input-styled text-sm" />
                 </div>
               </div>
-              <button onClick={editingTopic ? updateTopic : addTopic} disabled={!form.name.trim()} className="btn-primary w-full bg-green-500 text-white hover:bg-green-600 disabled:opacity-30">
+              <button onClick={editingTopic ? updateTopic : addTopic} disabled={!form.name.trim()} className="btn-primary w-full bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-30">
                 {editingTopic ? "Update Topic" : "Add Topic"}
               </button>
             </div>
