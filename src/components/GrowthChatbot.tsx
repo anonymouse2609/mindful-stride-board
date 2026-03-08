@@ -259,7 +259,7 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 section-chatbot" style={{ background: "linear-gradient(180deg, #7c3aed 0%, #2e1065 30%, #0d0d14 100%)" }}>
+        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300" style={{ background: "#1a0840", borderColor: "#7c3aed" }}>
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2">
