@@ -490,7 +490,7 @@ export default function RevisionScheduler() {
           {filteredTopics.length === 0 && (
             <div className="text-center py-6">
               <p className="text-3xl mb-2">📚</p>
-              <p className="text-[15px] text-muted-foreground">No topics found</p>
+              <p className="text-[15px] text-white/70">No topics found</p>
             </div>
           )}
           {filteredTopics.map(topic => {
