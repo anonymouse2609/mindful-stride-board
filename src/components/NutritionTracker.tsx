@@ -10,6 +10,11 @@ interface FoodItem {
   fiber: number;
 }
 
+interface UnitInfo {
+  unitLabel: string;
+  gramsPerUnit: number;
+}
+
 interface LogEntry {
   id: string;
   food: FoodItem;
@@ -22,6 +27,154 @@ interface MacroGoals {
   carbs: number;
   fat: number;
 }
+
+// Map of food names to their unit-based serving info
+const UNIT_MAP: Record<string, UnitInfo> = {
+  "Roti (wheat)": { unitLabel: "roti", gramsPerUnit: 40 },
+  "Chapati (multigrain)": { unitLabel: "chapati", gramsPerUnit: 35 },
+  "Paratha (plain)": { unitLabel: "paratha", gramsPerUnit: 80 },
+  "Aloo Paratha": { unitLabel: "paratha", gramsPerUnit: 80 },
+  "Gobi Paratha": { unitLabel: "paratha", gramsPerUnit: 80 },
+  "Paneer Paratha": { unitLabel: "paratha", gramsPerUnit: 80 },
+  "Thepla": { unitLabel: "thepla", gramsPerUnit: 50 },
+  "Methi Thepla": { unitLabel: "thepla", gramsPerUnit: 50 },
+  "Idli": { unitLabel: "idli", gramsPerUnit: 40 },
+  "Dosa (plain)": { unitLabel: "dosa", gramsPerUnit: 120 },
+  "Masala Dosa": { unitLabel: "dosa", gramsPerUnit: 120 },
+  "Rava Dosa": { unitLabel: "dosa", gramsPerUnit: 120 },
+  "Uttapam": { unitLabel: "uttapam", gramsPerUnit: 150 },
+  "Onion Uttapam": { unitLabel: "uttapam", gramsPerUnit: 150 },
+  "Dhokla": { unitLabel: "piece", gramsPerUnit: 40 },
+  "Mathri": { unitLabel: "mathri", gramsPerUnit: 15 },
+  "Besan Chilla": { unitLabel: "chilla", gramsPerUnit: 100 },
+  "Moong Dal Chilla": { unitLabel: "chilla", gramsPerUnit: 100 },
+  "Egg": { unitLabel: "egg", gramsPerUnit: 50 },
+  "Banana": { unitLabel: "banana", gramsPerUnit: 120 },
+  "Apple": { unitLabel: "apple", gramsPerUnit: 180 },
+  "Mango": { unitLabel: "mango", gramsPerUnit: 200 },
+  "Orange": { unitLabel: "orange", gramsPerUnit: 150 },
+  "Almond": { unitLabel: "almond", gramsPerUnit: 1.2 },
+  "Cashew": { unitLabel: "cashew", gramsPerUnit: 3 },
+  "Walnut": { unitLabel: "half", gramsPerUnit: 4 },
+  "Dates (dried)": { unitLabel: "date", gramsPerUnit: 24 },
+  "Lassi (sweet)": { unitLabel: "glass", gramsPerUnit: 250 },
+  "Lassi (salted)": { unitLabel: "glass", gramsPerUnit: 250 },
+  "Chaas / Buttermilk": { unitLabel: "glass", gramsPerUnit: 200 },
+  "Milk (full fat)": { unitLabel: "glass", gramsPerUnit: 250 },
+  "Milk (toned)": { unitLabel: "glass", gramsPerUnit: 250 },
+  "Milk (skimmed)": { unitLabel: "glass", gramsPerUnit: 250 },
+  "Toor Dal (cooked)": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Moong Dal (cooked)": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Masoor Dal (cooked)": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Chana Dal (cooked)": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Urad Dal (cooked)": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Dal Fry": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Dal Tadka": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Dal Makhani": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Mixed Veg Curry": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Aloo Gobi": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Aloo Matar": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Palak Paneer": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Shahi Paneer": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Matar Paneer": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Paneer Butter Masala": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Kadai Paneer": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Bhindi / Okra Sabzi": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Cabbage Sabzi": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Baingan Bharta": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Chole / Chana Masala": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Rajma Masala": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Sambhar": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Kadhi": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Kadhi Pakoda": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Steamed Rice": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Jeera Rice": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Curd Rice": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Brown Rice": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Curd / Yogurt": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Greek Yogurt": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Khichdi (dal rice)": { unitLabel: "katori", gramsPerUnit: 200 },
+  "Poha": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Upma": { unitLabel: "katori", gramsPerUnit: 150 },
+  "Sabudana Khichdi": { unitLabel: "katori", gramsPerUnit: 180 },
+  "Bread (white)": { unitLabel: "slice", gramsPerUnit: 30 },
+  "Bread (brown/wheat)": { unitLabel: "slice", gramsPerUnit: 30 },
+  "Bread (multigrain)": { unitLabel: "slice", gramsPerUnit: 30 },
+  "Sourdough Bread": { unitLabel: "slice", gramsPerUnit: 30 },
+  "Paneer (raw)": { unitLabel: "cube", gramsPerUnit: 30 },
+  "Cottage Cheese / Paneer": { unitLabel: "cube", gramsPerUnit: 30 },
+  "Cheese (cheddar)": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Cheese (mozzarella)": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Cream Cheese": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Feta Cheese": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Brie": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Ghee": { unitLabel: "tbsp", gramsPerUnit: 15 },
+  "Butter": { unitLabel: "tbsp", gramsPerUnit: 15 },
+  "Peanut Butter": { unitLabel: "tbsp", gramsPerUnit: 16 },
+  "Almond Butter": { unitLabel: "tbsp", gramsPerUnit: 16 },
+  "Makhana / Fox Nuts": { unitLabel: "handful", gramsPerUnit: 30 },
+  "Makhana (roasted, ghee)": { unitLabel: "handful", gramsPerUnit: 30 },
+  "Peanuts": { unitLabel: "handful", gramsPerUnit: 28 },
+  "Peanuts (roasted)": { unitLabel: "handful", gramsPerUnit: 28 },
+  "Naan": { unitLabel: "naan", gramsPerUnit: 90 },
+  "Garlic Naan": { unitLabel: "naan", gramsPerUnit: 90 },
+  "Butter Naan": { unitLabel: "naan", gramsPerUnit: 90 },
+  "Kulcha": { unitLabel: "kulcha", gramsPerUnit: 90 },
+  "Puri": { unitLabel: "puri", gramsPerUnit: 30 },
+  "Bhatura": { unitLabel: "bhatura", gramsPerUnit: 80 },
+  "Bajra Roti": { unitLabel: "roti", gramsPerUnit: 40 },
+  "Jowar Roti": { unitLabel: "roti", gramsPerUnit: 40 },
+  "Nachni / Ragi Roti": { unitLabel: "roti", gramsPerUnit: 40 },
+  "Makka Roti": { unitLabel: "roti", gramsPerUnit: 45 },
+  "Bhakri": { unitLabel: "bhakri", gramsPerUnit: 45 },
+  "Missi Roti": { unitLabel: "roti", gramsPerUnit: 40 },
+  "Rumali Roti": { unitLabel: "roti", gramsPerUnit: 30 },
+  "Samosa (veg)": { unitLabel: "samosa", gramsPerUnit: 60 },
+  "Kachori": { unitLabel: "kachori", gramsPerUnit: 50 },
+  "Vada Pav": { unitLabel: "piece", gramsPerUnit: 120 },
+  "Sabudana Vada": { unitLabel: "vada", gramsPerUnit: 50 },
+  "Medu Vada": { unitLabel: "vada", gramsPerUnit: 50 },
+  "Gulab Jamun": { unitLabel: "piece", gramsPerUnit: 40 },
+  "Rasgulla": { unitLabel: "piece", gramsPerUnit: 40 },
+  "Ladoo (besan)": { unitLabel: "ladoo", gramsPerUnit: 40 },
+  "Ladoo (motichoor)": { unitLabel: "ladoo", gramsPerUnit: 35 },
+  "Kaju Katli": { unitLabel: "piece", gramsPerUnit: 20 },
+  "Barfi": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Jalebi": { unitLabel: "piece", gramsPerUnit: 30 },
+  "Pani Puri / Gol Gappa": { unitLabel: "piece", gramsPerUnit: 20 },
+  "Sev Puri": { unitLabel: "piece", gramsPerUnit: 30 },
+  "Dahi Puri": { unitLabel: "piece", gramsPerUnit: 30 },
+  "Bhel Puri": { unitLabel: "katori", gramsPerUnit: 100 },
+  "Khakhra": { unitLabel: "piece", gramsPerUnit: 20 },
+  "Fafda": { unitLabel: "piece", gramsPerUnit: 30 },
+  "Paneer Tikka": { unitLabel: "piece", gramsPerUnit: 40 },
+  "Aloo Tikki": { unitLabel: "tikki", gramsPerUnit: 60 },
+  "Pakora / Bhajia": { unitLabel: "piece", gramsPerUnit: 25 },
+  "Fig (fresh)": { unitLabel: "fig", gramsPerUnit: 50 },
+  "Guava": { unitLabel: "guava", gramsPerUnit: 150 },
+  "Pear": { unitLabel: "pear", gramsPerUnit: 180 },
+  "Peach": { unitLabel: "peach", gramsPerUnit: 150 },
+  "Kiwi": { unitLabel: "kiwi", gramsPerUnit: 75 },
+  "Plum": { unitLabel: "plum", gramsPerUnit: 65 },
+  "Appam": { unitLabel: "appam", gramsPerUnit: 80 },
+  "Pesarattu": { unitLabel: "pesarattu", gramsPerUnit: 100 },
+  "Pizza Margherita": { unitLabel: "slice", gramsPerUnit: 100 },
+  "Paneer Tikka Pizza": { unitLabel: "slice", gramsPerUnit: 100 },
+  "Veggie Pizza": { unitLabel: "slice", gramsPerUnit: 100 },
+  "Croissant": { unitLabel: "piece", gramsPerUnit: 60 },
+  "Muffin (blueberry)": { unitLabel: "muffin", gramsPerUnit: 60 },
+  "Chocolate Muffin": { unitLabel: "muffin", gramsPerUnit: 60 },
+  "Cookie (chocolate chip)": { unitLabel: "cookie", gramsPerUnit: 30 },
+  "Brownie": { unitLabel: "piece", gramsPerUnit: 50 },
+  "Waffle": { unitLabel: "waffle", gramsPerUnit: 75 },
+  "Pancake": { unitLabel: "pancake", gramsPerUnit: 75 },
+  "Doughnut": { unitLabel: "doughnut", gramsPerUnit: 60 },
+  "Spring Roll (veg)": { unitLabel: "roll", gramsPerUnit: 60 },
+  "Veg Momos / Dumplings": { unitLabel: "momo", gramsPerUnit: 25 },
+  "Dabeli": { unitLabel: "piece", gramsPerUnit: 100 },
+  "Khandvi": { unitLabel: "piece", gramsPerUnit: 15 },
+  "Handvo": { unitLabel: "piece", gramsPerUnit: 80 },
+};
 
 const FOODS: FoodItem[] = [
   // ===== DALS & LEGUMES (Indian) =====
@@ -725,12 +878,23 @@ export default function NutritionTracker() {
   const [data, setData] = useState<StoredData>(loadData);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [grams, setGrams] = useState("100");
+  const [quantity, setQuantity] = useState("1");
+  const [useGramMode, setUseGramMode] = useState(false);
   const [selected, setSelected] = useState<FoodItem | null>(null);
   const [showGoals, setShowGoals] = useState(false);
   const [editGoals, setEditGoals] = useState<MacroGoals>(data.goals);
 
   useEffect(() => { saveData(data); }, [data]);
+
+  const selectedUnit = selected ? UNIT_MAP[selected.name] : null;
+  const hasUnit = !!selectedUnit;
+
+  // Auto-switch to gram mode for items without unit mappings
+  const effectiveGramMode = !hasUnit || useGramMode;
+
+  const computedGrams = effectiveGramMode
+    ? parseFloat(quantity)
+    : (parseFloat(quantity) || 0) * (selectedUnit?.gramsPerUnit || 0);
 
   const filtered = search.length > 0
     ? FOODS.filter((f) => f.name.toLowerCase().includes(search.toLowerCase())).slice(0, 8)
@@ -740,17 +904,26 @@ export default function NutritionTracker() {
     setSelected(food);
     setSearch(food.name);
     setShowDropdown(false);
+    const unit = UNIT_MAP[food.name];
+    if (unit) {
+      setUseGramMode(false);
+      setQuantity("1");
+    } else {
+      setUseGramMode(true);
+      setQuantity("100");
+    }
   };
 
   const addEntry = () => {
-    if (!selected || !grams) return;
-    const g = parseFloat(grams);
+    if (!selected || !quantity) return;
+    const g = computedGrams;
     if (isNaN(g) || g <= 0) return;
     const entry: LogEntry = { id: Date.now().toString(), food: selected, grams: g };
     setData((prev) => ({ ...prev, log: [...prev.log, entry] }));
     setSearch("");
     setSelected(null);
-    setGrams("100");
+    setQuantity("1");
+    setUseGramMode(false);
   };
 
   const removeEntry = (id: string) => {
@@ -863,37 +1036,65 @@ export default function NutritionTracker() {
           )}
           {showDropdown && filtered.length > 0 && !selected && (
             <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-20 py-1 max-h-48 overflow-y-auto">
-              {filtered.map((f) => (
-                <button
-                  key={f.name}
-                  onClick={() => selectFood(f)}
-                  className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between"
-                >
-                  <span>{f.name}</span>
-                  <span className="text-muted-foreground">{f.calories} cal</span>
-                </button>
-              ))}
+              {filtered.map((f) => {
+                const unit = UNIT_MAP[f.name];
+                return (
+                  <button
+                    key={f.name}
+                    onClick={() => selectFood(f)}
+                    className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between"
+                  >
+                    <span>{f.name} {unit && <span className="text-muted-foreground text-[10px]">per {unit.unitLabel} ≈{unit.gramsPerUnit}g</span>}</span>
+                    <span className="text-muted-foreground">{f.calories} cal</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
-        <div className="flex gap-2">
-          <div className="relative">
-            <input
-              type="number"
-              value={grams}
-              onChange={(e) => setGrams(e.target.value)}
-              className="w-20 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
-              min="1"
-            />
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">g</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex gap-2 items-center">
+            <div className="relative">
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                placeholder={effectiveGramMode ? "grams" : "How many?"}
+                className="w-24 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40"
+                min="0.1"
+                step={effectiveGramMode ? "1" : "0.5"}
+              />
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                {effectiveGramMode ? "g" : "×"}
+              </span>
+            </div>
+            <button
+              onClick={addEntry}
+              disabled={!selected}
+              className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <button
-            onClick={addEntry}
-            disabled={!selected}
-            className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-          </button>
+          {/* Unit toggle & conversion info */}
+          {selected && hasUnit && (
+            <div className="flex flex-col gap-0.5">
+              <button
+                onClick={() => {
+                  setUseGramMode(!useGramMode);
+                  setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100));
+                }}
+                className="text-[10px] text-accent hover:underline self-start"
+              >
+                {effectiveGramMode ? `Use ${selectedUnit!.unitLabel} count` : "Enter grams instead"}
+              </button>
+              {!effectiveGramMode && quantity && parseFloat(quantity) > 0 && (
+                <span className="text-[10px] text-muted-foreground">
+                  {quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
