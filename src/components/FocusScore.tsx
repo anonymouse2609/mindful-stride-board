@@ -180,10 +180,10 @@ function getVerdict(score: number): string {
 }
 
 function getBarColor(score: number): string {
-  if (score >= 81) return "hsl(var(--nutrition-accent))";
-  if (score >= 61) return "hsl(var(--goals-accent))";
+  if (score >= 81) return "hsl(160, 60%, 45%)";
+  if (score >= 61) return "hsl(217, 91%, 60%)";
   if (score >= 41) return "hsl(38, 90%, 55%)";
-  return "hsl(var(--destructive))";
+  return "hsl(0, 60%, 50%)";
 }
 
 // ===== COMPONENT =====
