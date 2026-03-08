@@ -90,12 +90,12 @@ export default function HabitsTracker() {
         <table className="w-full text-sm min-w-[340px]">
           <thead>
             <tr>
-              <th className="text-left text-muted-foreground font-normal pb-3 pr-3 min-w-[100px] sm:min-w-[140px]"></th>
+              <th className="text-left font-normal pb-3 pr-3 min-w-[100px] sm:min-w-[140px]"></th>
               {DAYS.map((d, i) => (
                 <th
                   key={i}
-                  className={`text-center font-medium pb-3 px-1 ${
-                    i === todayIdx ? "text-habits" : "text-muted-foreground"
+                  className={`text-center font-bold pb-3 px-1 ${
+                    i === todayIdx ? "text-habits" : "text-white/70"
                   }`}
                 >
                   {d}
