@@ -99,8 +99,8 @@ export default function TodoList() {
         {sorted.length === 0 && (
           <div className="text-center py-8">
             <p className="text-3xl mb-2">📝</p>
-            <p className="text-[15px] text-muted-foreground">No tasks yet</p>
-            <p className="text-sm text-muted-foreground mt-1">Add your first task above</p>
+            <p className="text-[15px] text-white/70">No tasks yet</p>
+            <p className="text-sm text-white/60 mt-1">Add your first task above</p>
           </div>
         )}
         {sorted.map((todo) => (
