@@ -259,16 +259,16 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
 
       {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300" style={{ background: "hsl(240, 15%, 5%)" }}>
+        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 section-chatbot" style={{ background: "linear-gradient(180deg, #7c3aed 0%, #2e1065 30%, #0d0d14 100%)" }}>
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ background: "hsla(260, 25%, 12%, 0.6)" }}>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-chatbotAccent flex items-center justify-center">
+              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
-                <h3 className="text-xs font-semibold section-title-chatbot">Growth AI</h3>
-                <p className="text-[9px] text-muted-foreground">Your personal assistant</p>
+                <h3 className="text-xs font-semibold text-white">Growth AI</h3>
+                <p className="text-[9px] text-white/60">Your personal assistant</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
