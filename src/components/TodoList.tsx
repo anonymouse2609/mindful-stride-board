@@ -114,8 +114,8 @@ export default function TodoList() {
               onClick={() => toggle(todo.id)}
               className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all ${
                 todo.done
-                  ? "bg-accent/80 border-accent animate-check-pop"
-                  : "border-muted-foreground/30 hover:border-accent"
+                  ? "bg-white border-white animate-check-pop"
+                  : "border-white/50 hover:border-white/80"
               }`}
             >
               {todo.done && <Check className="w-3.5 h-3.5 text-accent-foreground" />}
