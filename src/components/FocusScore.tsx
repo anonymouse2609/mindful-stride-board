@@ -324,14 +324,15 @@ const FocusScore = () => {
     <>
       {/* Main Score Ring */}
       <div
-        className="section-card section-focus p-6 sm:p-8 cursor-pointer group"
+        className="section-card section-focus cursor-pointer group"
         onClick={() => setShowBreakdown(true)}
-        style={{ "--section-accent": "hsl(var(--goals-accent))", "--section-glow": "hsla(217, 91%, 60%, 0.12)" } as React.CSSProperties}
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5 text-goals" />
-            <h2 className="text-[20px] font-bold text-foreground">Focus Score</h2>
+            <div className="w-8 h-8 rounded-xl bg-focus/10 flex items-center justify-center">
+              <Zap className="w-[18px] h-[18px] text-focus" />
+            </div>
+            <h2 className="text-[18px] font-semibold section-title-focus">Focus Score</h2>
           </div>
           {streak > 0 && (
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/60">
