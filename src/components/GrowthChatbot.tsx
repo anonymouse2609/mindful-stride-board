@@ -123,9 +123,9 @@ const RULES: BotRule[] = [
   { keywords: ["add habit", "new habit", "create habit"],
     response: () => ({ text: "✏️ To add a new habit, go to the **Habits Tracker** (right column) and look for the edit/add option. You can customize your daily habit list there!\n\nDefault habits include water, exercise, study, sleep, and meditation.", quickReplies: ["Show habits", "How am I doing today?"] }) },
 
-  // How does Pomodoro work
-  { keywords: ["how does pomodoro", "what is pomodoro", "pomodoro technique", "explain pomodoro"],
-    response: () => ({ text: "🍅 **The Pomodoro Technique:**\n• Work for 25 minutes with full focus\n• Take a 5-minute break\n• Repeat! Each cycle = 1 session\n\nIt helps you stay productive without burning out. The timer is at the top-left of your dashboard.", quickReplies: ["Start Pomodoro", "How am I doing today?"] }) },
+  // How does Study Timer work
+  { keywords: ["how does pomodoro", "what is pomodoro", "pomodoro technique", "explain pomodoro", "how does study timer", "how does the study", "explain study timer"],
+    response: () => ({ text: "📚 **The Subject Study Timer:**\n1. Add subjects (Maths, Physics, etc.) with color tags and weekly hour goals\n2. Select a subject from the dropdown\n3. Choose mode: **🍅 Pomodoro** (25min work + 5min break) or **⏱️ Free Study** (runs until you stop)\n4. Sessions are logged automatically with subject, duration, and energy level\n5. Check the **Stats** tab for weekly progress bars, pie charts, streak, and insights\n6. The **History** tab shows all sessions with filters\n\nWeekly hours reset every Monday but all-time stats are preserved!", quickReplies: ["Start studying", "How am I doing today?"] }) },
 
   // Motivate me
   { keywords: ["motivate", "motivation", "inspire", "i'm lazy", "demotivated", "unmotivated", "i need motivation"],
