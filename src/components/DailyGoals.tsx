@@ -32,31 +32,33 @@ export default function DailyGoals() {
   const filledCount = goals.filter((g) => g.trim()).length;
 
   return (
-    <div className="glass-card p-4 sm:p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.15s forwards", opacity: 0 }}>
+    <div className="section-card section-goals p-5 sm:p-6 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.15s forwards", opacity: 0 }}>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-foreground flex items-center gap-1.5">
-          <Target className="w-4 h-4 text-muted-foreground" />
+        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-goals/10 flex items-center justify-center">
+            <Target className="w-[18px] h-[18px] text-goals" />
+          </div>
           Today's Goals
         </h2>
-        <span className="text-[11px] font-mono text-muted-foreground">{filledCount}/3</span>
+        <span className="text-sm font-mono text-muted-foreground">{filledCount}/3</span>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         {goals.map((goal, i) => (
-          <div key={i} className="flex items-center gap-2.5">
-            <span className="text-accent text-xs font-medium w-4 text-center shrink-0">{i + 1}</span>
+          <div key={i} className="flex items-center gap-3">
+            <span className="text-goals text-sm font-semibold w-5 text-center shrink-0">{i + 1}</span>
             <input
               value={goal}
               onChange={(e) => updateGoal(i, e.target.value)}
               placeholder={`Goal ${i + 1}`}
-              className="flex-1 min-w-0 bg-transparent border-b border-border/60 px-1 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-accent/50 transition-colors"
+              className="flex-1 min-w-0 bg-transparent border-b border-border/60 px-1 py-2 text-[15px] text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-goals/50 transition-colors"
             />
           </div>
         ))}
       </div>
 
       {filledCount === 3 && (
-        <p className="text-[11px] text-accent text-center animate-fade-in">
+        <p className="text-sm text-goals text-center animate-fade-in font-medium">
           All goals set — make it happen ✨
         </p>
       )}

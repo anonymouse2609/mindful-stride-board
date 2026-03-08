@@ -820,15 +820,15 @@ function MacroBar({ label, current, goal, color }: { label: string; current: num
   const pct = Math.min((current / goal) * 100, 100);
   const over = current > goal;
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-[11px]">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
-        <span className={over ? "text-destructive font-medium" : "text-foreground"}>
+        <span className={over ? "text-destructive font-medium" : "text-foreground font-medium"}>
           {Math.round(current)}
-          <span className="text-muted-foreground">/{goal}{label === "Calories" ? "" : "g"}</span>
+          <span className="text-muted-foreground font-normal">/{goal}{label === "Calories" ? "" : "g"}</span>
         </span>
       </div>
-      <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+      <div className="w-full h-3 rounded-full bg-secondary overflow-hidden">
         <div className={`h-full rounded-full transition-all duration-500 ${over ? "bg-destructive" : ""}`} style={{ width: `${pct}%`, backgroundColor: over ? undefined : color }} />
       </div>
     </div>
@@ -842,8 +842,8 @@ function MacroPieChart({ protein, carbs, fat }: { protein: number; carbs: number
   const total = proteinCal + carbsCal + fatCal;
   if (total === 0) return (
     <div className="flex items-center justify-center">
-      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
-        <span className="text-[10px] text-muted-foreground">No data</span>
+      <div className="w-24 h-24 rounded-full border-2 border-dashed border-border flex items-center justify-center">
+        <span className="text-sm text-muted-foreground">No data</span>
       </div>
     </div>
   );
@@ -852,11 +852,11 @@ function MacroPieChart({ protein, carbs, fat }: { protein: number; carbs: number
   const segments = [{ pct: pPct, color: PIE_COLORS.protein }, { pct: cPct, color: PIE_COLORS.carbs }, { pct: fPct, color: PIE_COLORS.fat }];
   let offset = 0;
   return (
-    <div className="flex flex-col items-center gap-2">
-      <svg viewBox="0 0 100 100" className="w-20 h-20 sm:w-24 sm:h-24 -rotate-90">
+    <div className="flex flex-col items-center gap-2.5">
+      <svg viewBox="0 0 100 100" className="w-24 h-24 -rotate-90">
         {segments.map((seg, i) => { const dash = (seg.pct / 100) * circumference; const gap = circumference - dash; const so = -offset; offset += dash; return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={seg.color} strokeWidth="12" strokeDasharray={`${dash} ${gap}`} strokeDashoffset={so} className="transition-all duration-500" />; })}
       </svg>
-      <div className="flex gap-3 text-[10px]">
+      <div className="flex gap-4 text-sm">
         <span style={{ color: PIE_COLORS.protein }}>● P {Math.round(pPct)}%</span>
         <span style={{ color: PIE_COLORS.carbs }}>● C {Math.round(cPct)}%</span>
         <span style={{ color: PIE_COLORS.fat }}>● F {Math.round(fPct)}%</span>
@@ -870,10 +870,10 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto p-5 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto p-6 flex flex-col gap-5" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+          <h3 className="text-[17px] font-semibold text-foreground">{title}</h3>
+          <button onClick={onClose} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
         </div>
         {children}
       </div>
@@ -1072,23 +1072,28 @@ export default function NutritionTracker() {
   const totalFoodCount = FOODS.length + customFoods.length + recipes.length;
 
   return (
-    <div className="glass-card p-4 sm:p-5 flex flex-col gap-4" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: 0 }}>
+    <div className="section-card section-nutrition p-5 sm:p-6 flex flex-col gap-5" style={{ animation: "fade-in 0.4s ease-out 0.35s forwards", opacity: "0" } as React.CSSProperties}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-foreground">🥗 Nutrition Tracker <span className="text-[10px] text-muted-foreground font-normal ml-1">{totalFoodCount} foods</span></h2>
+        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-nutrition/10 flex items-center justify-center">
+            <span className="text-lg">🥗</span>
+          </div>
+          Nutrition Tracker <span className="text-sm text-muted-foreground font-normal ml-1">{totalFoodCount} foods</span>
+        </h2>
         <div className="flex items-center gap-1.5">
-          <button onClick={() => openRecipeModal()} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Build a Recipe">
-            <ChefHat className="w-3.5 h-3.5" />
+          <button onClick={() => openRecipeModal()} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20 transition-colors" title="Build a Recipe">
+            <ChefHat className="w-[18px] h-[18px]" />
           </button>
-          <button onClick={() => openCustomModal()} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Create Custom Food">
-            <Plus className="w-3.5 h-3.5" />
+          <button onClick={() => openCustomModal()} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20 transition-colors" title="Create Custom Food">
+            <Plus className="w-[18px] h-[18px]" />
           </button>
-          <button onClick={() => { setShowGoals(!showGoals); setEditGoals(data.goals); }} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Set macro goals">
-            <Settings2 className="w-3.5 h-3.5" />
+          <button onClick={() => { setShowGoals(!showGoals); setEditGoals(data.goals); }} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-secondary/50 text-muted-foreground hover:text-foreground transition-colors" title="Set macro goals">
+            <Settings2 className="w-[18px] h-[18px]" />
           </button>
           {data.log.length > 0 && (
-            <button onClick={resetLog} className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary/60 transition-colors" title="Reset daily log">
-              <RotateCcw className="w-3.5 h-3.5" />
+            <button onClick={resetLog} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-secondary/50 text-muted-foreground hover:text-destructive transition-colors" title="Reset daily log">
+              <RotateCcw className="w-[18px] h-[18px]" />
             </button>
           )}
         </div>
@@ -1096,14 +1101,14 @@ export default function NutritionTracker() {
 
       {/* My Foods / My Recipes links */}
       {(customFoods.length > 0 || recipes.length > 0) && (
-        <div className="flex gap-3 text-[10px]">
+        <div className="flex gap-4 text-sm">
           {customFoods.length > 0 && (
-            <button onClick={() => setShowMyFoods(!showMyFoods)} className="text-accent hover:underline">
+            <button onClick={() => setShowMyFoods(!showMyFoods)} className="text-nutrition hover:underline font-medium">
               My Foods ({customFoods.length})
             </button>
           )}
           {recipes.length > 0 && (
-            <button onClick={() => setShowMyRecipes(!showMyRecipes)} className="text-accent hover:underline">
+            <button onClick={() => setShowMyRecipes(!showMyRecipes)} className="text-nutrition hover:underline font-medium">
               My Recipes ({recipes.length})
             </button>
           )}
@@ -1112,18 +1117,18 @@ export default function NutritionTracker() {
 
       {/* My Foods list */}
       {showMyFoods && (
-        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-1.5 animate-fade-in">
-          <span className="text-[11px] text-muted-foreground font-medium mb-1">My Custom Foods</span>
+        <div className="bg-nutrition/5 border border-nutrition/10 rounded-xl p-4 flex flex-col gap-2 animate-fade-in">
+          <span className="text-sm text-nutrition font-medium mb-1">My Custom Foods</span>
           {customFoods.map((f) => (
-            <div key={f.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/60">
+            <div key={f.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40">
               <div>
-                <span className="text-xs text-foreground">{f.name}</span>
-                {f.unitLabel && <span className="text-[10px] text-muted-foreground ml-1.5">per {f.unitLabel} ≈{f.gramsPerUnit}g</span>}
-                <div className="text-[10px] text-muted-foreground">{f.calories}cal · {f.protein}p · {f.carbs}c · {f.fat}f</div>
+                <span className="text-[15px] text-foreground">{f.name}</span>
+                {f.unitLabel && <span className="text-sm text-muted-foreground ml-2">per {f.unitLabel} ≈{f.gramsPerUnit}g</span>}
+                <div className="text-sm text-muted-foreground">{f.calories}cal · {f.protein}p · {f.carbs}c · {f.fat}f</div>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => openCustomModal(f)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
-                <button onClick={() => deleteCustomFood(f.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                <button onClick={() => openCustomModal(f)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => deleteCustomFood(f.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
               </div>
             </div>
           ))}
@@ -1132,18 +1137,18 @@ export default function NutritionTracker() {
 
       {/* My Recipes list */}
       {showMyRecipes && (
-        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-1.5 animate-fade-in">
-          <span className="text-[11px] text-muted-foreground font-medium mb-1">My Recipes</span>
+        <div className="bg-nutrition/5 border border-nutrition/10 rounded-xl p-4 flex flex-col gap-2 animate-fade-in">
+          <span className="text-sm text-nutrition font-medium mb-1">My Recipes</span>
           {recipes.map((r) => (
-            <div key={r.id} className="flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-secondary/60">
+            <div key={r.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40">
               <div>
-                <span className="text-xs text-foreground">🍳 {r.name}</span>
-                <span className="text-[10px] text-muted-foreground ml-1.5">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
-                <div className="text-[10px] text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
+                <span className="text-[15px] text-foreground">🍳 {r.name}</span>
+                <span className="text-sm text-muted-foreground ml-2">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
+                <div className="text-sm text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => openRecipeModal(r)} className="p-1 text-muted-foreground hover:text-foreground"><Edit2 className="w-3 h-3" /></button>
-                <button onClick={() => deleteRecipe(r.id)} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 className="w-3 h-3" /></button>
+                <button onClick={() => openRecipeModal(r)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
+                <button onClick={() => deleteRecipe(r.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
               </div>
             </div>
           ))}
@@ -1152,73 +1157,75 @@ export default function NutritionTracker() {
 
       {/* Goals editor */}
       {showGoals && (
-        <div className="bg-secondary/40 rounded-lg p-3 flex flex-col gap-2 animate-fade-in">
-          <span className="text-[11px] text-muted-foreground font-medium">Daily Macro Goals</span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="bg-secondary/40 rounded-xl p-4 flex flex-col gap-3 animate-fade-in">
+          <span className="text-sm text-muted-foreground font-medium">Daily Macro Goals</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {(["calories", "protein", "carbs", "fat"] as const).map((key) => (
-              <div key={key} className="flex flex-col gap-1">
-                <label className="text-[10px] text-muted-foreground capitalize">{key}</label>
-                <input type="number" value={editGoals[key]} onChange={(e) => setEditGoals({ ...editGoals, [key]: Number(e.target.value) })} className="bg-secondary border border-border/60 rounded-md px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40 w-full" />
+              <div key={key} className="flex flex-col gap-1.5">
+                <label className="text-sm text-muted-foreground capitalize">{key}</label>
+                <input type="number" value={editGoals[key]} onChange={(e) => setEditGoals({ ...editGoals, [key]: Number(e.target.value) })} className="input-styled" />
               </div>
             ))}
           </div>
-          <button onClick={handleSaveGoals} className="self-end px-3 py-1 rounded-md bg-accent text-accent-foreground text-[11px] font-medium hover:opacity-90 transition-opacity">Save Goals</button>
+          <button onClick={handleSaveGoals} className="self-end btn-primary bg-nutrition text-white hover:opacity-90">Save Goals</button>
         </div>
       )}
 
       {/* Macro bars + Pie chart */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start">
-        <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2 w-full">
-          <MacroBar label="Calories" current={totals.calories} goal={data.goals.calories} color="hsl(var(--accent))" />
-          <MacroBar label="Protein" current={totals.protein} goal={data.goals.protein} color="hsl(200, 60%, 50%)" />
-          <MacroBar label="Carbs" current={totals.carbs} goal={data.goals.carbs} color="hsl(38, 70%, 55%)" />
-          <MacroBar label="Fat" current={totals.fat} goal={data.goals.fat} color="hsl(0, 60%, 55%)" />
-          <div className="col-span-2 text-[11px] text-muted-foreground">Fiber: <span className="text-foreground font-medium">{Math.round(totals.fiber)}g</span></div>
+      <div className="flex flex-col sm:flex-row gap-5 items-start">
+        <div className="flex-1 grid grid-cols-2 gap-x-5 gap-y-3 w-full">
+          <MacroBar label="Calories" current={totals.calories} goal={data.goals.calories} color="hsl(25, 95%, 53%)" />
+          <MacroBar label="Protein" current={totals.protein} goal={data.goals.protein} color="hsl(217, 91%, 60%)" />
+          <MacroBar label="Carbs" current={totals.carbs} goal={data.goals.carbs} color="hsl(45, 80%, 50%)" />
+          <MacroBar label="Fat" current={totals.fat} goal={data.goals.fat} color="hsl(350, 89%, 60%)" />
+          <div className="col-span-2">
+            <MacroBar label="Fiber" current={totals.fiber} goal={30} color="hsl(160, 60%, 45%)" />
+          </div>
         </div>
         <MacroPieChart protein={totals.protein} carbs={totals.carbs} fat={totals.fat} />
       </div>
 
       {/* Search + add */}
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <input value={search} onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelected(null); }} onFocus={() => setShowDropdown(true)} placeholder="Search food..." className="w-full bg-secondary/50 border border-border/60 rounded-lg pl-8 pr-8 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" />
-          {search && (<button onClick={() => { setSearch(""); setSelected(null); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="w-3.5 h-3.5" /></button>)}
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input value={search} onChange={(e) => { setSearch(e.target.value); setShowDropdown(true); setSelected(null); }} onFocus={() => setShowDropdown(true)} placeholder="Search food..." className="input-styled w-full pl-12 pr-10" />
+          {search && (<button onClick={() => { setSearch(""); setSelected(null); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>)}
           {showDropdown && filtered.length > 0 && !selected && (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-20 py-1 max-h-48 overflow-y-auto">
+            <div className="absolute left-0 right-0 top-full mt-1 bg-card border border-border rounded-xl shadow-xl z-20 py-1 max-h-64 overflow-y-auto">
               {filtered.map((f: any) => {
                 const unit = dynamicUnitMap[f.name];
                 return (
-                  <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-3 py-2 text-xs text-foreground hover:bg-secondary/60 transition-colors flex justify-between items-center gap-2">
-                    <span className="flex items-center gap-1.5 min-w-0">
+                  <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-4 py-3 text-[15px] text-foreground hover:bg-nutrition/5 transition-colors flex justify-between items-center gap-3 min-h-[48px]">
+                    <span className="flex items-center gap-2 min-w-0">
                       <span className="truncate">{f.name}</span>
-                      {f.tag && <span className={`shrink-0 text-[9px] px-1.5 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"}`}>{f.tag}</span>}
-                      {unit && <span className="text-muted-foreground text-[10px] shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
+                      {f.tag && <span className={`shrink-0 text-sm px-2 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-nutrition/15 text-nutrition" : "bg-primary/15 text-primary"}`}>{f.tag}</span>}
+                      {unit && <span className="text-muted-foreground text-sm shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
                     </span>
-                    <span className="text-muted-foreground shrink-0">{f.calories} cal</span>
+                    <span className="text-muted-foreground shrink-0 text-sm">{f.calories} cal</span>
                   </button>
                 );
               })}
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1.5">
           <div className="flex gap-2 items-center">
             <div className="relative">
-              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder={effectiveGramMode ? "grams" : "How many?"} className="w-24 bg-secondary/50 border border-border/60 rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-accent/40" min="0.1" step={effectiveGramMode ? "1" : "0.5"} />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">{effectiveGramMode ? "g" : "×"}</span>
+              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder={effectiveGramMode ? "grams" : "How many?"} className="input-styled w-28 pr-8" min="0.1" step={effectiveGramMode ? "1" : "0.5"} />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{effectiveGramMode ? "g" : "×"}</span>
             </div>
-            <button onClick={addEntry} disabled={!selected} className="p-2 rounded-lg bg-accent text-accent-foreground hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
-              <Plus className="w-3.5 h-3.5" />
+            <button onClick={addEntry} disabled={!selected} className="btn-primary bg-nutrition text-white hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed shrink-0 px-6">
+              <Plus className="w-5 h-5" />
             </button>
           </div>
           {selected && hasUnit && (
             <div className="flex flex-col gap-0.5">
-              <button onClick={() => { setUseGramMode(!useGramMode); setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100)); }} className="text-[10px] text-accent hover:underline self-start">
+              <button onClick={() => { setUseGramMode(!useGramMode); setQuantity(useGramMode ? "1" : String(Math.round(computedGrams) || 100)); }} className="text-sm text-nutrition hover:underline self-start">
                 {effectiveGramMode ? `Use ${selectedUnit!.unitLabel} count` : "Enter grams instead"}
               </button>
               {!effectiveGramMode && quantity && parseFloat(quantity) > 0 && (
-                <span className="text-[10px] text-muted-foreground">{quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g</span>
+                <span className="text-sm text-muted-foreground">{quantity} {selectedUnit!.unitLabel}{parseFloat(quantity) !== 1 ? "s" : ""} = {Math.round(computedGrams)}g</span>
               )}
             </div>
           )}
@@ -1227,22 +1234,22 @@ export default function NutritionTracker() {
 
       {/* Food log */}
       {data.log.length > 0 && (
-        <div className="flex flex-col gap-1 max-h-48 overflow-y-auto -mx-1 px-1">
+        <div className="flex flex-col gap-1.5 max-h-56 overflow-y-auto -mx-1 px-1">
           {data.log.map((entry) => {
             const m = entry.grams / 100;
             return (
-              <div key={entry.id} className="group flex items-center gap-2 px-2 sm:px-3 py-2 rounded-lg hover:bg-secondary/40 transition-colors">
+              <div key={entry.id} className="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-secondary/40 transition-colors">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-1.5">
-                    <span className="text-xs text-foreground truncate">{entry.food.name}</span>
-                    <span className="text-[10px] text-muted-foreground shrink-0">{Math.round(entry.grams)}g</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[15px] text-foreground truncate">{entry.food.name}</span>
+                    <span className="text-sm text-muted-foreground shrink-0">{Math.round(entry.grams)}g</span>
                   </div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">
+                  <div className="text-sm text-muted-foreground mt-0.5">
                     {Math.round(entry.food.calories * m)} cal · {Math.round(entry.food.protein * m)}p · {Math.round(entry.food.carbs * m)}c · {Math.round(entry.food.fat * m)}f
                   </div>
                 </div>
                 <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
-                  <Trash2 className="w-3 h-3" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             );
@@ -1250,7 +1257,13 @@ export default function NutritionTracker() {
         </div>
       )}
 
-      {data.log.length === 0 && (<p className="text-[11px] text-muted-foreground text-center py-3">Search and add foods to start tracking</p>)}
+      {data.log.length === 0 && (
+        <div className="text-center py-6">
+          <p className="text-3xl mb-2">🍽️</p>
+          <p className="text-[15px] text-muted-foreground">No food logged yet</p>
+          <p className="text-sm text-muted-foreground/60 mt-1">Search and add foods to start tracking</p>
+        </div>
+      )}
 
       {/* Custom Food Modal */}
       <Modal open={showCustomModal} onClose={() => setShowCustomModal(false)} title={editingCustom ? "Edit Custom Food" : "Create Custom Food"}>

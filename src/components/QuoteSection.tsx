@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const quotes = [
   { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
@@ -31,11 +31,11 @@ export default function QuoteSection() {
   const [quote] = useState(getDailyQuote);
 
   return (
-    <div className="text-center py-2" style={{ animation: "fade-in 0.4s ease-out forwards" }}>
-      <p className="text-sm text-muted-foreground italic">
+    <div className="text-center py-3" style={{ animation: "fade-in 0.4s ease-out forwards" }}>
+      <p className="text-[15px] text-muted-foreground italic leading-relaxed">
         "{quote.text}"
       </p>
-      <p className="mt-1 text-xs text-muted-foreground/60">— {quote.author}</p>
+      <p className="mt-1.5 text-sm text-muted-foreground/50">— {quote.author}</p>
     </div>
   );
 }

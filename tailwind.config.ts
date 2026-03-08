@@ -56,6 +56,13 @@ export default {
         high: "hsl(var(--high))",
         medium: "hsl(var(--medium))",
         low: "hsl(var(--low))",
+        // Section accent colors
+        study: "hsl(var(--study-accent))",
+        nutrition: "hsl(var(--nutrition-accent))",
+        habits: "hsl(var(--habits-accent))",
+        goals: "hsl(var(--goals-accent))",
+        mood: "hsl(var(--mood-accent))",
+        chatbotAccent: "hsl(var(--chatbot-accent))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -87,8 +94,12 @@ export default {
         },
         "check-pop": {
           "0%": { transform: "scale(1)" },
-          "50%": { transform: "scale(1.15)" },
+          "50%": { transform: "scale(1.2)" },
           "100%": { transform: "scale(1)" },
+        },
+        "page-enter": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
       },
       animation: {
@@ -96,6 +107,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.4s ease-out forwards",
         "check-pop": "check-pop 0.25s ease-out",
+        "page-enter": "page-enter 0.2s ease-out",
       },
     },
   },

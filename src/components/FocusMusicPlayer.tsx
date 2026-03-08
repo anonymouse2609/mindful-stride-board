@@ -15,27 +15,29 @@ export default function FocusMusicPlayer() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="glass-card p-4 sm:p-5 flex flex-col gap-3" style={{ animation: "fade-in 0.4s ease-out 0.25s forwards", opacity: 0 }}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-foreground flex items-center gap-2">
-          <Music className="w-4 h-4 text-muted-foreground" />
+    <div className="section-card p-5 sm:p-6 flex flex-col gap-4" style={{ "--section-accent": "hsl(var(--accent))", "--section-glow": "hsla(38, 70%, 55%, 0.12)" } as React.CSSProperties & Record<string, string>}>
+      <div className="flex items-center justify-between" style={{ animation: "fade-in 0.4s ease-out 0.25s forwards", opacity: 0 }}>
+        <h2 className="text-[17px] font-semibold text-foreground flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-accent/10 flex items-center justify-center">
+            <Music className="w-[18px] h-[18px] text-accent" />
+          </div>
           Focus Music
         </h2>
         <div className="relative">
           <button
             onClick={() => setOpen(!open)}
-            className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground hover:text-foreground transition-colors bg-secondary/60 px-2 sm:px-2.5 py-1.5 rounded-lg"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-secondary/60 px-3 py-2 rounded-xl min-h-[44px]"
           >
             {station.label}
-            <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform ${open ? "rotate-180" : ""}`} />
           </button>
           {open && (
-            <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-xl z-10 py-1 min-w-[140px]">
+            <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-xl shadow-xl z-10 py-1 min-w-[160px]">
               {stations.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => { setStation(s); setOpen(false); setIsPlaying(true); }}
-                  className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                  className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
                     s.id === station.id ? "text-accent" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
@@ -50,13 +52,13 @@ export default function FocusMusicPlayer() {
       {!isPlaying ? (
         <button
           onClick={() => setIsPlaying(true)}
-          className="w-full py-6 sm:py-8 rounded-lg bg-secondary/40 border border-border/40 text-muted-foreground text-xs hover:text-foreground hover:bg-secondary/60 transition-all flex flex-col items-center gap-2"
+          className="w-full py-8 sm:py-10 rounded-xl bg-secondary/40 border border-border/40 text-muted-foreground text-[15px] hover:text-foreground hover:bg-secondary/60 transition-all flex flex-col items-center gap-3 min-h-[44px]"
         >
-          <Music className="w-5 h-5" />
+          <Music className="w-6 h-6" />
           Click to start {station.label}
         </button>
       ) : (
-        <div className="relative w-full rounded-lg overflow-hidden bg-secondary/40" style={{ aspectRatio: "16/9" }}>
+        <div className="relative w-full rounded-xl overflow-hidden bg-secondary/40" style={{ aspectRatio: "16/9" }}>
           <iframe
             src={`https://www.youtube.com/embed/${station.videoId}?autoplay=1&loop=1`}
             allow="autoplay; encrypted-media"
