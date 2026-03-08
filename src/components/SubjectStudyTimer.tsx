@@ -193,8 +193,8 @@ function CelebrationOverlay({ show }: { show: boolean }) {
   return (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 animate-fade-in">
       <div className="text-center animate-bounce">
-        <div className="text-3xl mb-1">🎉</div>
-        <div className="text-xs font-semibold text-foreground">Session Complete!</div>
+        <div className="text-5xl mb-2">🎉</div>
+        <div className="text-[15px] font-semibold text-foreground">Session Complete!</div>
       </div>
     </div>
   );
