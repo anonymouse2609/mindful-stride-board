@@ -144,10 +144,10 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto p-5 flex flex-col gap-4" onClick={e => e.stopPropagation()}>
+      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto p-6 flex flex-col gap-5" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+          <h3 className="text-[17px] font-semibold text-foreground">{title}</h3>
+          <button onClick={onClose} className="icon-btn text-muted-foreground hover:text-foreground w-9 h-9 min-w-0 min-h-0"><X className="w-5 h-5" /></button>
         </div>
         {children}
       </div>
