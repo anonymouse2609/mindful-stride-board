@@ -820,15 +820,15 @@ function MacroBar({ label, current, goal, color }: { label: string; current: num
   const pct = Math.min((current / goal) * 100, 100);
   const over = current > goal;
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between text-[11px]">
+    <div className="flex flex-col gap-1.5">
+      <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
-        <span className={over ? "text-destructive font-medium" : "text-foreground"}>
+        <span className={over ? "text-destructive font-medium" : "text-foreground font-medium"}>
           {Math.round(current)}
-          <span className="text-muted-foreground">/{goal}{label === "Calories" ? "" : "g"}</span>
+          <span className="text-muted-foreground font-normal">/{goal}{label === "Calories" ? "" : "g"}</span>
         </span>
       </div>
-      <div className="w-full h-1.5 rounded-full bg-secondary overflow-hidden">
+      <div className="w-full h-3 rounded-full bg-secondary overflow-hidden">
         <div className={`h-full rounded-full transition-all duration-500 ${over ? "bg-destructive" : ""}`} style={{ width: `${pct}%`, backgroundColor: over ? undefined : color }} />
       </div>
     </div>
