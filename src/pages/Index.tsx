@@ -43,6 +43,9 @@ const Index = () => {
           </div>
         </div>
 
+        {/* Nutrition Tracker */}
+        <NutritionTracker />
+
         {/* Weekly Progress */}
         <WeeklyProgress />
 
