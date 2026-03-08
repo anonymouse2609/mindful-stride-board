@@ -119,32 +119,17 @@
   }
 
   .section-card {
-    background: hsl(var(--card));
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: var(--radius);
+    border: 1px solid var(--section-border, rgba(255, 255, 255, 0.1));
+    border-radius: 20px;
     transition: all 0.2s ease;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     padding: 24px;
-  }
-
-  @media (max-width: 640px) {
-    .section-card {
-      padding: 16px;
-    }
+    color: #f1f5f9;
   }
 
   .section-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--section-accent);
-    border-radius: var(--radius) var(--radius) 0 0;
-    z-index: 1;
+    display: none;
   }
 
   /* Glow orb pseudo-element */
@@ -163,9 +148,9 @@
   }
 
   .section-card:hover {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 25px var(--section-glow);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--section-hover-border, rgba(255, 255, 255, 0.2));
     transform: translateY(-2px);
+    box-shadow: 0 0 30px var(--section-glow, transparent);
   }
 
   .text-gradient {
