@@ -613,42 +613,46 @@ export default function SubjectStudyTimer() {
 
       {/* ===== HISTORY TAB ===== */}
       {activeTab === "history" && (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <select value={historyFilter} onChange={e => setHistoryFilter(e.target.value)} className="flex-1 bg-secondary/50 border border-border/60 rounded-lg px-3 py-1.5 text-xs text-foreground focus:outline-none">
+            <select value={historyFilter} onChange={e => setHistoryFilter(e.target.value)} className="input-styled flex-1">
               <option value="">All Subjects</option>
               {data.subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <button onClick={() => { setManualSession({ subjectId: data.subjects[0]?.id || "", date: todayKey(), startTime: "09:00", durationMinutes: "25" }); setShowManualModal(true); }} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors" title="Add manual session">
-              <Plus className="w-3.5 h-3.5" />
+            <button onClick={() => { setManualSession({ subjectId: data.subjects[0]?.id || "", date: todayKey(), startTime: "09:00", durationMinutes: "25" }); setShowManualModal(true); }} className="icon-btn bg-study/10 text-study hover:bg-study/20" title="Add manual session">
+              <Plus className="w-5 h-5" />
             </button>
           </div>
 
           {filteredSessions.length > 0 ? (
-            <div className="flex flex-col gap-1 max-h-64 overflow-y-auto">
+            <div className="flex flex-col gap-1.5 max-h-72 overflow-y-auto">
               {filteredSessions.map(s => {
                 const sub = data.subjects.find(sub => sub.id === s.subjectId);
                 return (
-                  <div key={s.id} className="group flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-secondary/40 transition-colors">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: sub?.color || "hsl(var(--muted))" }} />
+                  <div key={s.id} className="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-secondary/40 transition-colors">
+                    <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: sub?.color || "hsl(var(--muted))" }} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-xs text-foreground">{s.subjectName}</span>
-                        <span className="text-[10px] text-muted-foreground">{formatDuration(s.durationMinutes)}</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[15px] text-foreground font-medium">{s.subjectName}</span>
+                        <span className="text-sm text-muted-foreground">{formatDuration(s.durationMinutes)}</span>
                       </div>
-                      <div className="text-[9px] text-muted-foreground">
+                      <div className="text-sm text-muted-foreground mt-0.5">
                         {getDayName(s.date)} {s.date} · {s.startTime} · {s.mode === "pomodoro" ? "🍅" : "⏱️"} {s.energyLevel ? ["😴", "😴", "😐", "⚡", "🔥"][s.energyLevel - 1] : ""}
                       </div>
                     </div>
                     <button onClick={() => deleteSession(s.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p className="text-[11px] text-muted-foreground text-center py-4">No sessions recorded yet. Start studying!</p>
+            <div className="text-center py-8">
+              <p className="text-3xl mb-2">📚</p>
+              <p className="text-[15px] text-muted-foreground">No sessions recorded yet</p>
+              <p className="text-sm text-muted-foreground/60 mt-1">Start studying to see your history</p>
+            </div>
           )}
         </div>
       )}
