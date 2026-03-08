@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import QuoteSection from "@/components/QuoteSection";
-import PomodoroTimer from "@/components/PomodoroTimer";
+import SubjectStudyTimer from "@/components/SubjectStudyTimer";
 import TodoList from "@/components/TodoList";
 import HabitsTracker from "@/components/HabitsTracker";
 import DailyGoals from "@/components/DailyGoals";
@@ -48,9 +48,18 @@ function getAppState(): AppState {
     }
   } catch {}
 
-  // Pomodoro
-  let pomodoroState = { sessions: 0, isRunning: false };
-  // Pomodoro state is in component state, we can't easily read it. Use defaults.
+  // Study timer
+  let studyState = { sessions: 0, isRunning: false, todayMinutes: 0 };
+  try {
+    const raw = localStorage.getItem("dashboard-study-timer");
+    if (raw) {
+      const data = JSON.parse(raw);
+      const today = new Date().toISOString().split("T")[0];
+      const todaySessions = (data.sessions || []).filter((s: any) => s.date === today);
+      studyState.sessions = todaySessions.length;
+      studyState.todayMinutes = todaySessions.reduce((a: number, s: any) => a + (s.durationMinutes || 0), 0);
+    }
+  } catch {}
 
   // Todos
   let todosState = { completed: 0, total: 0 };
@@ -72,7 +81,7 @@ function getAppState(): AppState {
     habitsTotal,
     habitNames,
     nutrition: nutritionState,
-    pomodoro: pomodoroState,
+    pomodoro: studyState,
     todos: todosState,
   };
 }
@@ -119,7 +128,7 @@ const Index = () => {
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
           <div className="space-y-3 sm:space-y-4">
-            <PomodoroTimer />
+            <SubjectStudyTimer />
             <DailyGoals />
             <FocusMusicPlayer />
           </div>

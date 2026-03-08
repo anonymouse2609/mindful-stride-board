@@ -17,6 +17,7 @@ export interface AppState {
   pomodoro?: {
     sessions: number;
     isRunning: boolean;
+    todayMinutes?: number;
   };
   todos?: {
     completed: number;
@@ -46,19 +47,27 @@ const RULES: BotRule[] = [
       const lines: string[] = ["📊 **Here's your day so far:**"];
       if (s.habits) lines.push(`• Habits: ${s.habitsCompleted}/${s.habitsTotal} completed`);
       if (s.nutrition) lines.push(`• Nutrition: ${Math.round(s.nutrition.calories)}/${s.nutrition.caloriesGoal} cal logged (${s.nutrition.mealsCount} items)`);
-      if (s.pomodoro) lines.push(`• Study: ${s.pomodoro.sessions} Pomodoro sessions`);
+      if (s.pomodoro) {
+        const studyTime = s.pomodoro.todayMinutes || 0;
+        lines.push(`• Study: ${s.pomodoro.sessions} sessions (${Math.floor(studyTime / 60)}h ${Math.round(studyTime % 60)}m)`);
+      }
       if (s.todos) lines.push(`• Tasks: ${s.todos.completed}/${s.todos.total} done`);
       const nudges: string[] = [];
       if (s.nutrition?.mealsCount === 0) nudges.push("Log a meal");
       if (s.habits && s.habitsCompleted! < s.habitsTotal!) nudges.push("Check habits");
-      if (s.pomodoro?.sessions === 0) nudges.push("Start Pomodoro");
+      if (s.pomodoro?.sessions === 0) nudges.push("Start studying");
       return { text: lines.join("\n"), quickReplies: nudges.length > 0 ? nudges : ["Motivate me"] };
     }
   },
 
-  // Navigation - Pomodoro
-  { keywords: ["pomodoro", "timer", "study session", "start studying", "focus timer", "start pomodoro", "open pomodoro"],
-    response: () => ({ text: "⏱️ The **Pomodoro Timer** is at the top-left of your dashboard. It runs 25-minute work sessions with 5-minute breaks.\n\nScroll up to find it! Click Play to start a session.", quickReplies: ["How does Pomodoro work?", "Show my macros"] }) },
+  // Navigation - Study Timer
+  { keywords: ["study", "pomodoro", "timer", "study session", "start studying", "focus timer", "start pomodoro", "open pomodoro", "study timer", "subject"],
+    response: (s) => {
+      const studyTime = s.pomodoro?.todayMinutes || 0;
+      const sessionCount = s.pomodoro?.sessions || 0;
+      return { text: `📚 The **Subject Study Timer** is at the top-left of your dashboard. It supports Pomodoro (25/5) and Free Study modes with subject tracking.\n\n${sessionCount > 0 ? `You've done ${sessionCount} sessions today (${Math.floor(studyTime / 60)}h ${Math.round(studyTime % 60)}m). ` : "No sessions yet today. "}Scroll up and select a subject to start!`, quickReplies: ["How does the study timer work?", "Show my macros"] };
+    }
+  },
 
   // Navigation - Habits
   { keywords: ["habit", "habits", "my habits", "show habits", "open habits", "where is habits", "habit tracker"],
@@ -114,9 +123,9 @@ const RULES: BotRule[] = [
   { keywords: ["add habit", "new habit", "create habit"],
     response: () => ({ text: "✏️ To add a new habit, go to the **Habits Tracker** (right column) and look for the edit/add option. You can customize your daily habit list there!\n\nDefault habits include water, exercise, study, sleep, and meditation.", quickReplies: ["Show habits", "How am I doing today?"] }) },
 
-  // How does Pomodoro work
-  { keywords: ["how does pomodoro", "what is pomodoro", "pomodoro technique", "explain pomodoro"],
-    response: () => ({ text: "🍅 **The Pomodoro Technique:**\n• Work for 25 minutes with full focus\n• Take a 5-minute break\n• Repeat! Each cycle = 1 session\n\nIt helps you stay productive without burning out. The timer is at the top-left of your dashboard.", quickReplies: ["Start Pomodoro", "How am I doing today?"] }) },
+  // How does Study Timer work
+  { keywords: ["how does pomodoro", "what is pomodoro", "pomodoro technique", "explain pomodoro", "how does study timer", "how does the study", "explain study timer"],
+    response: () => ({ text: "📚 **The Subject Study Timer:**\n1. Add subjects (Maths, Physics, etc.) with color tags and weekly hour goals\n2. Select a subject from the dropdown\n3. Choose mode: **🍅 Pomodoro** (25min work + 5min break) or **⏱️ Free Study** (runs until you stop)\n4. Sessions are logged automatically with subject, duration, and energy level\n5. Check the **Stats** tab for weekly progress bars, pie charts, streak, and insights\n6. The **History** tab shows all sessions with filters\n\nWeekly hours reset every Monday but all-time stats are preserved!", quickReplies: ["Start studying", "How am I doing today?"] }) },
 
   // Motivate me
   { keywords: ["motivate", "motivation", "inspire", "i'm lazy", "demotivated", "unmotivated", "i need motivation"],
