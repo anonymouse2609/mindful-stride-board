@@ -520,7 +520,7 @@ export default function RevisionScheduler() {
                   </div>
                 </div>
                 {/* Mastery bar */}
-                <div className="h-2 rounded-full bg-secondary/40 overflow-hidden">
+                <div className="h-2 rounded-full bg-white/15 overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-500 bg-indigo-500" style={{ width: `${masteryPct}%` }} />
                 </div>
               </div>
