@@ -117,6 +117,7 @@ const Index = () => {
           </p>
         </div>
 
+        <FocusScore />
         <QuoteSection />
 
         {/* Main Grid */}
