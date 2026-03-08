@@ -268,7 +268,7 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-white">Growth AI</h3>
-                <p className="text-[9px] text-white/60">Your personal assistant</p>
+                <p className="text-[9px] text-foreground/50">Your personal assistant</p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
@@ -286,7 +286,7 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
                     <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
                       isUser
                         ? "bg-[hsl(221,83%,53%)] text-white rounded-br-md"
-                        : "rounded-bl-md" } `} style={!isUser ? { background: "hsl(240, 12%, 10%)", color: "hsl(220, 13%, 91%)" } : undefined}>
+                        : "rounded-bl-md bg-secondary/60 text-foreground" } `}>
                       {msg.content.split(/(\*\*.*?\*\*)/).map((part, j) => {
                         if (part.startsWith("**") && part.endsWith("**")) {
                           return <strong key={j}>{part.slice(2, -2)}</strong>;

@@ -100,7 +100,7 @@ export default function TodoList() {
           <div className="text-center py-8">
             <p className="text-3xl mb-2">📝</p>
             <p className="text-[15px] text-muted-foreground">No tasks yet</p>
-            <p className="text-sm text-muted-foreground/60 mt-1">Add your first task above</p>
+            <p className="text-sm text-muted-foreground mt-1">Add your first task above</p>
           </div>
         )}
         {sorted.map((todo) => (

@@ -143,7 +143,7 @@ const Index = () => {
         <WeeklyProgress />
 
         <div className="text-center pb-4 sm:pb-6">
-          <p className="text-sm text-muted-foreground/40">Stay focused. Stay consistent.</p>
+          <p className="text-sm text-muted-foreground">Stay focused. Stay consistent.</p>
         </div>
       </div>
 

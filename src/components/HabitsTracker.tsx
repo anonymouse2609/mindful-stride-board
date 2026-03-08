@@ -106,7 +106,7 @@ export default function HabitsTracker() {
           <tbody>
             {data.habits.map((habit) => (
               <tr key={habit} className="group">
-                <td className="py-1.5 pr-3 text-[15px]" style={{ color: "hsl(220, 13%, 91%)" }}>
+                <td className="py-1.5 pr-3 text-[15px] text-foreground/80">
                   <div className="flex items-center justify-between gap-2 max-w-[100px] sm:max-w-[140px]">
                     <span className="truncate">{habit}</span>
                     <button

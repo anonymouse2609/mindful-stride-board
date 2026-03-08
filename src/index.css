@@ -23,7 +23,7 @@
     --secondary-foreground: 215 20% 65%;
 
     --muted: 230 12% 18%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 20% 65%;
 
     --accent: 263 70% 50%;
     --accent-foreground: 210 40% 98%;
@@ -157,7 +157,7 @@
 
   .dark body,
   :root body {
-    color: #f8fafc;
+    color: #f1f5f9;
   }
 
   .light body {
@@ -502,7 +502,7 @@
 
   /* Inputs */
   .input-styled {
-    @apply rounded-xl text-[15px] placeholder:text-muted-foreground focus:outline-none transition-all;
+    @apply rounded-xl text-[15px] placeholder:text-muted-foreground/70 focus:outline-none transition-all;
     color: hsl(var(--foreground));
     min-height: 48px;
     padding: 12px 16px;

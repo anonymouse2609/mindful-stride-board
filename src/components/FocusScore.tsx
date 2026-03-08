@@ -401,20 +401,20 @@ const FocusScore = () => {
                 { label: "Habits", val: breakdown.habits, max: 25, color: "hsl(var(--habits-accent))" },
                 { label: "Energy", val: breakdown.energy, max: 15, color: "hsl(var(--mood-accent))" },
               ].map(c => (
-                <div key={c.label} className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground w-16 text-right">{c.label}</span>
+              <div key={c.label} className="flex items-center gap-2">
+                  <span className="text-xs text-foreground/70 w-16 text-right">{c.label}</span>
                   <div className="flex-1 h-3.5 rounded-full bg-secondary/60 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{ width: `${(c.val / c.max) * 100}%`, background: c.color }}
                     />
                   </div>
-                  <span className="text-xs font-mono text-muted-foreground w-10">{c.val}/{c.max}</span>
+                  <span className="text-xs font-mono font-bold text-foreground w-10">{c.val}/{c.max}</span>
                 </div>
               ))}
             </div>
 
-            <p className="text-xs text-muted-foreground flex items-center gap-1 justify-center sm:justify-start">
+            <p className="text-xs text-focus flex items-center gap-1 justify-center sm:justify-start">
               Tap for details <ChevronRight className="w-3 h-3" />
             </p>
           </div>
