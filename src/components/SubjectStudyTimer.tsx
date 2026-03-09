@@ -527,15 +527,17 @@ export default function SubjectStudyTimer() {
   // Filtered history
   const filteredSessions = [...weekSessions].reverse().filter(s => !historyFilter || s.subjectId === historyFilter);
 
-  // Timer display
+  // Timer display — computed from displayMs
+  const freeElapsedSec = Math.floor(displayMs / 1000);
+  const freeMinutes = Math.floor(freeElapsedSec / 60).toString().padStart(2, "0");
+  const freeSeconds = (freeElapsedSec % 60).toString().padStart(2, "0");
+  const pomTotalSec = Math.ceil(displayMs / 1000);
+  const pomMinutes = Math.floor(pomTotalSec / 60).toString().padStart(2, "0");
+  const pomSeconds = (pomTotalSec % 60).toString().padStart(2, "0");
   const pomodoroTotalTime = isBreak ? BREAK_TIME : WORK_TIME;
-  const pomodoroProgress = ((pomodoroTotalTime - timeLeft) / pomodoroTotalTime) * 100;
-  const freeMinutes = Math.floor(freeStudySeconds / 60).toString().padStart(2, "0");
-  const freeSeconds = (freeStudySeconds % 60).toString().padStart(2, "0");
-  const pomMinutes = Math.floor(timeLeft / 60).toString().padStart(2, "0");
-  const pomSeconds = (timeLeft % 60).toString().padStart(2, "0");
+  const pomodoroProgress = ((pomodoroTotalTime - pomTotalSec) / pomodoroTotalTime) * 100;
   const circumference = 2 * Math.PI * 54;
-  const strokeDashoffset = circumference - (mode === "pomodoro" ? pomodoroProgress : Math.min((freeStudySeconds / 3600) * 100, 100)) / 100 * circumference;
+  const strokeDashoffset = circumference - (mode === "pomodoro" ? pomodoroProgress : Math.min((freeElapsedSec / 3600) * 100, 100)) / 100 * circumference;
 
   const activeColor = selectedSubject?.color || "hsl(var(--accent))";
 
