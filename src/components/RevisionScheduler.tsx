@@ -135,6 +135,13 @@ export default function RevisionScheduler() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [celebration, setCelebration] = useState(false);
 
+  // PYQ state
+  const [pyqSubject, setPyqSubject] = useState(CBSE_SUBJECTS[0]);
+  const [pyqYear, setPyqYear] = useState(PYQ_YEARS[0]);
+  const [pyqData, setPyqData] = useState<PYQData | null>(null);
+  const [pyqLoading, setPyqLoading] = useState(false);
+  const [pyqError, setPyqError] = useState<string | null>(null);
+  const [pyqExpandedAnswers, setPyqExpandedAnswers] = useState<Set<number>>(new Set());
   // Form state
   const [form, setForm] = useState({ name: "", subject: "", difficulty: "medium" as Difficulty, dateFirstStudied: todayKey() });
 
