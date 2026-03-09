@@ -345,12 +345,48 @@ export default function RevisionScheduler() {
     setShowAdd(true);
   };
 
+  const fetchPYQ = async () => {
+    setPyqLoading(true);
+    setPyqError(null);
+    setPyqData(null);
+    setPyqExpandedAnswers(new Set());
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pyq`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ subject: pyqSubject, year: pyqYear, className: "12" }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Failed to generate questions" }));
+        throw new Error(err.error || "Failed to generate questions");
+      }
+      const data = await res.json();
+      setPyqData(data);
+    } catch (e: any) {
+      setPyqError(e.message || "Something went wrong");
+    } finally {
+      setPyqLoading(false);
+    }
+  };
+
+  const togglePyqAnswer = (qNum: number) => {
+    setPyqExpandedAnswers(prev => {
+      const next = new Set(prev);
+      if (next.has(qNum)) next.delete(qNum); else next.add(qNum);
+      return next;
+    });
+  };
+
   const tabs: { key: TabType; label: string }[] = [
     { key: "today", label: `Today${dueToday.length > 0 ? ` (${dueToday.length})` : ""}` },
     { key: "upcoming", label: "Upcoming" },
     { key: "all", label: "All Topics" },
     { key: "mastered", label: `Mastered (${masteredTopics.length})` },
     { key: "stats", label: "Stats" },
+    { key: "pyq", label: "📝 PYQ" },
   ];
 
   const nextDueTopic = useMemo(() => {
