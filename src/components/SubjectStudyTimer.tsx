@@ -585,10 +585,10 @@ export default function SubjectStudyTimer() {
 
           {/* Mode toggle */}
           <div className="flex rounded-xl bg-secondary/40 p-1">
-            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); resetTimer(unded-lg text-sm font-medium transition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); resetTimer(ition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               🍅 Pomodoro
             </button>
-            <button onClick={() => { if (!isRunning) { setMode("free"); setFreeStudySeconds(0); } }} classresetTimer(unded-lg text-sm font-medium transition-all ${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("free"); setFreeStudySeconds(0); } }} classresetTimer(unded-lg text-sm font-mresetTimer(${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               ⏱️ Free Study
             </button>
           </div>
@@ -624,7 +624,7 @@ export default function SubjectStudyTimer() {
                 <Pause className="w-4 h-4" /> Stop & Log
               </button>
             ) : (
-              <button onClick={() => isRunning ? setIsRunning(false) : startTimer()} disabled={!selectedSubject} className="btn-primary bg-study text-white flex items-center gap-2 disabled:opacity-30">
+              <button onClick={() => isRunning ? setIsRunning(false) : startTimer()} disabledpauseTimer(} className="btn-primary bg-study text-white flex items-center gap-2 disabled:opacity-30">
                 {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 {isRunning ? "Pause" : "Start"}
               </button>
