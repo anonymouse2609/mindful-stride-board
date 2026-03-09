@@ -375,46 +375,55 @@ export default function SubjectStudyTimer() {
     }
   }, []);
 
-  const logSession = useCallback((durationMinutes: number) => {
-    if (!selectedSubject || durationMinutes < 0.5) return;
-    const now = new Date();
-    const session: StudySession = {
-      id: Date.now().toString(),
-      subjectId: selectedSubject.id,
-      subjectName: selectedSubject.name,
-      date: todayKey(),
-      startTime: sessionStartTime ? `${sessionStartTime.getHours().toString().padStart(2, "0")}:${sessionStartTime.getMinutes().toString().padStart(2, "0")}` : `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`,
-      durationMinutes,
-      energyLevel,
-      mode,
-    };
-    setData(prev => ({ ...prev, sessions: [...prev.sessions, session] }));
-  }, [selectedSubject, energyLevel, mode, sessionStartTime]);
+  // Subject management state
+  const [showSubjectModal, setShowSubjectModal] = useState(false);
+  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
+  const [sf, setSf] = useState({ name: "", color: SUBJECT_COLORS[0].value, weeklyGoalHours: "8" });
+
+  // Manual session state
+  const [showManualModal, setShowManualModal] = useState(false);
+  const [manualSession, setManualSession] = useState({ subjectId: "", date: todayKey(), startTime: "09:00", durationMinutes: "25" });
+
+  // History filter
+  const [historyFilter, setHistoryFilter] = useState("");
 
   const startTimer = () => {
     if (!selectedSubject) return;
+    requestNotifPermission();
+    requestWakeLock();
     setSessionStartTime(new Date());
-    setIsRunning(true);
+    const dur = mode === "pomodoro" ? (isBreak ? BREAK_TIME_MS : WORK_TIME_MS) : 0;
+    const ts: RunningTimerState = { startedAt: Date.now(), mode, isBreak, duration: dur, subjectId: selectedSubjectId };
+    setTimerState(ts);
+    saveTimerState(ts);
+  };
+
+  const pauseTimer = () => {
+    releaseWakeLock();
+    if (!timerState) return;
+    const paused = mode === "pomodoro" ? getPomoRemaining() : getFreeElapsed();
+    const ts: RunningTimerState = { ...timerState, pausedRemaining: paused };
+    setTimerState(ts);
+    saveTimerState(ts);
   };
 
   const stopFreeStudy = () => {
-    setIsRunning(false);
-    if (freeStudySeconds > 30) {
-      logSession(freeStudySeconds / 60);
+    releaseWakeLock();
+    const elapsed = getFreeElapsed();
+    const elapsedSec = elapsed / 1000;
+    if (elapsedSec > 30) {
+      logSessionDirect(elapsedSec / 60);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
     }
-    setFreeStudySeconds(0);
+    setTimerState(null);
+    saveTimerState(null);
   };
 
   const resetTimer = () => {
-    setIsRunning(false);
-    if (mode === "pomodoro") {
-      setTimeLeft(isBreak ? BREAK_TIME : WORK_TIME);
-    } else {
-      setFreeStudySeconds(0);
-    }
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    releaseWakeLock();
+    setTimerState(null);
+    saveTimerState(null);
   };
 
   // Subject CRUD
