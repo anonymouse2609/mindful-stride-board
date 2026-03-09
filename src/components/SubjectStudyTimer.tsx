@@ -585,10 +585,10 @@ export default function SubjectStudyTimer() {
 
           {/* Mode toggle */}
           <div className="flex rounded-xl bg-secondary/40 p-1">
-            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); resetTimer(ition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); resetTimer(); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               🍅 Pomodoro
             </button>
-            <button onClick={() => { if (!isRunning) { setMode("free"); setFreeStudySeconds(0); } }} classresetTimer(unded-lg text-sm font-mresetTimer(${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("free"); resetTimer(); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               ⏱️ Free Study
             </button>
           </div>
