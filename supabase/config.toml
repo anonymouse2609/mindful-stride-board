@@ -1,1 +1,4 @@
 project_id = "oihvcltlgwpdmsurorxn"
+
+[functions.generate-pyq]
+verify_jwt = false

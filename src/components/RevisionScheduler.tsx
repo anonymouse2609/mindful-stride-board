@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Plus, Check, X, Search, Edit2, Trash2, RotateCcw, Calendar, Star, BookOpen, ChevronLeft, ChevronRight, Zap, AlertTriangle } from "lucide-react";
+import { Plus, Check, X, Search, Edit2, Trash2, RotateCcw, Calendar, Star, BookOpen, ChevronLeft, ChevronRight, Zap, AlertTriangle, ChevronDown, Loader2 } from "lucide-react";
+import { sanitizeText } from "@/lib/sanitize";
 
 // ===== TYPES =====
 type Difficulty = "easy" | "medium" | "hard";
@@ -82,8 +83,45 @@ function saveData(data: RevisionData) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+// PYQ Types
+interface PYQStep {
+  step: number;
+  description: string;
+  working: string;
+  marks: number;
+}
+
+interface PYQQuestion {
+  number: number;
+  marks: number;
+  type: string;
+  text: string;
+  given_data: string[];
+  required: string;
+  answer: {
+    steps: PYQStep[];
+    final_answer: string;
+  };
+}
+
+interface PYQData {
+  subject: string;
+  year: string;
+  questions: PYQQuestion[];
+}
+
+type TabType = "today" | "upcoming" | "all" | "mastered" | "stats" | "pyq";
+
+const CBSE_SUBJECTS = [
+  "Mathematics", "Physics", "Chemistry", "Biology",
+  "Accountancy", "Business Studies", "Economics",
+  "English", "Hindi", "Computer Science", "Political Science",
+  "History", "Geography", "Psychology", "Sociology"
+];
+
+const PYQ_YEARS = ["2024", "2023", "2022", "2021", "2020", "2019"];
+
 // ===== COMPONENT =====
-type TabType = "today" | "upcoming" | "all" | "mastered" | "stats";
 
 export default function RevisionScheduler() {
   const [data, setData] = useState<RevisionData>(loadData);
@@ -97,6 +135,13 @@ export default function RevisionScheduler() {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [celebration, setCelebration] = useState(false);
 
+  // PYQ state
+  const [pyqSubject, setPyqSubject] = useState(CBSE_SUBJECTS[0]);
+  const [pyqYear, setPyqYear] = useState(PYQ_YEARS[0]);
+  const [pyqData, setPyqData] = useState<PYQData | null>(null);
+  const [pyqLoading, setPyqLoading] = useState(false);
+  const [pyqError, setPyqError] = useState<string | null>(null);
+  const [pyqExpandedAnswers, setPyqExpandedAnswers] = useState<Set<number>>(new Set());
   // Form state
   const [form, setForm] = useState({ name: "", subject: "", difficulty: "medium" as Difficulty, dateFirstStudied: todayKey() });
 
@@ -300,12 +345,48 @@ export default function RevisionScheduler() {
     setShowAdd(true);
   };
 
+  const fetchPYQ = async () => {
+    setPyqLoading(true);
+    setPyqError(null);
+    setPyqData(null);
+    setPyqExpandedAnswers(new Set());
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-pyq`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ subject: pyqSubject, year: pyqYear, className: "12" }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Failed to generate questions" }));
+        throw new Error(err.error || "Failed to generate questions");
+      }
+      const data = await res.json();
+      setPyqData(data);
+    } catch (e: any) {
+      setPyqError(e.message || "Something went wrong");
+    } finally {
+      setPyqLoading(false);
+    }
+  };
+
+  const togglePyqAnswer = (qNum: number) => {
+    setPyqExpandedAnswers(prev => {
+      const next = new Set(prev);
+      if (next.has(qNum)) next.delete(qNum); else next.add(qNum);
+      return next;
+    });
+  };
+
   const tabs: { key: TabType; label: string }[] = [
     { key: "today", label: `Today${dueToday.length > 0 ? ` (${dueToday.length})` : ""}` },
     { key: "upcoming", label: "Upcoming" },
     { key: "all", label: "All Topics" },
     { key: "mastered", label: `Mastered (${masteredTopics.length})` },
     { key: "stats", label: "Stats" },
+    { key: "pyq", label: "📝 PYQ" },
   ];
 
   const nextDueTopic = useMemo(() => {
@@ -587,7 +668,194 @@ export default function RevisionScheduler() {
         </div>
       )}
 
-      {/* ===== ADD/EDIT MODAL ===== */}
+      {/* ===== PYQ TAB ===== */}
+      {tab === "pyq" && (
+        <div className="flex flex-col gap-4">
+          {/* Subject & Year selectors */}
+          <div className="flex gap-2 flex-wrap">
+            <select
+              value={pyqSubject}
+              onChange={e => setPyqSubject(e.target.value)}
+              className="input-styled min-h-[40px] text-sm flex-1 min-w-[140px]"
+            >
+              {CBSE_SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <select
+              value={pyqYear}
+              onChange={e => setPyqYear(e.target.value)}
+              className="input-styled min-h-[40px] text-sm min-w-[90px]"
+            >
+              {PYQ_YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+            <button
+              onClick={fetchPYQ}
+              disabled={pyqLoading}
+              className="btn-primary bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-50 px-4 py-2 text-sm font-medium rounded-xl flex items-center gap-2"
+            >
+              {pyqLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <BookOpen className="w-4 h-4" />}
+              {pyqLoading ? "Generating..." : "Generate PYQ"}
+            </button>
+          </div>
+
+          {/* Error */}
+          {pyqError && (
+            <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+              {pyqError}
+            </div>
+          )}
+
+          {/* Loading skeleton */}
+          {pyqLoading && (
+            <div className="flex flex-col gap-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="p-4 rounded-xl bg-secondary/20 animate-pulse">
+                  <div className="h-4 bg-secondary/40 rounded w-3/4 mb-3" />
+                  <div className="h-3 bg-secondary/30 rounded w-1/2 mb-2" />
+                  <div className="h-3 bg-secondary/30 rounded w-2/3" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* No data yet */}
+          {!pyqLoading && !pyqData && !pyqError && (
+            <div className="text-center py-8">
+              <p className="text-3xl mb-2">📝</p>
+              <p className="text-[15px] text-foreground font-medium">Previous Year Questions</p>
+              <p className="text-sm text-muted-foreground mt-1">Select a subject and year, then click Generate to get CBSE PYQs with solutions</p>
+            </div>
+          )}
+
+          {/* Questions */}
+          {pyqData && !pyqLoading && (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{sanitizeText(pyqData.subject)}</span>
+                <span>•</span>
+                <span>{pyqData.year}</span>
+                <span>•</span>
+                <span>{pyqData.questions.length} questions</span>
+              </div>
+
+              {pyqData.questions.map((q) => {
+                const isExpanded = pyqExpandedAnswers.has(q.number);
+                return (
+                  <div key={q.number} className="rounded-xl border border-border/50 overflow-hidden">
+                    {/* Question header */}
+                    <div className="p-4 bg-secondary/10">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-7 h-7 rounded-full bg-indigo-500/15 text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0">
+                            {q.number}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-secondary/40 text-muted-foreground capitalize">
+                            {q.type}
+                          </span>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-accent/15 text-accent shrink-0">
+                          {q.marks} marks
+                        </span>
+                      </div>
+
+                      {/* Question text */}
+                      <p className="text-[15px] leading-relaxed text-foreground font-medium">
+                        {sanitizeText(q.text)}
+                      </p>
+
+                      {/* Given data */}
+                      {q.given_data && q.given_data.length > 0 && (
+                        <div className="mt-3 p-3 rounded-lg bg-secondary/20 border border-border/30">
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Given Information</p>
+                          <ul className="space-y-1">
+                            {q.given_data.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
+                                <span className="text-accent mt-0.5 shrink-0">•</span>
+                                <span>{sanitizeText(item)}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Required */}
+                      {q.required && (
+                        <p className="mt-2 text-sm font-semibold text-accent">
+                          Required: {sanitizeText(q.required)}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Show/Hide answer toggle */}
+                    <button
+                      onClick={() => togglePyqAnswer(q.number)}
+                      className="w-full px-4 py-2.5 flex items-center justify-between text-sm font-medium bg-secondary/20 hover:bg-secondary/30 transition-colors border-t border-border/30"
+                    >
+                      <span className="text-muted-foreground">{isExpanded ? "Hide Answer" : "Show Answer"}</span>
+                      <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {/* Answer section */}
+                    {isExpanded && q.answer && (
+                      <div className="p-4 border-t border-border/30 bg-secondary/5">
+                        {/* Steps table */}
+                        {q.answer.steps && q.answer.steps.length > 0 && (
+                          <div className="overflow-x-auto rounded-lg border border-border/30">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-secondary/30">
+                                  <th className="px-3 py-2 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide w-12">Step</th>
+                                  <th className="px-3 py-2 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Description</th>
+                                  <th className="px-3 py-2 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Working</th>
+                                  <th className="px-3 py-2 text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wide w-16">Marks</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {q.answer.steps.map((step) => (
+                                  <tr key={step.step} className="border-t border-border/20">
+                                    <td className="px-3 py-2.5">
+                                      <span className="w-6 h-6 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-[11px] font-bold">
+                                        {step.step}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-foreground font-medium text-[13px]">
+                                      {sanitizeText(step.description)}
+                                    </td>
+                                    <td className="px-3 py-2.5">
+                                      <code className="text-[12px] font-mono bg-secondary/30 px-2 py-1 rounded text-foreground/80 block whitespace-pre-wrap">
+                                        {sanitizeText(step.working)}
+                                      </code>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right">
+                                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-accent/10 text-accent">
+                                        {step.marks}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {/* Final answer */}
+                        {q.answer.final_answer && (
+                          <div className="mt-3 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                            <p className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wide mb-1">Final Answer</p>
+                            <p className="text-sm font-medium text-foreground">
+                              {sanitizeText(q.answer.final_answer)}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={() => { setShowAdd(false); setEditingTopic(null); }}>
           <div className="w-full max-w-md bg-card rounded-2xl border border-border p-6 space-y-4" onClick={e => e.stopPropagation()}>
