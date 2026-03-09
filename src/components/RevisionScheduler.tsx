@@ -83,8 +83,45 @@ function saveData(data: RevisionData) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+// PYQ Types
+interface PYQStep {
+  step: number;
+  description: string;
+  working: string;
+  marks: number;
+}
+
+interface PYQQuestion {
+  number: number;
+  marks: number;
+  type: string;
+  text: string;
+  given_data: string[];
+  required: string;
+  answer: {
+    steps: PYQStep[];
+    final_answer: string;
+  };
+}
+
+interface PYQData {
+  subject: string;
+  year: string;
+  questions: PYQQuestion[];
+}
+
+type TabType = "today" | "upcoming" | "all" | "mastered" | "stats" | "pyq";
+
+const CBSE_SUBJECTS = [
+  "Mathematics", "Physics", "Chemistry", "Biology",
+  "Accountancy", "Business Studies", "Economics",
+  "English", "Hindi", "Computer Science", "Political Science",
+  "History", "Geography", "Psychology", "Sociology"
+];
+
+const PYQ_YEARS = ["2024", "2023", "2022", "2021", "2020", "2019"];
+
 // ===== COMPONENT =====
-type TabType = "today" | "upcoming" | "all" | "mastered" | "stats";
 
 export default function RevisionScheduler() {
   const [data, setData] = useState<RevisionData>(loadData);
