@@ -29,8 +29,48 @@ interface StudyData {
 
 // ===== CONSTANTS =====
 const STORAGE_KEY = "dashboard-study-timer";
+const TIMER_STATE_KEY = "study-timer-running-state";
 const WORK_TIME = 25 * 60;
+const WORK_TIME_MS = 25 * 60 * 1000;
 const BREAK_TIME = 5 * 60;
+const BREAK_TIME_MS = 5 * 60 * 1000;
+
+interface RunningTimerState {
+  startedAt: number;
+  mode: "pomodoro" | "free";
+  isBreak: boolean;
+  duration: number; // ms, for pomodoro countdown
+  subjectId: string;
+  pausedRemaining?: number | null;
+}
+
+function loadTimerState(): RunningTimerState | null {
+  try {
+    const raw = localStorage.getItem(TIMER_STATE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
+function saveTimerState(s: RunningTimerState | null) {
+  if (s) localStorage.setItem(TIMER_STATE_KEY, JSON.stringify(s));
+  else localStorage.removeItem(TIMER_STATE_KEY);
+}
+
+function notifyComplete(isBreak: boolean) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("Growth App", {
+      body: isBreak ? "Break over! Ready to focus? 💪" : "Study session complete! Great work 🎉",
+      icon: "/icon.svg",
+    });
+  }
+}
+
+async function requestNotifPermission() {
+  if ("Notification" in window && Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+}
 
 const SUBJECT_COLORS = [
   { name: "Blue", value: "hsl(210, 70%, 55%)" },
