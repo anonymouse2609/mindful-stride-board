@@ -29,8 +29,48 @@ interface StudyData {
 
 // ===== CONSTANTS =====
 const STORAGE_KEY = "dashboard-study-timer";
+const TIMER_STATE_KEY = "study-timer-running-state";
 const WORK_TIME = 25 * 60;
+const WORK_TIME_MS = 25 * 60 * 1000;
 const BREAK_TIME = 5 * 60;
+const BREAK_TIME_MS = 5 * 60 * 1000;
+
+interface RunningTimerState {
+  startedAt: number;
+  mode: "pomodoro" | "free";
+  isBreak: boolean;
+  duration: number; // ms, for pomodoro countdown
+  subjectId: string;
+  pausedRemaining?: number | null;
+}
+
+function loadTimerState(): RunningTimerState | null {
+  try {
+    const raw = localStorage.getItem(TIMER_STATE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return null;
+}
+
+function saveTimerState(s: RunningTimerState | null) {
+  if (s) localStorage.setItem(TIMER_STATE_KEY, JSON.stringify(s));
+  else localStorage.removeItem(TIMER_STATE_KEY);
+}
+
+function notifyComplete(isBreak: boolean) {
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("Growth App", {
+      body: isBreak ? "Break over! Ready to focus? 💪" : "Study session complete! Great work 🎉",
+      icon: "/icon.svg",
+    });
+  }
+}
+
+async function requestNotifPermission() {
+  if ("Notification" in window && Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+}
 
 const SUBJECT_COLORS = [
   { name: "Blue", value: "hsl(210, 70%, 55%)" },
@@ -205,104 +245,185 @@ export default function SubjectStudyTimer() {
   const [data, setData] = useState<StudyData>(loadData);
   const [activeTab, setActiveTab] = useState<"timer" | "stats" | "history">("timer");
 
-  // Timer state
+  // Timer state — timestamp-based
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(data.subjects[0]?.id || "");
   const [mode, setMode] = useState<"pomodoro" | "free">("pomodoro");
-  const [timeLeft, setTimeLeft] = useState(WORK_TIME);
-  const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
-  const [freeStudySeconds, setFreeStudySeconds] = useState(0);
   const [energyLevel, setEnergyLevel] = useState(3);
   const [showCelebration, setShowCelebration] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const wakeLockRef = useRef<any>(null);
 
-  // Subject management
+  // Timestamp-based timer state
+  const [timerState, setTimerState] = useState<RunningTimerState | null>(loadTimerState);
+  const [displayMs, setDisplayMs] = useState(0); // remaining ms for pomodoro, elapsed ms for free
+
+  const isRunning = timerState !== null && timerState.pausedRemaining == null;
+
+  const getPomoRemaining = useCallback(() => {
+    if (!timerState) return 0;
+    if (timerState.pausedRemaining != null) return timerState.pausedRemaining;
+    return Math.max(0, timerState.duration - (Date.now() - timerState.startedAt));
+  }, [timerState]);
+
+  const getFreeElapsed = useCallback(() => {
+    if (!timerState) return 0;
+    if (timerState.pausedRemaining != null) return timerState.pausedRemaining; // stores elapsed when paused
+    return Date.now() - timerState.startedAt;
+  }, [timerState]);
+
+  // Wake lock helpers
+  const requestWakeLock = async () => {
+    try { if ("wakeLock" in navigator) { wakeLockRef.current = await (navigator as any).wakeLock.request("screen"); } } catch {}
+  };
+  const releaseWakeLock = async () => {
+    try { if (wakeLockRef.current) { await wakeLockRef.current.release(); wakeLockRef.current = null; } } catch {}
+  };
+
+  useEffect(() => { saveData(data); }, [data]);
+
+  const selectedSubject = data.subjects.find(s => s.id === selectedSubjectId);
+
+  // Pomodoro completion handler
+  const handlePomoComplete = useCallback(() => {
+    playBeep();
+    notifyComplete(isBreak);
+    releaseWakeLock();
+    if (!isBreak) {
+      logSessionDirect(WORK_TIME / 60);
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 2000);
+      setIsBreak(true);
+      // Auto-setup break (paused)
+      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: true, duration: BREAK_TIME_MS, subjectId: selectedSubjectId, pausedRemaining: BREAK_TIME_MS };
+      setTimerState(newTs);
+      saveTimerState(newTs);
+    } else {
+      setIsBreak(false);
+      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: false, duration: WORK_TIME_MS, subjectId: selectedSubjectId, pausedRemaining: WORK_TIME_MS };
+      setTimerState(newTs);
+      saveTimerState(newTs);
+    }
+  }, [isBreak, selectedSubjectId]);
+
+  // Direct log that doesn't depend on callback state
+  const logSessionDirect = useCallback((durationMinutes: number) => {
+    const sub = data.subjects.find(s => s.id === (timerState?.subjectId || selectedSubjectId));
+    if (!sub || durationMinutes < 0.5) return;
+    const now = new Date();
+    const st = sessionStartTime || now;
+    const session: StudySession = {
+      id: Date.now().toString(), subjectId: sub.id, subjectName: sub.name,
+      date: todayKey(),
+      startTime: `${st.getHours().toString().padStart(2, "0")}:${st.getMinutes().toString().padStart(2, "0")}`,
+      durationMinutes, energyLevel, mode,
+    };
+    setData(prev => ({ ...prev, sessions: [...prev.sessions, session] }));
+  }, [data.subjects, timerState, selectedSubjectId, sessionStartTime, energyLevel, mode]);
+
+  // Display update loop
+  useEffect(() => {
+    if (!timerState) { setDisplayMs(0); return; }
+
+    const update = () => {
+      if (timerState.mode === "pomodoro") {
+        const r = getPomoRemaining();
+        setDisplayMs(r);
+        if (r <= 0 && timerState.pausedRemaining == null) handlePomoComplete();
+      } else {
+        setDisplayMs(getFreeElapsed());
+      }
+    };
+    update();
+
+    if (timerState.pausedRemaining != null) return;
+
+    const interval = setInterval(update, 500);
+    return () => clearInterval(interval);
+  }, [timerState, getPomoRemaining, getFreeElapsed, handlePomoComplete]);
+
+  // Visibility change handler
+  useEffect(() => {
+    const handle = () => {
+      if (document.visibilityState === "visible" && timerState && timerState.pausedRemaining == null) {
+        if (timerState.mode === "pomodoro") {
+          const r = getPomoRemaining();
+          if (r <= 0) handlePomoComplete();
+          else setDisplayMs(r);
+        } else {
+          setDisplayMs(getFreeElapsed());
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handle);
+    return () => document.removeEventListener("visibilitychange", handle);
+  }, [timerState, getPomoRemaining, getFreeElapsed, handlePomoComplete]);
+
+  // Restore on mount
+  useEffect(() => {
+    const ts = loadTimerState();
+    if (!ts) return;
+    setMode(ts.mode);
+    setIsBreak(ts.isBreak);
+    setSelectedSubjectId(ts.subjectId);
+    if (ts.pausedRemaining == null && ts.mode === "pomodoro") {
+      const r = Math.max(0, ts.duration - (Date.now() - ts.startedAt));
+      if (r <= 0) {
+        // Completed while away
+        handlePomoComplete();
+      }
+    }
+  }, []);
+
+  // Subject management state
   const [showSubjectModal, setShowSubjectModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [sf, setSf] = useState({ name: "", color: SUBJECT_COLORS[0].value, weeklyGoalHours: "8" });
 
-  // Manual session
+  // Manual session state
   const [showManualModal, setShowManualModal] = useState(false);
   const [manualSession, setManualSession] = useState({ subjectId: "", date: todayKey(), startTime: "09:00", durationMinutes: "25" });
 
   // History filter
   const [historyFilter, setHistoryFilter] = useState("");
 
-  useEffect(() => { saveData(data); }, [data]);
-
-  const selectedSubject = data.subjects.find(s => s.id === selectedSubjectId);
-
-  // Timer logic
-  useEffect(() => {
-    if (!isRunning) return;
-    intervalRef.current = setInterval(() => {
-      if (mode === "pomodoro") {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            playBeep();
-            setIsRunning(false);
-            if (!isBreak) {
-              // Log session
-              logSession(WORK_TIME / 60);
-              setShowCelebration(true);
-              setTimeout(() => setShowCelebration(false), 2000);
-              setIsBreak(true);
-              return BREAK_TIME;
-            } else {
-              setIsBreak(false);
-              return WORK_TIME;
-            }
-          }
-          return prev - 1;
-        });
-      } else {
-        setFreeStudySeconds(prev => prev + 1);
-      }
-    }, 1000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [isRunning, isBreak, mode]);
-
-  const logSession = useCallback((durationMinutes: number) => {
-    if (!selectedSubject || durationMinutes < 0.5) return;
-    const now = new Date();
-    const session: StudySession = {
-      id: Date.now().toString(),
-      subjectId: selectedSubject.id,
-      subjectName: selectedSubject.name,
-      date: todayKey(),
-      startTime: sessionStartTime ? `${sessionStartTime.getHours().toString().padStart(2, "0")}:${sessionStartTime.getMinutes().toString().padStart(2, "0")}` : `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`,
-      durationMinutes,
-      energyLevel,
-      mode,
-    };
-    setData(prev => ({ ...prev, sessions: [...prev.sessions, session] }));
-  }, [selectedSubject, energyLevel, mode, sessionStartTime]);
-
   const startTimer = () => {
     if (!selectedSubject) return;
+    requestNotifPermission();
+    requestWakeLock();
     setSessionStartTime(new Date());
-    setIsRunning(true);
+    const dur = mode === "pomodoro" ? (isBreak ? BREAK_TIME_MS : WORK_TIME_MS) : 0;
+    const ts: RunningTimerState = { startedAt: Date.now(), mode, isBreak, duration: dur, subjectId: selectedSubjectId };
+    setTimerState(ts);
+    saveTimerState(ts);
+  };
+
+  const pauseTimer = () => {
+    releaseWakeLock();
+    if (!timerState) return;
+    const paused = mode === "pomodoro" ? getPomoRemaining() : getFreeElapsed();
+    const ts: RunningTimerState = { ...timerState, pausedRemaining: paused };
+    setTimerState(ts);
+    saveTimerState(ts);
   };
 
   const stopFreeStudy = () => {
-    setIsRunning(false);
-    if (freeStudySeconds > 30) {
-      logSession(freeStudySeconds / 60);
+    releaseWakeLock();
+    const elapsed = getFreeElapsed();
+    const elapsedSec = elapsed / 1000;
+    if (elapsedSec > 30) {
+      logSessionDirect(elapsedSec / 60);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
     }
-    setFreeStudySeconds(0);
+    setTimerState(null);
+    saveTimerState(null);
   };
 
   const resetTimer = () => {
-    setIsRunning(false);
-    if (mode === "pomodoro") {
-      setTimeLeft(isBreak ? BREAK_TIME : WORK_TIME);
-    } else {
-      setFreeStudySeconds(0);
-    }
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    releaseWakeLock();
+    setTimerState(null);
+    saveTimerState(null);
   };
 
   // Subject CRUD
@@ -406,15 +527,17 @@ export default function SubjectStudyTimer() {
   // Filtered history
   const filteredSessions = [...weekSessions].reverse().filter(s => !historyFilter || s.subjectId === historyFilter);
 
-  // Timer display
+  // Timer display — computed from displayMs
+  const freeElapsedSec = Math.floor(displayMs / 1000);
+  const freeMinutes = Math.floor(freeElapsedSec / 60).toString().padStart(2, "0");
+  const freeSeconds = (freeElapsedSec % 60).toString().padStart(2, "0");
+  const pomTotalSec = Math.ceil(displayMs / 1000);
+  const pomMinutes = Math.floor(pomTotalSec / 60).toString().padStart(2, "0");
+  const pomSeconds = (pomTotalSec % 60).toString().padStart(2, "0");
   const pomodoroTotalTime = isBreak ? BREAK_TIME : WORK_TIME;
-  const pomodoroProgress = ((pomodoroTotalTime - timeLeft) / pomodoroTotalTime) * 100;
-  const freeMinutes = Math.floor(freeStudySeconds / 60).toString().padStart(2, "0");
-  const freeSeconds = (freeStudySeconds % 60).toString().padStart(2, "0");
-  const pomMinutes = Math.floor(timeLeft / 60).toString().padStart(2, "0");
-  const pomSeconds = (timeLeft % 60).toString().padStart(2, "0");
+  const pomodoroProgress = ((pomodoroTotalTime - pomTotalSec) / pomodoroTotalTime) * 100;
   const circumference = 2 * Math.PI * 54;
-  const strokeDashoffset = circumference - (mode === "pomodoro" ? pomodoroProgress : Math.min((freeStudySeconds / 3600) * 100, 100)) / 100 * circumference;
+  const strokeDashoffset = circumference - (mode === "pomodoro" ? pomodoroProgress : Math.min((freeElapsedSec / 3600) * 100, 100)) / 100 * circumference;
 
   const activeColor = selectedSubject?.color || "hsl(var(--accent))";
 
@@ -462,10 +585,10 @@ export default function SubjectStudyTimer() {
 
           {/* Mode toggle */}
           <div className="flex rounded-xl bg-secondary/40 p-1">
-            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); setTimeLeft(WORK_TIME); setFreeStudySeconds(0); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("pomodoro"); resetTimer(); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "pomodoro" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               🍅 Pomodoro
             </button>
-            <button onClick={() => { if (!isRunning) { setMode("free"); setFreeStudySeconds(0); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
+            <button onClick={() => { if (!isRunning) { setMode("free"); resetTimer(); } }} className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === "free" ? "bg-card text-study shadow-sm" : "text-muted-foreground"}`}>
               ⏱️ Free Study
             </button>
           </div>
@@ -501,7 +624,7 @@ export default function SubjectStudyTimer() {
                 <Pause className="w-4 h-4" /> Stop & Log
               </button>
             ) : (
-              <button onClick={() => isRunning ? setIsRunning(false) : startTimer()} disabled={!selectedSubject} className="btn-primary bg-study text-white flex items-center gap-2 disabled:opacity-30">
+              <button onClick={() => isRunning ? pauseTimer() : startTimer()} disabled={!selectedSubject} className="btn-primary bg-study text-white flex items-center gap-2 disabled:opacity-30">
                 {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 {isRunning ? "Pause" : "Start"}
               </button>
