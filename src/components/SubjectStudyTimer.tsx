@@ -245,63 +245,135 @@ export default function SubjectStudyTimer() {
   const [data, setData] = useState<StudyData>(loadData);
   const [activeTab, setActiveTab] = useState<"timer" | "stats" | "history">("timer");
 
-  // Timer state
+  // Timer state — timestamp-based
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(data.subjects[0]?.id || "");
   const [mode, setMode] = useState<"pomodoro" | "free">("pomodoro");
-  const [timeLeft, setTimeLeft] = useState(WORK_TIME);
-  const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
-  const [freeStudySeconds, setFreeStudySeconds] = useState(0);
   const [energyLevel, setEnergyLevel] = useState(3);
   const [showCelebration, setShowCelebration] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const wakeLockRef = useRef<any>(null);
 
-  // Subject management
-  const [showSubjectModal, setShowSubjectModal] = useState(false);
-  const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
-  const [sf, setSf] = useState({ name: "", color: SUBJECT_COLORS[0].value, weeklyGoalHours: "8" });
+  // Timestamp-based timer state
+  const [timerState, setTimerState] = useState<RunningTimerState | null>(loadTimerState);
+  const [displayMs, setDisplayMs] = useState(0); // remaining ms for pomodoro, elapsed ms for free
 
-  // Manual session
-  const [showManualModal, setShowManualModal] = useState(false);
-  const [manualSession, setManualSession] = useState({ subjectId: "", date: todayKey(), startTime: "09:00", durationMinutes: "25" });
+  const isRunning = timerState !== null && timerState.pausedRemaining == null;
 
-  // History filter
-  const [historyFilter, setHistoryFilter] = useState("");
+  const getPomoRemaining = useCallback(() => {
+    if (!timerState) return 0;
+    if (timerState.pausedRemaining != null) return timerState.pausedRemaining;
+    return Math.max(0, timerState.duration - (Date.now() - timerState.startedAt));
+  }, [timerState]);
+
+  const getFreeElapsed = useCallback(() => {
+    if (!timerState) return 0;
+    if (timerState.pausedRemaining != null) return timerState.pausedRemaining; // stores elapsed when paused
+    return Date.now() - timerState.startedAt;
+  }, [timerState]);
+
+  // Wake lock helpers
+  const requestWakeLock = async () => {
+    try { if ("wakeLock" in navigator) { wakeLockRef.current = await (navigator as any).wakeLock.request("screen"); } } catch {}
+  };
+  const releaseWakeLock = async () => {
+    try { if (wakeLockRef.current) { await wakeLockRef.current.release(); wakeLockRef.current = null; } } catch {}
+  };
 
   useEffect(() => { saveData(data); }, [data]);
 
   const selectedSubject = data.subjects.find(s => s.id === selectedSubjectId);
 
-  // Timer logic
+  // Pomodoro completion handler
+  const handlePomoComplete = useCallback(() => {
+    playBeep();
+    notifyComplete(isBreak);
+    releaseWakeLock();
+    if (!isBreak) {
+      logSessionDirect(WORK_TIME / 60);
+      setShowCelebration(true);
+      setTimeout(() => setShowCelebration(false), 2000);
+      setIsBreak(true);
+      // Auto-setup break (paused)
+      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: true, duration: BREAK_TIME_MS, subjectId: selectedSubjectId, pausedRemaining: BREAK_TIME_MS };
+      setTimerState(newTs);
+      saveTimerState(newTs);
+    } else {
+      setIsBreak(false);
+      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: false, duration: WORK_TIME_MS, subjectId: selectedSubjectId, pausedRemaining: WORK_TIME_MS };
+      setTimerState(newTs);
+      saveTimerState(newTs);
+    }
+  }, [isBreak, selectedSubjectId]);
+
+  // Direct log that doesn't depend on callback state
+  const logSessionDirect = useCallback((durationMinutes: number) => {
+    const sub = data.subjects.find(s => s.id === (timerState?.subjectId || selectedSubjectId));
+    if (!sub || durationMinutes < 0.5) return;
+    const now = new Date();
+    const st = sessionStartTime || now;
+    const session: StudySession = {
+      id: Date.now().toString(), subjectId: sub.id, subjectName: sub.name,
+      date: todayKey(),
+      startTime: `${st.getHours().toString().padStart(2, "0")}:${st.getMinutes().toString().padStart(2, "0")}`,
+      durationMinutes, energyLevel, mode,
+    };
+    setData(prev => ({ ...prev, sessions: [...prev.sessions, session] }));
+  }, [data.subjects, timerState, selectedSubjectId, sessionStartTime, energyLevel, mode]);
+
+  // Display update loop
   useEffect(() => {
-    if (!isRunning) return;
-    intervalRef.current = setInterval(() => {
-      if (mode === "pomodoro") {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            playBeep();
-            setIsRunning(false);
-            if (!isBreak) {
-              // Log session
-              logSession(WORK_TIME / 60);
-              setShowCelebration(true);
-              setTimeout(() => setShowCelebration(false), 2000);
-              setIsBreak(true);
-              return BREAK_TIME;
-            } else {
-              setIsBreak(false);
-              return WORK_TIME;
-            }
-          }
-          return prev - 1;
-        });
+    if (!timerState) { setDisplayMs(0); return; }
+
+    const update = () => {
+      if (timerState.mode === "pomodoro") {
+        const r = getPomoRemaining();
+        setDisplayMs(r);
+        if (r <= 0 && timerState.pausedRemaining == null) handlePomoComplete();
       } else {
-        setFreeStudySeconds(prev => prev + 1);
+        setDisplayMs(getFreeElapsed());
       }
-    }, 1000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [isRunning, isBreak, mode]);
+    };
+    update();
+
+    if (timerState.pausedRemaining != null) return;
+
+    const interval = setInterval(update, 500);
+    return () => clearInterval(interval);
+  }, [timerState, getPomoRemaining, getFreeElapsed, handlePomoComplete]);
+
+  // Visibility change handler
+  useEffect(() => {
+    const handle = () => {
+      if (document.visibilityState === "visible" && timerState && timerState.pausedRemaining == null) {
+        if (timerState.mode === "pomodoro") {
+          const r = getPomoRemaining();
+          if (r <= 0) handlePomoComplete();
+          else setDisplayMs(r);
+        } else {
+          setDisplayMs(getFreeElapsed());
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handle);
+    return () => document.removeEventListener("visibilitychange", handle);
+  }, [timerState, getPomoRemaining, getFreeElapsed, handlePomoComplete]);
+
+  // Restore on mount
+  useEffect(() => {
+    const ts = loadTimerState();
+    if (!ts) return;
+    setMode(ts.mode);
+    setIsBreak(ts.isBreak);
+    setSelectedSubjectId(ts.subjectId);
+    if (ts.pausedRemaining == null && ts.mode === "pomodoro") {
+      const r = Math.max(0, ts.duration - (Date.now() - ts.startedAt));
+      if (r <= 0) {
+        // Completed while away
+        handlePomoComplete();
+      }
+    }
+  }, []);
 
   const logSession = useCallback((durationMinutes: number) => {
     if (!selectedSubject || durationMinutes < 0.5) return;
