@@ -624,7 +624,7 @@ export default function SubjectStudyTimer() {
                 <Pause className="w-4 h-4" /> Stop & Log
               </button>
             ) : (
-              <button onClick={() => isRunning ? setIsRunning(false) : startTimer()} disabledpauseTimer(} className="btn-primary bg-study text-white flex items-center gap-2 disabled:opacity-30">
+              <button onClick={() => isRunning ? pauseTimer() : startTimer()} disabled={!selectedSubject} className="btn-primary bg-study text-white flex items-center gap-2 disabled:opacity-30">
                 {isRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 {isRunning ? "Pause" : "Start"}
               </button>
