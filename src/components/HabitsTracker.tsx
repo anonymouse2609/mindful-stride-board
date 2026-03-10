@@ -40,11 +40,25 @@ function saveData(data: HabitData) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function writeHabitsToday(data: HabitData) {
+  const todayIdx = getTodayIndex();
+  const total = data.habits.length;
+  let completed = 0;
+  data.habits.forEach((habit) => {
+    if (data.grid[habit]?.[todayIdx]) completed++;
+  });
+  const todayKey = new Date().toISOString().split("T")[0];
+  localStorage.setItem("habits_today", JSON.stringify({ completed, total, date: todayKey }));
+}
+
 export default function HabitsTracker() {
   const [data, setData] = useState<HabitData>(loadData);
   const [newHabit, setNewHabit] = useState("");
 
-  useEffect(() => { saveData(data); }, [data]);
+  useEffect(() => {
+    saveData(data);
+    writeHabitsToday(data);
+  }, [data]);
 
   const toggleDay = (habit: string, dayIdx: number) => {
     setData((prev) => {
