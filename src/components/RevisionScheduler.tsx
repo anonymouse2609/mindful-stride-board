@@ -148,6 +148,31 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
 
   const subjects = useMemo(() => getSubjects(), []);
 
+  // Expose addExternalTopic via ref for URL integration
+  useImperativeHandle(ref, () => ({
+    addExternalTopic: (t: { name: string; subject: string; difficulty: string; source: string }) => {
+      const diff = (t.difficulty.toLowerCase() as Difficulty) || "medium";
+      const validDiff: Difficulty = ["easy", "medium", "hard"].includes(diff) ? diff : "medium";
+      const subjectMatch = subjects.find(s => s.name === t.subject);
+      const topic: RevisionTopic = {
+        id: Date.now().toString(),
+        name: t.name,
+        subject: t.subject || "General",
+        subjectColor: subjectMatch?.color,
+        difficulty: validDiff,
+        dateFirstStudied: todayKey(),
+        currentStage: 0,
+        timesRevised: 0,
+        lastRevised: null,
+        nextDue: addDays(todayKey(), INTERVALS[validDiff][0]),
+        mastered: false,
+        revisionLog: [],
+        source: t.source,
+      };
+      setData(prev => ({ ...prev, topics: [...prev.topics, topic] }));
+    },
+  }));
+
   useEffect(() => { saveData(data); }, [data]);
 
   // Update streak
