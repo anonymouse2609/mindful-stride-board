@@ -12,12 +12,13 @@ interface RevisionTopic {
   subjectColor?: string;
   difficulty: Difficulty;
   dateFirstStudied: string;
-  currentStage: number; // 0-indexed into intervals
+  currentStage: number;
   timesRevised: number;
   lastRevised: string | null;
   nextDue: string;
   mastered: boolean;
   revisionLog: { date: string; action: "revised" | "too_hard" | "too_easy" }[];
+  source?: string;
 }
 
 interface RevisionData {
