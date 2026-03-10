@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import QuoteSection from "@/components/QuoteSection";
 import SubjectStudyTimer from "@/components/SubjectStudyTimer";
 import TodoList from "@/components/TodoList";
@@ -11,22 +13,26 @@ import GrowthChatbot, { type AppState } from "@/components/GrowthChatbot";
 import FocusScore from "@/components/FocusScore";
 import RevisionScheduler from "@/components/RevisionScheduler";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useToast } from "@/hooks/use-toast";
 
 function getAppState(): AppState {
   const todayKey = new Date().toISOString().split("T")[0];
 
   let habitsCompleted = 0, habitsTotal = 0, habitNames = "";
   try {
-    const raw = localStorage.getItem("dashboard-habits");
+    const raw = localStorage.getItem("habits_today");
     if (raw) {
       const data = JSON.parse(raw);
-      const todayIdx = (new Date().getDay() + 6) % 7;
-      habitsTotal = data.habits?.length || 0;
-      habitNames = (data.habits || []).join(", ");
-      habitsCompleted = (data.habits || []).filter((_: string, i: number) => {
-        const key = `${i}`;
-        return data.grid?.[key]?.[todayIdx];
-      }).length;
+      if (data.date === todayKey) {
+        habitsCompleted = data.completed || 0;
+        habitsTotal = data.total || 0;
+      }
+    }
+    // fallback to old key for habit names
+    const rawH = localStorage.getItem("dashboard-habits");
+    if (rawH) {
+      const hData = JSON.parse(rawH);
+      habitNames = (hData.habits || []).join(", ");
     }
   } catch {}
 
@@ -86,15 +92,51 @@ function getAppState(): AppState {
 }
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const now = new Date();
   const greeting =
     now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
 
+  // Load profile name from settings
+  const profileName = (() => {
+    try {
+      const raw = localStorage.getItem("growth_settings");
+      if (raw) {
+        const s = JSON.parse(raw);
+        return s.profile?.name || "";
+      }
+    } catch {}
+    return "";
+  })();
+
   const [appState, setAppState] = useState<AppState>(getAppState);
+  const revisionRef = useRef<{ addExternalTopic: (topic: { name: string; subject: string; difficulty: string; source: string }) => void } | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => setAppState(getAppState()), 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  // URL Integration from Study Buddy
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("action") === "add_revision") {
+      const subject = params.get("subject");
+      const chapter = params.get("chapter");
+      const difficulty = params.get("difficulty") || "medium";
+      if (subject && chapter) {
+        // Wait a bit for RevisionScheduler to mount
+        setTimeout(() => {
+          if (revisionRef.current) {
+            revisionRef.current.addExternalTopic({ name: chapter, subject, difficulty, source: "Study Buddy" });
+            toast({ title: `📚 ${chapter} added to revision schedule!` });
+          }
+          window.history.replaceState({}, "", "/");
+          setTimeout(() => document.getElementById("revision-scheduler")?.scrollIntoView({ behavior: "smooth" }), 500);
+        }, 800);
+      }
+    }
   }, []);
 
   const handleChatAction = useCallback((action: string, param: string | null) => {
@@ -113,13 +155,18 @@ const Index = () => {
         <div className="flex items-center justify-between" style={{ animation: "fade-in 0.4s ease-out forwards" }}>
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-              {greeting}.
+              {greeting}{profileName ? `, ${profileName}` : ""}.
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
             </p>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/settings")} className="icon-btn w-10 h-10 min-w-0 min-h-0 bg-secondary/40 text-muted-foreground hover:text-foreground" title="Settings">
+              <Settings className="w-5 h-5" />
+            </button>
+            <ThemeToggle />
+          </div>
         </div>
 
         <FocusScore />
@@ -139,7 +186,9 @@ const Index = () => {
         </div>
 
         <NutritionTracker />
-        <RevisionScheduler />
+        <div id="revision-scheduler">
+          <RevisionScheduler ref={revisionRef} />
+        </div>
         <WeeklyProgress />
 
         <div className="text-center pb-4 sm:pb-6">

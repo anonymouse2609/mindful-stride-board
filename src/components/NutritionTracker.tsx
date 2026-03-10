@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Settings2, RotateCcw, Search, X, ChefHat, Edit2, BookOpen } from "lucide-react";
 
 interface FoodItem {
@@ -750,6 +751,10 @@ const FOODS: FoodItem[] = [
   { name: "Popcorn (plain)", calories: 375, protein: 11, carbs: 74, fat: 4, fiber: 15 },
   { name: "Dark Chocolate", calories: 546, protein: 5, carbs: 60, fat: 31, fiber: 7 },
   { name: "Milk Chocolate", calories: 535, protein: 8, carbs: 59, fat: 30, fiber: 3.4 },
+  { name: "Vermicelli (cooked)", calories: 130, protein: 3, carbs: 27, fat: 0.5, fiber: 1 },
+  { name: "Soyabean (cooked)", calories: 173, protein: 17, carbs: 10, fat: 9, fiber: 6 },
+  { name: "Methi Paratha", calories: 300, protein: 8, carbs: 47, fat: 8, fiber: 3 },
+  { name: "Corn Flakes (dry)", calories: 367, protein: 7, carbs: 83, fat: 0.7, fiber: 3 },
   { name: "Nutella", calories: 539, protein: 6, carbs: 58, fat: 31, fiber: 3.4 },
   { name: "Maple Syrup", calories: 260, protein: 0, carbs: 67, fat: 0, fiber: 0 },
   { name: "Jam / Preserves", calories: 250, protein: 0.4, carbs: 65, fat: 0.1, fiber: 1 },
@@ -882,6 +887,7 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
 }
 
 export default function NutritionTracker() {
+  const { toast } = useToast();
   const [data, setData] = useState<StoredData>(loadData);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -985,6 +991,7 @@ export default function NutritionTracker() {
       setCustomFoods((prev) => [...prev, food]);
     }
     setShowCustomModal(false);
+    toast({ title: editingCustom ? "Custom food updated! ✏️" : "Custom food saved! ✅" });
   };
 
   const deleteCustomFood = (id: string) => { setCustomFoods((prev) => prev.filter((f) => f.id !== id)); };

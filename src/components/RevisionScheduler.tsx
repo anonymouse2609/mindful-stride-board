@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Plus, Check, X, Search, Edit2, Trash2, RotateCcw, Calendar, Star, BookOpen, ChevronLeft, ChevronRight, Zap, AlertTriangle, ChevronDown, Loader2 } from "lucide-react";
 import { sanitizeText } from "@/lib/sanitize";
 
@@ -12,12 +12,13 @@ interface RevisionTopic {
   subjectColor?: string;
   difficulty: Difficulty;
   dateFirstStudied: string;
-  currentStage: number; // 0-indexed into intervals
+  currentStage: number;
   timesRevised: number;
   lastRevised: string | null;
   nextDue: string;
   mastered: boolean;
   revisionLog: { date: string; action: "revised" | "too_hard" | "too_easy" }[];
+  source?: string;
 }
 
 interface RevisionData {
@@ -123,7 +124,7 @@ const PYQ_YEARS = ["2024", "2023", "2022", "2021", "2020", "2019"];
 
 // ===== COMPONENT =====
 
-export default function RevisionScheduler() {
+const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref: React.Ref<{ addExternalTopic: (t: { name: string; subject: string; difficulty: string; source: string }) => void }>) {
   const [data, setData] = useState<RevisionData>(loadData);
   const [tab, setTab] = useState<TabType>("today");
   const [showAdd, setShowAdd] = useState(false);
@@ -146,6 +147,31 @@ export default function RevisionScheduler() {
   const [form, setForm] = useState({ name: "", subject: "", difficulty: "medium" as Difficulty, dateFirstStudied: todayKey() });
 
   const subjects = useMemo(() => getSubjects(), []);
+
+  // Expose addExternalTopic via ref for URL integration
+  useImperativeHandle(ref, () => ({
+    addExternalTopic: (t: { name: string; subject: string; difficulty: string; source: string }) => {
+      const diff = (t.difficulty.toLowerCase() as Difficulty) || "medium";
+      const validDiff: Difficulty = ["easy", "medium", "hard"].includes(diff) ? diff : "medium";
+      const subjectMatch = subjects.find(s => s.name === t.subject);
+      const topic: RevisionTopic = {
+        id: Date.now().toString(),
+        name: t.name,
+        subject: t.subject || "General",
+        subjectColor: subjectMatch?.color,
+        difficulty: validDiff,
+        dateFirstStudied: todayKey(),
+        currentStage: 0,
+        timesRevised: 0,
+        lastRevised: null,
+        nextDue: addDays(todayKey(), INTERVALS[validDiff][0]),
+        mastered: false,
+        revisionLog: [],
+        source: t.source,
+      };
+      setData(prev => ({ ...prev, topics: [...prev.topics, topic] }));
+    },
+  }));
 
   useEffect(() => { saveData(data); }, [data]);
 
@@ -469,6 +495,7 @@ export default function RevisionScheduler() {
                         {topic.subject}
                       </span>
                       <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${dc.bg} ${dc.text}`}>{dc.label}</span>
+                      {topic.source && <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-500/15 text-blue-400">From {topic.source} 📚</span>}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-sm">
                       {isOverdue && !doneToday ? (
@@ -587,6 +614,7 @@ export default function RevisionScheduler() {
                       <span className="text-[15px] font-semibold text-foreground">{topic.name}</span>
                       <span className="px-2 py-0.5 rounded-full text-[10px]" style={{ background: topic.subjectColor ? `${topic.subjectColor}20` : "rgba(255,255,255,0.05)", color: topic.subjectColor || "inherit" }}>{topic.subject}</span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] ${dc.bg} ${dc.text}`}>{dc.label}</span>
+                      {topic.source && <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/15 text-blue-400">From {topic.source} 📚</span>}
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                       <span>Revised {topic.timesRevised}×</span>
@@ -905,4 +933,6 @@ export default function RevisionScheduler() {
       )}
     </div>
   );
-}
+});
+
+export default RevisionScheduler;

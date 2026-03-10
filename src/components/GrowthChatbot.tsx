@@ -37,11 +37,8 @@ interface BotRule {
 }
 
 const RULES: BotRule[] = [
-  // Greetings
   { keywords: ["hi", "hello", "hey", "sup", "yo", "hola"],
     response: () => ({ text: "Hey! 👋 I'm your Growth assistant. I can help you navigate the app, explain features, and track your progress. What would you like to do?", quickReplies: ["How am I doing today?", "Log food", "Start Pomodoro"] }) },
-
-  // How am I doing / status / summary
   { keywords: ["how am i doing", "my status", "summary", "progress today", "daily summary", "today's progress"],
     response: (s) => {
       const lines: string[] = ["📊 **Here's your day so far:**"];
@@ -59,8 +56,6 @@ const RULES: BotRule[] = [
       return { text: lines.join("\n"), quickReplies: nudges.length > 0 ? nudges : ["Motivate me"] };
     }
   },
-
-  // Navigation - Study Timer
   { keywords: ["study", "pomodoro", "timer", "study session", "start studying", "focus timer", "start pomodoro", "open pomodoro", "study timer", "subject"],
     response: (s) => {
       const studyTime = s.pomodoro?.todayMinutes || 0;
@@ -68,36 +63,20 @@ const RULES: BotRule[] = [
       return { text: `📚 The **Subject Study Timer** is at the top-left of your dashboard. It supports Pomodoro (25/5) and Free Study modes with subject tracking.\n\n${sessionCount > 0 ? `You've done ${sessionCount} sessions today (${Math.floor(studyTime / 60)}h ${Math.round(studyTime % 60)}m). ` : "No sessions yet today. "}Scroll up and select a subject to start!`, quickReplies: ["How does the study timer work?", "Show my macros"] };
     }
   },
-
-  // Navigation - Habits
   { keywords: ["habit", "habits", "my habits", "show habits", "open habits", "where is habits", "habit tracker"],
     response: (s) => ({ text: `✅ The **Habits Tracker** is in the right column of your dashboard. You have ${s.habitsTotal || 5} habits set up — ${s.habitsCompleted || 0} checked today.\n\nScroll to the right column to find it!`, quickReplies: ["How do I add a habit?", "How am I doing today?"] }) },
-
-  // Navigation - Nutrition
   { keywords: ["nutrition", "food", "macros", "calories", "log food", "track food", "diet", "meal", "nutrition tracker", "where is nutrition"],
     response: () => ({ text: "🥗 The **Nutrition Tracker** is below the main grid on your dashboard. You can search from 450+ vegetarian foods and log meals.\n\nScroll down to find it! Use the search bar to find any food.", quickReplies: ["How do I log food?", "Create custom food", "Build a recipe"] }) },
-
-  // Navigation - Todos
   { keywords: ["todo", "task", "tasks", "to do", "to-do", "show tasks", "open tasks", "my tasks"],
     response: (s) => ({ text: `📝 The **Todo List** is in the right column at the top. You have ${s.todos?.completed || 0}/${s.todos?.total || 0} tasks done today.\n\nScroll to the right column to manage your tasks!`, quickReplies: ["Show habits", "How am I doing today?"] }) },
-
-  // Navigation - Goals
   { keywords: ["goal", "goals", "daily goals", "my goals", "open goals"],
     response: () => ({ text: "🎯 **Daily Goals** are below the Pomodoro timer on the left side. Set your targets for the day and track them!\n\nScroll to the left column to find it.", quickReplies: ["Open Pomodoro", "How am I doing today?"] }) },
-
-  // Navigation - Music
   { keywords: ["music", "focus music", "study music", "play music", "ambient", "lo-fi"],
     response: () => ({ text: "🎵 The **Focus Music Player** is in the left column, below Daily Goals. Play ambient study music to help you concentrate!\n\nScroll down in the left column to find it.", quickReplies: ["Start Pomodoro", "How am I doing today?"] }) },
-
-  // Navigation - Weekly Progress
   { keywords: ["weekly", "progress", "weekly progress", "week", "show progress"],
     response: () => ({ text: "📈 **Weekly Progress** is at the bottom of your dashboard. It shows an overview of your entire week's performance.\n\nScroll to the very bottom to see it!", quickReplies: ["How am I doing today?", "Show habits"] }) },
-
-  // Navigation - Quote
   { keywords: ["quote", "motivation quote", "daily quote", "quote of the day"],
     response: () => ({ text: "💬 The **Quote of the Day** is right at the top of your dashboard, below the greeting. A fresh motivational quote every day!", quickReplies: ["Motivate me", "How am I doing today?"] }) },
-
-  // Show macros
   { keywords: ["show macros", "my macros", "macro summary", "macros today", "show my macros"],
     response: (s) => {
       if (!s.nutrition || s.nutrition.mealsCount === 0) {
@@ -106,28 +85,16 @@ const RULES: BotRule[] = [
       return { text: `📊 **Today's Macros:**\n• Calories: ${Math.round(s.nutrition.calories)}/${s.nutrition.caloriesGoal}\n• Protein: ${Math.round(s.nutrition.protein)}g\n• Carbs: ${Math.round(s.nutrition.carbs)}g\n• Fat: ${Math.round(s.nutrition.fat)}g\n\nKeep it up! 💪`, quickReplies: ["Log more food", "How am I doing today?"] };
     }
   },
-
-  // How to log food
   { keywords: ["how do i log", "how to log food", "how to add food", "how to track food", "log a meal"],
     response: () => ({ text: "🍽️ **To log food:**\n1. Scroll down to the Nutrition Tracker\n2. Type a food name in the search bar (e.g. 'roti', 'banana')\n3. Select the food from the dropdown\n4. Enter quantity (count or grams)\n5. Click the + button to add it\n\nThe macros update automatically!", quickReplies: ["Create custom food", "Build a recipe", "Show macros"] }) },
-
-  // Custom food
   { keywords: ["custom food", "create food", "add my own food", "make food", "create custom"],
     response: () => ({ text: "🆕 **To create a custom food:**\n1. Go to the Nutrition Tracker\n2. Click the **+** button in the header (next to the ⚙️ icon)\n3. Enter the food name, optional unit (glass/piece/bowl), and macros per 100g\n4. Click Save — it appears in search with a 'Custom' badge!\n\nYou can edit/delete custom foods from the 'My Foods' link.", quickReplies: ["Build a recipe", "How do I log food?"] }) },
-
-  // Recipe builder
   { keywords: ["recipe", "build recipe", "combo", "recipe builder", "create recipe", "make recipe"],
     response: () => ({ text: "🍳 **To build a recipe:**\n1. Go to the Nutrition Tracker\n2. Click the **chef hat** icon (🍳) in the header\n3. Name your recipe (e.g. 'Ghee Khakra')\n4. Search & add ingredients with quantities\n5. Set how many servings it makes\n6. Save — it appears in food search with a 🍳 badge!\n\nMacros are auto-calculated per serving.", quickReplies: ["Create custom food", "Log food"] }) },
-
-  // Add habit
   { keywords: ["add habit", "new habit", "create habit"],
     response: () => ({ text: "✏️ To add a new habit, go to the **Habits Tracker** (right column) and look for the edit/add option. You can customize your daily habit list there!\n\nDefault habits include water, exercise, study, sleep, and meditation.", quickReplies: ["Show habits", "How am I doing today?"] }) },
-
-  // How does Study Timer work
   { keywords: ["how does pomodoro", "what is pomodoro", "pomodoro technique", "explain pomodoro", "how does study timer", "how does the study", "explain study timer"],
     response: () => ({ text: "📚 **The Subject Study Timer:**\n1. Add subjects (Maths, Physics, etc.) with color tags and weekly hour goals\n2. Select a subject from the dropdown\n3. Choose mode: **🍅 Pomodoro** (25min work + 5min break) or **⏱️ Free Study** (runs until you stop)\n4. Sessions are logged automatically with subject, duration, and energy level\n5. Check the **Stats** tab for weekly progress bars, pie charts, streak, and insights\n6. The **History** tab shows all sessions with filters\n\nWeekly hours reset every Monday but all-time stats are preserved!", quickReplies: ["Start studying", "How am I doing today?"] }) },
-
-  // Motivate me
   { keywords: ["motivate", "motivation", "inspire", "i'm lazy", "demotivated", "unmotivated", "i need motivation"],
     response: () => {
       const quotes = [
@@ -142,39 +109,24 @@ const RULES: BotRule[] = [
       return { text: quotes[Math.floor(Math.random() * quotes.length)], quickReplies: ["Start Pomodoro", "Log breakfast", "How am I doing today?"] };
     }
   },
-
-  // What can you do
   { keywords: ["what can you do", "help", "features", "what do you do", "capabilities", "commands"],
     response: () => ({ text: "🤖 **Here's what I can help with:**\n\n• **Navigate** — 'open pomodoro', 'show habits', 'where is nutrition'\n• **Explain features** — 'how do I log food?', 'how does pomodoro work?'\n• **Daily summary** — 'how am I doing today?', 'show my macros'\n• **Motivate** — 'motivate me'\n• **Guide** — 'create custom food', 'build a recipe'\n\nJust type naturally!", quickReplies: ["How am I doing today?", "Motivate me", "Show macros"] }) },
-
-  // RSI / terms
-  { keywords: ["what is rsi", "rsi meaning", "what does rsi mean"],
-    response: () => ({ text: "📈 **RSI (Relative Strength Index)** is a momentum indicator used in stock trading. It ranges from 0-100 — above 70 means overbought (might drop), below 30 means oversold (might rise).\n\nIt helps you gauge if a stock is overvalued or undervalued!", quickReplies: ["How am I doing today?", "Open nutrition tracker"] }) },
-
-  // Watchlist
-  { keywords: ["watchlist", "my watchlist", "stocks", "show watchlist"],
-    response: () => ({ text: "📋 This app focuses on productivity and nutrition tracking. Stock watchlists aren't a current feature — but I can help with everything else here!\n\nWant to check your habits, macros, or start studying?", quickReplies: ["How am I doing today?", "Show macros"] }) },
-
-  // Thank you
+  { keywords: ["settings", "open settings", "preferences", "configure"],
+    response: () => ({ text: "⚙️ You can find **Settings** by clicking the gear icon (⚙️) in the top-right corner of the dashboard. There you can configure your profile, Pomodoro timer, notifications, Focus Score, theme, and manage your data.", quickReplies: ["How am I doing today?"] }) },
   { keywords: ["thank", "thanks", "thank you", "thx", "ty"],
     response: () => ({ text: "You're welcome! 😊 Happy to help anytime. Keep crushing your goals! 💪", quickReplies: ["How am I doing today?", "Motivate me"] }) },
-
-  // Bye
   { keywords: ["bye", "goodbye", "see you", "later", "cya"],
     response: () => ({ text: "See you later! 👋 Keep up the great work. I'll be here whenever you need me!", quickReplies: ["How am I doing today?"] }) },
 ];
 
 function getResponse(input: string, state: AppState): { text: string; quickReplies: string[] } {
   const lower = input.toLowerCase().trim();
-
   for (const rule of RULES) {
     if (rule.keywords.some((kw) => lower.includes(kw))) {
       const result = rule.response(state);
       return { text: result.text, quickReplies: result.quickReplies || [] };
     }
   }
-
-  // Fallback
   return {
     text: "🤔 I'm not sure about that, but I can help you navigate the app, explain features, or give you a daily summary! Try asking something like 'how am I doing today?' or 'how do I log food?'",
     quickReplies: ["What can you do?", "How am I doing today?", "Motivate me"],
@@ -225,13 +177,10 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
 
   const sendMessage = (text: string) => {
     if (!text.trim() || isTyping) return;
-
     const userMsg: ChatMessage = { role: "user", content: text.trim() };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsTyping(true);
-
-    // Simulate brief typing delay for natural feel
     setTimeout(() => {
       const { text: responseText, quickReplies } = getResponse(text, appState);
       setMessages((prev) => [...prev, { role: "assistant", content: responseText, quickReplies }]);
@@ -246,7 +195,6 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
 
   return (
     <>
-      {/* Floating button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -257,27 +205,26 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
         </button>
       )}
 
-      {/* Chat panel */}
       {isOpen && (
-        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 section-chatbot">
+        <div className="fixed bottom-5 right-5 z-50 w-[340px] sm:w-[380px] max-h-[520px] flex flex-col rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 bg-[#0d0d14] border border-[#6366f1]">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[#6366f1]/30 bg-[#0d0d14]">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-full bg-[#6366f1]/20 flex items-center justify-center">
                 <Sparkles className="w-3.5 h-3.5 text-white" />
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-white">Growth AI</h3>
-                <p className="text-[9px] text-foreground/50">Your personal assistant</p>
+                <p className="text-[9px] text-white/50">Your personal assistant</p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+            <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-md text-white/50 hover:text-white hover:bg-white/10 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 min-h-0 max-h-[360px]">
+          <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3 min-h-0 max-h-[360px] bg-[#0d0d14]">
             {messages.map((msg, i) => {
               const isUser = msg.role === "user";
               return (
@@ -285,8 +232,8 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
                   <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
                       isUser
-                        ? "bg-[hsl(221,83%,53%)] text-white rounded-br-md"
-                        : "rounded-bl-md bg-secondary/60 text-foreground" } `}>
+                        ? "bg-blue-900 text-white rounded-br-md"
+                        : "rounded-bl-md bg-[#13131f] text-white/90"}`}>
                       {msg.content.split(/(\*\*.*?\*\*)/).map((part, j) => {
                         if (part.startsWith("**") && part.endsWith("**")) {
                           return <strong key={j}>{part.slice(2, -2)}</strong>;
@@ -295,11 +242,10 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
                       })}
                     </div>
                   </div>
-                  {/* Quick replies for this message */}
                   {msg.role === "assistant" && msg.quickReplies && msg.quickReplies.length > 0 && i === messages.length - 1 && !isTyping && (
                     <div className="flex flex-wrap gap-1.5 mt-2 ml-1">
                       {msg.quickReplies.map((qr, j) => (
-                        <button key={j} onClick={() => sendMessage(qr)} className="px-3 py-1.5 rounded-full bg-secondary/60 border border-border/40 text-[10px] text-foreground hover:bg-secondary hover:border-accent/40 transition-all">
+                        <button key={j} onClick={() => sendMessage(qr)} className="px-3 py-1.5 rounded-full bg-[#1a1a2e] border border-[#6366f1]/30 text-[10px] text-white/80 hover:bg-[#6366f1]/20 hover:border-[#6366f1]/50 transition-all">
                           {qr}
                         </button>
                       ))}
@@ -311,9 +257,9 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-secondary/60 rounded-2xl rounded-bl-md px-3 py-2 flex items-center gap-1">
+                <div className="bg-[#13131f] rounded-2xl rounded-bl-md px-3 py-2 flex items-center gap-1">
                   {[0, 1, 2].map((i) => (
-                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce" style={{ animationDelay: `${i * 150}ms`, animationDuration: "800ms" }} />
+                    <div key={i} className="w-1.5 h-1.5 rounded-full bg-white/30 animate-bounce" style={{ animationDelay: `${i * 150}ms`, animationDuration: "800ms" }} />
                   ))}
                 </div>
               </div>
@@ -323,16 +269,16 @@ export default function GrowthChatbot({ appState, onAction }: { appState: AppSta
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-border" style={{ background: "hsla(240, 10%, 8%, 0.6)" }}>
+          <form onSubmit={handleSubmit} className="px-3 py-2.5 border-t border-[#6366f1]/30 bg-[#0d0d14]">
             <div className="flex items-center gap-2">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask anything..."
-                className="flex-1 rounded-xl px-3 py-2 text-xs placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-chatbotAccent/40" style={{ background: "hsl(240, 12%, 8%)", color: "hsl(220, 13%, 91%)", border: "1px solid rgba(255,255,255,0.07)" }}
+                className="flex-1 rounded-xl px-3 py-2 text-xs placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-[#6366f1]/40 bg-[#13131f] text-white/90 border border-white/10"
                 disabled={isTyping}
               />
-              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-chatbotAccent text-white hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
+              <button type="submit" disabled={!input.trim() || isTyping} className="p-2 rounded-xl bg-[#6366f1] text-white hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
                 <Send className="w-3.5 h-3.5" />
               </button>
             </div>
