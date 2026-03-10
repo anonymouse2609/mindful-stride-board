@@ -931,4 +931,6 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
       )}
     </div>
   );
-}
+});
+
+export default RevisionScheduler;
