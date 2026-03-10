@@ -124,7 +124,7 @@ const PYQ_YEARS = ["2024", "2023", "2022", "2021", "2020", "2019"];
 
 // ===== COMPONENT =====
 
-export default function RevisionScheduler() {
+const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref: React.Ref<{ addExternalTopic: (t: { name: string; subject: string; difficulty: string; source: string }) => void }>) {
   const [data, setData] = useState<RevisionData>(loadData);
   const [tab, setTab] = useState<TabType>("today");
   const [showAdd, setShowAdd] = useState(false);
