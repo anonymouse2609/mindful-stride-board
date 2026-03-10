@@ -887,6 +887,7 @@ function Modal({ open, onClose, title, children }: { open: boolean; onClose: () 
 }
 
 export default function NutritionTracker() {
+  const { toast } = useToast();
   const [data, setData] = useState<StoredData>(loadData);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
