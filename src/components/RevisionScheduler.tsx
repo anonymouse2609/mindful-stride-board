@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Plus, Check, X, Search, Edit2, Trash2, RotateCcw, Calendar, Star, BookOpen, ChevronLeft, ChevronRight, Zap, AlertTriangle, ChevronDown, Loader2 } from "lucide-react";
 import { sanitizeText } from "@/lib/sanitize";
 
