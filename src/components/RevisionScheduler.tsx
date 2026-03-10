@@ -495,6 +495,7 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
                         {topic.subject}
                       </span>
                       <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${dc.bg} ${dc.text}`}>{dc.label}</span>
+                      {topic.source && <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-500/15 text-blue-400">From {topic.source} 📚</span>}
                     </div>
                     <div className="flex items-center gap-2 mt-1 text-sm">
                       {isOverdue && !doneToday ? (
