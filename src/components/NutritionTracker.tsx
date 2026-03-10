@@ -989,6 +989,9 @@ export default function NutritionTracker() {
       setCustomFoods((prev) => [...prev, food]);
     }
     setShowCustomModal(false);
+    // Show success toast
+    const event = new CustomEvent("show-toast", { detail: { title: editingCustom ? "Custom food updated! ✏️" : "Custom food saved! ✅" } });
+    window.dispatchEvent(event);
   };
 
   const deleteCustomFood = (id: string) => { setCustomFoods((prev) => prev.filter((f) => f.id !== id)); };

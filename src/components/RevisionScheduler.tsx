@@ -614,6 +614,7 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
                       <span className="text-[15px] font-semibold text-foreground">{topic.name}</span>
                       <span className="px-2 py-0.5 rounded-full text-[10px]" style={{ background: topic.subjectColor ? `${topic.subjectColor}20` : "rgba(255,255,255,0.05)", color: topic.subjectColor || "inherit" }}>{topic.subject}</span>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] ${dc.bg} ${dc.text}`}>{dc.label}</span>
+                      {topic.source && <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/15 text-blue-400">From {topic.source} 📚</span>}
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                       <span>Revised {topic.timesRevised}×</span>
