@@ -54,7 +54,6 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
       const sessions = (data.sessions || []).filter((s: any) => s.date === todayKey);
       const todayMinutes = sessions.reduce((a: number, s: any) => a + (s.durationMinutes || 0), 0);
       
-      // Calculate daily goal from weekly goals
       let totalWeeklyGoalHours = subjects.reduce((a: number, s: any) => a + (s.weeklyGoalHours || 0), 0);
       const dailyGoalMinutes = totalWeeklyGoalHours > 0 ? (totalWeeklyGoalHours / 7) * 60 : 60;
       
@@ -63,6 +62,7 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
       else if (ratio >= 0.75) study = 25;
       else if (ratio >= 0.5) study = 15;
       else if (ratio >= 0.25) study = 8;
+      else if (sessions.length > 0) study = 5; // at least some study
       
       if (study < 35) {
         const remaining = Math.ceil((dailyGoalMinutes - todayMinutes) / 60 * 10) / 10;
@@ -73,7 +73,7 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
     }
   } catch {}
 
-  // Nutrition (25 pts)
+  // Nutrition (25 pts) - within 200 cal of goal = full points
   try {
     const raw = localStorage.getItem("dashboard-nutrition");
     if (raw) {
@@ -92,8 +92,9 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
           totalProtein += e.food.protein * m;
         });
 
-        if (Math.abs(totalCal - calGoal) / calGoal <= 0.1) nutrition += 10;
-        else if (meals >= 1) nudges.push("Get within 10% of calorie goal for 10 more points");
+        // Within 200 calories of goal = full 10 points
+        if (Math.abs(totalCal - calGoal) <= 200) nutrition += 10;
+        else if (meals >= 1) nudges.push("Get within 200 cal of goal for 10 more points");
 
         if (totalProtein >= proteinGoal) nutrition += 10;
         else if (meals >= 1) nudges.push(`Eat ${Math.ceil(proteinGoal - totalProtein)}g more protein for 10 points`);
@@ -105,22 +106,40 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
     }
   } catch {}
 
-  // Habits (25 pts)
+  // Habits (25 pts) — read from habits_today key directly
   try {
-    const raw = localStorage.getItem("dashboard-habits");
+    const raw = localStorage.getItem("habits_today");
     if (raw) {
       const data = JSON.parse(raw);
-      const todayIdx = (new Date().getDay() + 6) % 7;
-      const total = data.habits?.length || 0;
-      if (total > 0) {
-        const perHabit = 25 / total;
-        let completed = 0;
-        (data.habits || []).forEach((_: string, i: number) => {
-          if (data.grid?.[`${i}`]?.[todayIdx]) completed++;
-        });
-        habits = Math.round(perHabit * completed);
-        const remaining = total - completed;
-        if (remaining > 0) nudges.push(`Complete ${remaining} more habit${remaining > 1 ? "s" : ""} to earn ${Math.round(perHabit * remaining)} more points`);
+      if (data.date === todayKey) {
+        const total = data.total || 0;
+        const completed = data.completed || 0;
+        if (total > 0) {
+          habits = Math.round((completed / total) * 25);
+          const remaining = total - completed;
+          if (remaining > 0) nudges.push(`Complete ${remaining} more habit${remaining > 1 ? "s" : ""} to earn ${Math.round((remaining / total) * 25)} more points`);
+        }
+      }
+    } else {
+      // Fallback to old method
+      const rawOld = localStorage.getItem("dashboard-habits");
+      if (rawOld) {
+        const data = JSON.parse(rawOld);
+        const todayIdx = (new Date().getDay() + 6) % 7;
+        const total = data.habits?.length || 0;
+        if (total > 0) {
+          const perHabit = 25 / total;
+          let completed = 0;
+          (data.habits || []).forEach((_: string, i: number) => {
+            if (data.grid?.[`${i}`]?.[todayIdx]) completed++;
+          });
+          // Also check by habit name keys
+          (data.habits || []).forEach((h: string) => {
+            if (data.grid?.[h]?.[todayIdx]) completed++;
+          });
+          // Deduplicate - use max
+          habits = Math.min(25, Math.round(perHabit * completed));
+        }
       }
     }
   } catch {}
@@ -155,7 +174,6 @@ function calculateScore(): { score: number; breakdown: { study: number; nutritio
         if (allDone) {
           revisionBonus = 10;
         } else {
-          // Check overdue > 2 days
           const overdueCount = dueToday.filter((t: any) => {
             const diff = Math.floor((new Date(todayKey).getTime() - new Date(t.nextDue).getTime()) / 86400000);
             return diff > 2 && !(t.revisionLog || []).some((r: any) => r.date === todayKey);
@@ -181,6 +199,35 @@ function loadData(): FocusScoreData {
 
 function saveData(data: FocusScoreData) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// Save today's score to per-day history key
+function saveHistoryScore(score: number, breakdown: { study: number; nutrition: number; habits: number; energy: number }) {
+  const key = `focus_history_${getTodayKey()}`;
+  localStorage.setItem(key, JSON.stringify({ score, breakdown, timestamp: Date.now() }));
+}
+
+// Load 30 days of history from per-day keys
+function load30DayHistory(): DailyScore[] {
+  const result: DailyScore[] = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateKey = d.toISOString().split("T")[0];
+    const histKey = `focus_history_${dateKey}`;
+    try {
+      const raw = localStorage.getItem(histKey);
+      if (raw) {
+        const data = JSON.parse(raw);
+        result.push({ date: dateKey, score: data.score || 0, breakdown: data.breakdown || { study: 0, nutrition: 0, habits: 0, energy: 0 }, locked: dateKey !== getTodayKey() });
+      } else {
+        result.push({ date: dateKey, score: 0, breakdown: { study: 0, nutrition: 0, habits: 0, energy: 0 }, locked: true });
+      }
+    } catch {
+      result.push({ date: dateKey, score: 0, breakdown: { study: 0, nutrition: 0, habits: 0, energy: 0 }, locked: true });
+    }
+  }
+  return result;
 }
 
 function getScoreColor(score: number): string {
@@ -218,13 +265,37 @@ const FocusScore = () => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showEndOfDay, setShowEndOfDay] = useState(false);
   const [newMilestone, setNewMilestone] = useState<string | null>(null);
+  const [currentScore, setCurrentScore] = useState(0);
+  const [currentBreakdown, setCurrentBreakdown] = useState({ study: 0, nutrition: 0, habits: 0, energy: 0 });
+  const [currentNudges, setCurrentNudges] = useState<string[]>([]);
 
-  const { score, breakdown, nudges } = useMemo(() => calculateScore(), [data]);
-
-  // Update today's score and check milestones
+  // Midnight reset check
   useEffect(() => {
-    const interval = setInterval(() => {
+    const checkMidnight = () => {
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() < 2) {
+        // It's midnight — recalculate (will be 0 since no activity today)
+        const result = calculateScore();
+        setCurrentScore(result.score);
+        setCurrentBreakdown(result.breakdown);
+        setCurrentNudges(result.nudges);
+      }
+    };
+    const interval = setInterval(checkMidnight, 60000); // check every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update score every 3 seconds + save history every hour
+  useEffect(() => {
+    const update = () => {
       const result = calculateScore();
+      setCurrentScore(result.score);
+      setCurrentBreakdown(result.breakdown);
+      setCurrentNudges(result.nudges);
+      
+      // Save to per-day history key
+      saveHistoryScore(result.score, result.breakdown);
+
       setData(prev => {
         const todayKey = getTodayKey();
         const updated = { ...prev };
@@ -241,27 +312,7 @@ const FocusScore = () => {
           updated.scores.push(todayScore);
         }
 
-        // Fill missing days with 0
         const scores = updated.scores.sort((a, b) => a.date.localeCompare(b.date));
-        if (scores.length > 1) {
-          const latest = scores[scores.length - 1];
-          const secondLast = scores[scores.length - 2];
-          const d1 = new Date(secondLast.date);
-          const d2 = new Date(latest.date);
-          const diff = Math.floor((d2.getTime() - d1.getTime()) / 86400000);
-          for (let i = 1; i < diff; i++) {
-            const missingDate = new Date(d1);
-            missingDate.setDate(d1.getDate() + i);
-            const key = missingDate.toISOString().split("T")[0];
-            if (!scores.find(s => s.date === key)) {
-              scores.splice(scores.length - 1, 0, {
-                date: key, score: 0, breakdown: { study: 0, nutrition: 0, habits: 0, energy: 0 }, locked: true,
-              });
-            }
-          }
-        }
-
-        // Lock previous days
         scores.forEach(s => { if (s.date !== todayKey) s.locked = true; });
 
         // Check milestones
@@ -283,12 +334,14 @@ const FocusScore = () => {
           return m;
         });
 
-        // Keep last 90 days only
         updated.scores = scores.slice(-90);
         saveData(updated);
         return updated;
       });
-    }, 3000);
+    };
+
+    update(); // initial
+    const interval = setInterval(update, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -296,23 +349,12 @@ const FocusScore = () => {
   useEffect(() => {
     const hour = new Date().getHours();
     const dismissed = sessionStorage.getItem("eod-dismissed");
-    if (hour >= 22 && !dismissed && score > 0) {
+    if (hour >= 22 && !dismissed && currentScore > 0) {
       setShowEndOfDay(true);
     }
-  }, [score]);
+  }, [currentScore]);
 
-  const last30 = useMemo(() => {
-    const today = getTodayKey();
-    const result: DailyScore[] = [];
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const key = d.toISOString().split("T")[0];
-      const existing = data.scores.find(s => s.date === key);
-      result.push(existing || { date: key, score: 0, breakdown: { study: 0, nutrition: 0, habits: 0, energy: 0 }, locked: true });
-    }
-    return result;
-  }, [data.scores]);
+  const last30 = useMemo(() => load30DayHistory(), [data.scores]);
 
   const streak = useMemo(() => getStreak(data.scores), [data.scores]);
   const avg7 = useMemo(() => {
@@ -331,20 +373,19 @@ const FocusScore = () => {
 
   const maxBarHeight = 100;
   const circumference = 2 * Math.PI * 54;
-  const offset = circumference - (score / 100) * circumference;
+  const offset = circumference - (currentScore / 100) * circumference;
 
   const achievedMilestones = data.milestones.filter(m => m.achieved);
 
-  // Lowest category for end-of-day
   const lowestCat = useMemo(() => {
     const cats = [
-      { name: "Study", score: breakdown.study, max: 35 },
-      { name: "Nutrition", score: breakdown.nutrition, max: 25 },
-      { name: "Habits", score: breakdown.habits, max: 25 },
-      { name: "Energy", score: breakdown.energy, max: 15 },
+      { name: "Study", score: currentBreakdown.study, max: 35 },
+      { name: "Nutrition", score: currentBreakdown.nutrition, max: 25 },
+      { name: "Habits", score: currentBreakdown.habits, max: 25 },
+      { name: "Energy", score: currentBreakdown.energy, max: 15 },
     ];
     return cats.reduce((low, c) => (c.score / c.max) < (low.score / low.max) ? c : low, cats[0]);
-  }, [breakdown]);
+  }, [currentBreakdown]);
 
   return (
     <>
@@ -375,7 +416,7 @@ const FocusScore = () => {
               <circle cx="60" cy="60" r="54" fill="none" stroke="hsl(var(--secondary))" strokeWidth="8" />
               <circle
                 cx="60" cy="60" r="54" fill="none"
-                stroke={getScoreColor(score)}
+                stroke={getScoreColor(currentScore)}
                 strokeWidth="8"
                 strokeLinecap="round"
                 strokeDasharray={circumference}
@@ -384,22 +425,22 @@ const FocusScore = () => {
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-4xl font-bold font-mono text-foreground">{score}</span>
+              <span className="text-4xl font-bold font-mono text-foreground">{currentScore}</span>
               <span className="text-[11px] text-muted-foreground">/ 100</span>
             </div>
           </div>
 
           {/* Info */}
           <div className="flex-1 text-center sm:text-left space-y-3">
-            <p className="text-[17px] font-semibold text-foreground">{getVerdict(score)}</p>
+            <p className="text-[17px] font-semibold text-foreground">{getVerdict(currentScore)}</p>
 
             {/* Mini breakdown bars */}
             <div className="space-y-2">
               {[
-                { label: "Study", val: breakdown.study, max: 35, color: "hsl(var(--study-accent))" },
-                { label: "Nutrition", val: breakdown.nutrition, max: 25, color: "hsl(var(--nutrition-accent))" },
-                { label: "Habits", val: breakdown.habits, max: 25, color: "hsl(var(--habits-accent))" },
-                { label: "Energy", val: breakdown.energy, max: 15, color: "hsl(var(--mood-accent))" },
+                { label: "Study", val: currentBreakdown.study, max: 35, color: "hsl(var(--study-accent))" },
+                { label: "Nutrition", val: currentBreakdown.nutrition, max: 25, color: "hsl(var(--nutrition-accent))" },
+                { label: "Habits", val: currentBreakdown.habits, max: 25, color: "hsl(var(--habits-accent))" },
+                { label: "Energy", val: currentBreakdown.energy, max: 15, color: "hsl(var(--mood-accent))" },
               ].map(c => (
               <div key={c.label} className="flex items-center gap-2">
                   <span className="text-xs text-foreground/70 w-16 text-right">{c.label}</span>
@@ -492,18 +533,18 @@ const FocusScore = () => {
             </div>
 
             <div className="text-center">
-              <span className={`text-5xl font-bold font-mono ${getScoreColorClass(score)}`}>{score}</span>
+              <span className={`text-5xl font-bold font-mono ${getScoreColorClass(currentScore)}`}>{currentScore}</span>
               <span className="text-lg text-muted-foreground"> / 100</span>
-              <p className="text-sm text-muted-foreground mt-1">{getVerdict(score)}</p>
+              <p className="text-sm text-muted-foreground mt-1">{getVerdict(currentScore)}</p>
             </div>
 
             {/* Category breakdown */}
             <div className="space-y-4">
               {[
-                { label: "📚 Study", val: breakdown.study, max: 35, color: "hsl(var(--study-accent))" },
-                { label: "🥗 Nutrition", val: breakdown.nutrition, max: 25, color: "hsl(var(--nutrition-accent))" },
-                { label: "✅ Habits", val: breakdown.habits, max: 25, color: "hsl(var(--habits-accent))" },
-                { label: "⚡ Energy", val: breakdown.energy, max: 15, color: "hsl(var(--mood-accent))" },
+                { label: "📚 Study", val: currentBreakdown.study, max: 35, color: "hsl(var(--study-accent))" },
+                { label: "🥗 Nutrition", val: currentBreakdown.nutrition, max: 25, color: "hsl(var(--nutrition-accent))" },
+                { label: "✅ Habits", val: currentBreakdown.habits, max: 25, color: "hsl(var(--habits-accent))" },
+                { label: "⚡ Energy", val: currentBreakdown.energy, max: 15, color: "hsl(var(--mood-accent))" },
               ].map(c => (
                 <div key={c.label}>
                   <div className="flex justify-between items-center mb-1">
@@ -518,10 +559,10 @@ const FocusScore = () => {
             </div>
 
             {/* Nudges */}
-            {nudges.length > 0 && (
+            {currentNudges.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold text-muted-foreground">💡 How to earn more today</h4>
-                {nudges.map((n, i) => (
+                {currentNudges.map((n, i) => (
                   <div key={i} className="flex items-start gap-2 p-2.5 rounded-xl bg-secondary/30">
                     <Star className="w-3.5 h-3.5 text-medium mt-0.5 flex-shrink-0" />
                     <span className="text-sm text-foreground">{n}</span>
@@ -594,22 +635,22 @@ const FocusScore = () => {
           <div className="w-full max-w-sm bg-card rounded-2xl border border-border p-6 space-y-4 text-center">
             <p className="text-sm text-muted-foreground">End of Day Summary</p>
             <div>
-              <span className={`text-5xl font-bold font-mono ${getScoreColorClass(score)}`}>{score}</span>
-              <p className="text-[17px] font-semibold text-foreground mt-2">{getVerdict(score)}</p>
+              <span className={`text-5xl font-bold font-mono ${getScoreColorClass(currentScore)}`}>{currentScore}</span>
+              <p className="text-[17px] font-semibold text-foreground mt-2">{getVerdict(currentScore)}</p>
             </div>
 
             <div className="space-y-2 text-left">
-              {breakdown.study / 35 >= 0.8 && <p className="text-sm text-foreground">✅ Study goals on track</p>}
-              {breakdown.nutrition / 25 >= 0.8 && <p className="text-sm text-foreground">✅ Nutrition well managed</p>}
-              {breakdown.habits / 25 >= 0.8 && <p className="text-sm text-foreground">✅ Habits going strong</p>}
-              {breakdown.energy / 15 >= 0.8 && <p className="text-sm text-foreground">✅ Energy levels great</p>}
+              {currentBreakdown.study / 35 >= 0.8 && <p className="text-sm text-foreground">✅ Study goals on track</p>}
+              {currentBreakdown.nutrition / 25 >= 0.8 && <p className="text-sm text-foreground">✅ Nutrition well managed</p>}
+              {currentBreakdown.habits / 25 >= 0.8 && <p className="text-sm text-foreground">✅ Habits going strong</p>}
+              {currentBreakdown.energy / 15 >= 0.8 && <p className="text-sm text-foreground">✅ Energy levels great</p>}
               <p className="text-sm text-muted-foreground mt-2">
                 📌 Focus on <span className="text-foreground font-medium">{lowestCat.name}</span> tomorrow — it was your lowest scoring category today
               </p>
             </div>
 
             <p className="text-xs text-muted-foreground italic">
-              {score >= 75 ? "You crushed it today. Rest well!" : score >= 50 ? "Solid effort. Small wins compound!" : "Every day is a fresh start. You showed up!"}
+              {currentScore >= 75 ? "You crushed it today. Rest well!" : currentScore >= 50 ? "Solid effort. Small wins compound!" : "Every day is a fresh start. You showed up!"}
             </p>
 
             <button
@@ -645,4 +686,3 @@ function get30DayAvg(scores: DailyScore[]): number {
 }
 
 export default FocusScore;
-
