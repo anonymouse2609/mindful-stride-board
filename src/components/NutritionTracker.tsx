@@ -324,7 +324,7 @@ const FOODS: FoodItem[] = [
 ];
 
 const STORAGE_KEY = "dashboard-nutrition";
-const CUSTOM_FOODS_KEY = "dashboard-custom-foods";
+const CUSTOM_FOODS_KEY = "custom_foods";
 const RECIPES_KEY = "dashboard-recipes";
 const todayKey = () => new Date().toISOString().split("T")[0];
 
@@ -769,7 +769,7 @@ export default function NutritionTracker() {
                   <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-4 py-3 text-[15px] text-foreground hover:bg-nutrition/5 transition-colors flex justify-between items-center gap-3 min-h-[48px]">
                     <span className="flex items-center gap-2 min-w-0">
                       <span className="truncate">{f.name}</span>
-                      {f.tag && <span className={`shrink-0 text-sm px-2 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-nutrition/15 text-nutrition" : "bg-primary/15 text-primary"}`}>{f.tag}</span>}
+                      {f.tag && <span className={`shrink-0 text-sm px-2 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-orange-500/15 text-orange-400" : "bg-primary/15 text-primary"}`}>{f.tag}</span>}
                       {unit && <span className="text-muted-foreground text-sm shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
                     </span>
                     <span className="text-muted-foreground shrink-0 text-sm">{f.calories} cal</span>
@@ -897,23 +897,36 @@ export default function NutritionTracker() {
             </div>
           </div>
 
-          {/* Ingredients list */}
+          {/* Ingredients list with per-ingredient breakdown */}
           {recipeIngredients.length > 0 && (
             <div className="flex flex-col gap-1.5 bg-secondary/30 rounded-lg p-2">
+              <div className="grid grid-cols-[1fr_60px_40px_40px_30px_30px_20px] gap-1 text-[9px] text-muted-foreground font-medium px-1">
+                <span>Ingredient</span><span className="text-right">Qty(g)</span><span className="text-right">Cal</span><span className="text-right">P</span><span className="text-right">C</span><span className="text-right">F</span><span></span>
+              </div>
               {recipeIngredients.map((ing, idx) => {
                 const unit = dynamicUnitMap[ing.food.name];
                 const m = ing.grams / 100;
                 return (
-                  <div key={idx} className="flex items-center gap-2 text-xs">
-                    <span className="flex-1 text-foreground truncate">{ing.food.name}</span>
-                    <input type="number" value={ing.grams} onChange={(e) => updateIngredientGrams(idx, Number(e.target.value))} className="w-16 bg-secondary border border-border/60 rounded px-2 py-1 text-xs text-foreground text-right focus:outline-none" min="1" />
-                    <span className="text-[10px] text-muted-foreground w-4">g</span>
-                    {unit && <span className="text-[10px] text-muted-foreground">≈{(ing.grams / unit.gramsPerUnit).toFixed(1)} {unit.unitLabel}</span>}
-                    <span className="text-[10px] text-muted-foreground">{Math.round(ing.food.calories * m)}cal</span>
-                    <button onClick={() => removeIngredient(idx)} className="text-muted-foreground hover:text-destructive"><X className="w-3 h-3" /></button>
+                  <div key={idx} className="grid grid-cols-[1fr_60px_40px_40px_30px_30px_20px] gap-1 items-center text-xs px-1">
+                    <span className="text-foreground truncate">{ing.food.name}</span>
+                    <input type="number" value={ing.grams} onChange={(e) => updateIngredientGrams(idx, Number(e.target.value))} className="w-full bg-secondary border border-border/60 rounded px-1 py-1 text-xs text-foreground text-right focus:outline-none" min="1" />
+                    <span className="text-muted-foreground text-right">{Math.round(ing.food.calories * m)}</span>
+                    <span className="text-muted-foreground text-right">{(ing.food.protein * m).toFixed(1)}</span>
+                    <span className="text-muted-foreground text-right">{Math.round(ing.food.carbs * m)}</span>
+                    <span className="text-muted-foreground text-right">{(ing.food.fat * m).toFixed(1)}</span>
+                    <button onClick={() => removeIngredient(idx)} className="text-muted-foreground hover:text-destructive justify-self-center"><X className="w-3 h-3" /></button>
                   </div>
                 );
               })}
+              <div className="grid grid-cols-[1fr_60px_40px_40px_30px_30px_20px] gap-1 items-center text-xs px-1 pt-1.5 border-t border-border/40 font-medium">
+                <span className="text-foreground">Total</span>
+                <span className="text-right text-muted-foreground">{Math.round(recipeTotals.grams)}g</span>
+                <span className="text-right text-foreground">{Math.round(recipeTotals.calories)}</span>
+                <span className="text-right text-foreground">{recipeTotals.protein.toFixed(1)}</span>
+                <span className="text-right text-foreground">{Math.round(recipeTotals.carbs)}</span>
+                <span className="text-right text-foreground">{recipeTotals.fat.toFixed(1)}</span>
+                <span></span>
+              </div>
             </div>
           )}
 
