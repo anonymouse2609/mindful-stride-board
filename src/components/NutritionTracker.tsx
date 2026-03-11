@@ -548,13 +548,33 @@ export default function NutritionTracker() {
       fat: Number(cf.fat) || 0, fiber: Number(cf.fiber) || 0,
       unitLabel: cf.unitLabel || undefined, gramsPerUnit: cf.gramsPerUnit ? Number(cf.gramsPerUnit) : undefined,
     };
+
+    // Ensure localStorage array exists and update it directly
+    try {
+      const existingRaw = localStorage.getItem(CUSTOM_FOODS_KEY);
+      const existing: CustomFood[] = existingRaw ? JSON.parse(existingRaw) : [];
+      const updated = editingCustom
+        ? existing.map((f) => (f.id === editingCustom.id ? food : f))
+        : [...existing, food];
+      localStorage.setItem(CUSTOM_FOODS_KEY, JSON.stringify(updated));
+    } catch {
+      // Fallback: still update in-memory state even if localStorage fails
+    }
+
+    // Keep React state in sync so search results update immediately
     if (editingCustom) {
-      setCustomFoods((prev) => prev.map((f) => f.id === editingCustom.id ? food : f));
+      setCustomFoods((prev) => prev.map((f) => (f.id === editingCustom.id ? food : f)));
     } else {
       setCustomFoods((prev) => [...prev, food]);
     }
+
     setShowCustomModal(false);
-    toast({ title: editingCustom ? "Custom food updated! ✏️" : "Custom food saved! ✅" });
+    toast({ title: "Food saved!" });
+
+    // Surface the newly saved food in the main search with Custom badge
+    setSearch(food.name);
+    setShowDropdown(true);
+    setSelected(null);
   };
 
   const deleteCustomFood = (id: string) => { setCustomFoods((prev) => prev.filter((f) => f.id !== id)); };
