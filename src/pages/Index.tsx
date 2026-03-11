@@ -118,26 +118,56 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // URL Integration from Study Buddy
+  // URL Integration from Study Buddy -> add revision topic via URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("action") === "add_revision") {
       const subject = params.get("subject");
       const chapter = params.get("chapter");
-      const difficulty = params.get("difficulty") || "medium";
+      const rawDifficulty = params.get("difficulty") || "Medium";
+      const difficulty = ["Easy", "Medium", "Hard"].includes(rawDifficulty) ? rawDifficulty : "Medium";
+
       if (subject && chapter) {
-        // Wait a bit for RevisionScheduler to mount
-        setTimeout(() => {
-          if (revisionRef.current) {
-            revisionRef.current.addExternalTopic({ name: chapter, subject, difficulty, source: "Study Buddy" });
-            toast({ title: `📚 ${chapter} added to revision schedule!` });
-          }
-          window.history.replaceState({}, "", "/");
-          setTimeout(() => document.getElementById("revision-scheduler")?.scrollIntoView({ behavior: "smooth" }), 500);
-        }, 800);
+        try {
+          const existing = JSON.parse(localStorage.getItem("revision_topics") || "[]");
+          const nowIso = new Date().toISOString();
+          existing.push({
+            id: Date.now(),
+            topic: chapter,
+            subject: subject,
+            difficulty: difficulty,
+            source: "Study Buddy",
+            dateAdded: nowIso,
+            nextReview: nowIso,
+            interval: difficulty === "Hard" ? 1 : difficulty === "Easy" ? 4 : 2,
+            repetitions: 0,
+            mastery: 0,
+          });
+          localStorage.setItem("revision_topics", JSON.stringify(existing));
+        } catch {
+          // Fallback: minimal write if parsing fails
+          const nowIso = new Date().toISOString();
+          const fallback = [{
+            id: Date.now(),
+            topic: chapter,
+            subject: subject,
+            difficulty: difficulty,
+            source: "Study Buddy",
+            dateAdded: nowIso,
+            nextReview: nowIso,
+            interval: difficulty === "Hard" ? 1 : difficulty === "Easy" ? 4 : 2,
+            repetitions: 0,
+            mastery: 0,
+          }];
+          localStorage.setItem("revision_topics", JSON.stringify(fallback));
+        }
+
+        toast({ title: `📚 ${chapter} added to revision schedule!` });
+        window.history.replaceState({}, "", "/");
+        setTimeout(() => document.getElementById("revision-scheduler")?.scrollIntoView({ behavior: "smooth" }), 500);
       }
     }
-  }, []);
+  }, [toast]);
 
   const handleChatAction = useCallback((action: string, param: string | null) => {
     if (action === "SEARCH_FOOD" && param) {
