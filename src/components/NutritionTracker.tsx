@@ -769,7 +769,7 @@ export default function NutritionTracker() {
                   <button key={f.name + (f.tag || "")} onClick={() => selectFood(f)} className="w-full text-left px-4 py-3 text-[15px] text-foreground hover:bg-nutrition/5 transition-colors flex justify-between items-center gap-3 min-h-[48px]">
                     <span className="flex items-center gap-2 min-w-0">
                       <span className="truncate">{f.name}</span>
-                      {f.tag && <span className={`shrink-0 text-sm px-2 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-nutrition/15 text-nutrition" : "bg-primary/15 text-primary"}`}>{f.tag}</span>}
+                      {f.tag && <span className={`shrink-0 text-sm px-2 py-0.5 rounded-full font-medium ${f.tag === "Custom" ? "bg-orange-500/15 text-orange-400" : "bg-primary/15 text-primary"}`}>{f.tag}</span>}
                       {unit && <span className="text-muted-foreground text-sm shrink-0">per {unit.unitLabel} ≈{Math.round(unit.gramsPerUnit)}g</span>}
                     </span>
                     <span className="text-muted-foreground shrink-0 text-sm">{f.calories} cal</span>
