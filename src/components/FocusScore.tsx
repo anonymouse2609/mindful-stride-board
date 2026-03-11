@@ -201,10 +201,24 @@ function saveData(data: FocusScoreData) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// Save today's score to per-day history key
+// Save today's score to per-day history key (at most once per hour)
 function saveHistoryScore(score: number, breakdown: { study: number; nutrition: number; habits: number; energy: number }) {
   const key = `focus_history_${getTodayKey()}`;
-  localStorage.setItem(key, JSON.stringify({ score, breakdown, timestamp: Date.now() }));
+  try {
+    const now = Date.now();
+    const existingRaw = localStorage.getItem(key);
+    if (existingRaw) {
+      const existing = JSON.parse(existingRaw);
+      const lastTs = typeof existing.timestamp === "number" ? existing.timestamp : 0;
+      // Only update if at least 1 hour has passed
+      if (now - lastTs < 60 * 60 * 1000) {
+        return;
+      }
+    }
+    localStorage.setItem(key, JSON.stringify({ score, breakdown, timestamp: now }));
+  } catch {
+    // Best-effort; ignore history write errors
+  }
 }
 
 // Load 30 days of history from per-day keys
