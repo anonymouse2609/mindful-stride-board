@@ -324,7 +324,7 @@ const FOODS: FoodItem[] = [
 ];
 
 const STORAGE_KEY = "dashboard-nutrition";
-const CUSTOM_FOODS_KEY = "dashboard-custom-foods";
+const CUSTOM_FOODS_KEY = "custom_foods";
 const RECIPES_KEY = "dashboard-recipes";
 const todayKey = () => new Date().toISOString().split("T")[0];
 
