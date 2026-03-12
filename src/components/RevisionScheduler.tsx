@@ -430,8 +430,34 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
     { key: "all", label: "All Topics" },
     { key: "mastered", label: `Mastered (${masteredTopics.length})` },
     { key: "stats", label: "Stats" },
+    { key: "studybuddy", label: "📚 Study Buddy" },
     { key: "pyq", label: "📝 PYQ" },
   ];
+
+  const studyBuddyTopics = useMemo(() => loadStudyBuddyTopics(), [tab]);
+  const studyBuddyBySubject = useMemo(() => {
+    const grouped: Record<string, StudyBuddyTopic[]> = {};
+    studyBuddyTopics.forEach(t => {
+      if (!grouped[t.subject]) grouped[t.subject] = [];
+      grouped[t.subject].push(t);
+    });
+    return grouped;
+  }, [studyBuddyTopics]);
+
+  const SUBJECT_COLORS: Record<string, string> = {
+    Mathematics: "bg-blue-500/15 text-blue-400",
+    Physics: "bg-violet-500/15 text-violet-400",
+    Chemistry: "bg-green-500/15 text-green-400",
+    Biology: "bg-emerald-500/15 text-emerald-400",
+    English: "bg-rose-500/15 text-rose-400",
+    Hindi: "bg-orange-500/15 text-orange-400",
+    Economics: "bg-yellow-500/15 text-yellow-400",
+    Accountancy: "bg-teal-500/15 text-teal-400",
+    "Computer Science": "bg-cyan-500/15 text-cyan-400",
+    History: "bg-amber-500/15 text-amber-400",
+    Geography: "bg-lime-500/15 text-lime-400",
+  };
+  const getSubjectColor = (subj: string) => SUBJECT_COLORS[subj] || "bg-indigo-500/15 text-indigo-400";
 
   const nextDueTopic = useMemo(() => {
     const future = data.topics.filter(t => !t.mastered && t.nextDue > today).sort((a, b) => a.nextDue.localeCompare(b.nextDue));
