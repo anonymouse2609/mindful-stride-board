@@ -928,6 +928,44 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
         </div>
       )}
 
+      {/* ===== STUDY BUDDY TAB ===== */}
+      {tab === "studybuddy" && (
+        <div className="flex flex-col gap-4">
+          {studyBuddyTopics.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-3xl mb-2">📚</p>
+              <p className="text-[15px] text-foreground font-medium">No Study Buddy topics yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Topics added from Study Buddy via URL will appear here</p>
+            </div>
+          ) : (
+            Object.entries(studyBuddyBySubject).map(([subject, topics]) => (
+              <div key={subject} className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getSubjectColor(subject)}`}>{subject}</span>
+                  <span className="text-xs text-muted-foreground">{topics.length} topic{topics.length !== 1 ? "s" : ""}</span>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {topics.map(t => (
+                    <div key={t.id} className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-medium text-foreground">{t.topic}</span>
+                        <span className="text-xs text-muted-foreground">Added {new Date(t.dateAdded).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/15 text-purple-400">From Study Buddy 📚</span>
+                        <span className="text-xs text-muted-foreground">
+                          Next: {new Date(t.nextReview).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
       {showAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm" onClick={() => { setShowAdd(false); setEditingTopic(null); }}>
           <div className="w-full max-w-md bg-card rounded-2xl border border-border p-6 space-y-4" onClick={e => e.stopPropagation()}>
