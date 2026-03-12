@@ -111,7 +111,25 @@ interface PYQData {
   questions: PYQQuestion[];
 }
 
-type TabType = "today" | "upcoming" | "all" | "mastered" | "stats" | "pyq";
+type TabType = "today" | "upcoming" | "all" | "mastered" | "stats" | "pyq" | "studybuddy";
+
+interface StudyBuddyTopic {
+  id: number;
+  topic: string;
+  subject: string;
+  difficulty: string;
+  source: string;
+  dateAdded: string;
+  nextReview: string;
+}
+
+function loadStudyBuddyTopics(): StudyBuddyTopic[] {
+  try {
+    const raw = localStorage.getItem("studybuddy_topics");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [];
+}
 
 const CBSE_SUBJECTS = [
   "Mathematics", "Physics", "Chemistry", "Biology",
@@ -412,8 +430,34 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
     { key: "all", label: "All Topics" },
     { key: "mastered", label: `Mastered (${masteredTopics.length})` },
     { key: "stats", label: "Stats" },
+    { key: "studybuddy", label: "📚 Study Buddy" },
     { key: "pyq", label: "📝 PYQ" },
   ];
+
+  const studyBuddyTopics = useMemo(() => loadStudyBuddyTopics(), [tab]);
+  const studyBuddyBySubject = useMemo(() => {
+    const grouped: Record<string, StudyBuddyTopic[]> = {};
+    studyBuddyTopics.forEach(t => {
+      if (!grouped[t.subject]) grouped[t.subject] = [];
+      grouped[t.subject].push(t);
+    });
+    return grouped;
+  }, [studyBuddyTopics]);
+
+  const SUBJECT_COLORS: Record<string, string> = {
+    Mathematics: "bg-blue-500/15 text-blue-400",
+    Physics: "bg-violet-500/15 text-violet-400",
+    Chemistry: "bg-green-500/15 text-green-400",
+    Biology: "bg-emerald-500/15 text-emerald-400",
+    English: "bg-rose-500/15 text-rose-400",
+    Hindi: "bg-orange-500/15 text-orange-400",
+    Economics: "bg-yellow-500/15 text-yellow-400",
+    Accountancy: "bg-teal-500/15 text-teal-400",
+    "Computer Science": "bg-cyan-500/15 text-cyan-400",
+    History: "bg-amber-500/15 text-amber-400",
+    Geography: "bg-lime-500/15 text-lime-400",
+  };
+  const getSubjectColor = (subj: string) => SUBJECT_COLORS[subj] || "bg-indigo-500/15 text-indigo-400";
 
   const nextDueTopic = useMemo(() => {
     const future = data.topics.filter(t => !t.mastered && t.nextDue > today).sort((a, b) => a.nextDue.localeCompare(b.nextDue));
@@ -880,6 +924,44 @@ const RevisionScheduler = forwardRef(function RevisionScheduler(_props: {}, ref:
                 );
               })}
             </div>
+          )}
+        </div>
+      )}
+
+      {/* ===== STUDY BUDDY TAB ===== */}
+      {tab === "studybuddy" && (
+        <div className="flex flex-col gap-4">
+          {studyBuddyTopics.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-3xl mb-2">📚</p>
+              <p className="text-[15px] text-foreground font-medium">No Study Buddy topics yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Topics added from Study Buddy via URL will appear here</p>
+            </div>
+          ) : (
+            Object.entries(studyBuddyBySubject).map(([subject, topics]) => (
+              <div key={subject} className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${getSubjectColor(subject)}`}>{subject}</span>
+                  <span className="text-xs text-muted-foreground">{topics.length} topic{topics.length !== 1 ? "s" : ""}</span>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  {topics.map(t => (
+                    <div key={t.id} className="flex items-center justify-between p-3 rounded-xl bg-secondary/30 border border-border/50">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-medium text-foreground">{t.topic}</span>
+                        <span className="text-xs text-muted-foreground">Added {new Date(t.dateAdded).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-500/15 text-purple-400">From Study Buddy 📚</span>
+                        <span className="text-xs text-muted-foreground">
+                          Next: {new Date(t.nextReview).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}

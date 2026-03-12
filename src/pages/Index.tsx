@@ -128,39 +128,40 @@ const Index = () => {
       const difficulty = ["Easy", "Medium", "Hard"].includes(rawDifficulty) ? rawDifficulty : "Medium";
 
       if (subject && chapter) {
+        const nowIso = new Date().toISOString();
+        const topicEntry = {
+          id: Date.now(),
+          topic: chapter,
+          subject: subject,
+          difficulty: difficulty,
+          source: "Study Buddy",
+          dateAdded: nowIso,
+          nextReview: nowIso,
+          interval: difficulty === "Hard" ? 1 : difficulty === "Easy" ? 4 : 2,
+          repetitions: 0,
+          mastery: 0,
+        };
+
+        // Save to revision_topics
         try {
           const existing = JSON.parse(localStorage.getItem("revision_topics") || "[]");
-          const nowIso = new Date().toISOString();
-          existing.push({
-            id: Date.now(),
-            topic: chapter,
-            subject: subject,
-            difficulty: difficulty,
-            source: "Study Buddy",
-            dateAdded: nowIso,
-            nextReview: nowIso,
-            interval: difficulty === "Hard" ? 1 : difficulty === "Easy" ? 4 : 2,
-            repetitions: 0,
-            mastery: 0,
-          });
+          existing.push(topicEntry);
           localStorage.setItem("revision_topics", JSON.stringify(existing));
         } catch {
-          // Fallback: minimal write if parsing fails
-          const nowIso = new Date().toISOString();
-          const fallback = [{
-            id: Date.now(),
-            topic: chapter,
-            subject: subject,
-            difficulty: difficulty,
-            source: "Study Buddy",
-            dateAdded: nowIso,
-            nextReview: nowIso,
-            interval: difficulty === "Hard" ? 1 : difficulty === "Easy" ? 4 : 2,
-            repetitions: 0,
-            mastery: 0,
-          }];
-          localStorage.setItem("revision_topics", JSON.stringify(fallback));
+          localStorage.setItem("revision_topics", JSON.stringify([topicEntry]));
         }
+
+        // Save to studybuddy_topics
+        try {
+          const sbExisting = JSON.parse(localStorage.getItem("studybuddy_topics") || "[]");
+          sbExisting.push(topicEntry);
+          localStorage.setItem("studybuddy_topics", JSON.stringify(sbExisting));
+        } catch {
+          localStorage.setItem("studybuddy_topics", JSON.stringify([topicEntry]));
+        }
+
+        // Also add to the RevisionScheduler's internal state
+        revisionRef.current?.addExternalTopic({ name: chapter, subject, difficulty, source: "Study Buddy" });
 
         toast({ title: `📚 ${chapter} added to revision schedule!` });
         window.history.replaceState({}, "", "/");
