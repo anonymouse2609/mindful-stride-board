@@ -1372,6 +1372,26 @@ export default function NutritionTracker() {
           <button onClick={saveRecipe} disabled={!recipeName || recipeIngredients.length === 0} className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">
             {editingRecipe ? "Update Recipe" : "Save Recipe"}
           </button>
+
+          {/* Saved recipes quick-log list */}
+          {recipes.length > 0 && !editingRecipe && (
+            <div className="border-t border-border/40 pt-3 flex flex-col gap-1.5">
+              <span className="text-[10px] text-muted-foreground font-medium">Saved Recipes — tap + to log</span>
+              {recipes.map((r) => (
+                <div key={r.id} className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-secondary/40 transition-colors">
+                  <div className="min-w-0">
+                    <span className="text-xs text-foreground font-medium">🍳 {r.name}</span>
+                    <span className="text-[10px] text-muted-foreground ml-1.5">
+                      {Math.round(r.ingredients.reduce((a, i) => a + i.food.calories * i.grams / 100, 0))} cal
+                    </span>
+                  </div>
+                  <button onClick={() => logRecipeToDay(r)} className="icon-btn w-7 h-7 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20" title="Log to today">
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Modal>
     </div>
