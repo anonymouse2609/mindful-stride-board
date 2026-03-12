@@ -684,6 +684,7 @@ const FOODS: FoodItem[] = [
 const STORAGE_KEY = "dashboard-nutrition";
 const CUSTOM_FOODS_KEY = "custom_foods";
 const RECIPES_KEY = "dashboard-recipes";
+const SAVED_RECIPES_KEY = "saved_recipes";
 const todayKey = () => new Date().toISOString().split("T")[0];
 
 const DEFAULT_GOALS: MacroGoals = { calories: 2000, protein: 80, carbs: 250, fat: 65 };
@@ -993,7 +994,6 @@ export default function NutritionTracker() {
   const saveRecipe = () => {
     if (!recipeName || recipeIngredients.length === 0) return;
     const totalG = recipeTotals.grams;
-    // Store macros per 100g for compatibility with the main tracker
     const per100 = totalG > 0 ? {
       calories: (recipeTotals.calories / totalG) * 100,
       protein: (recipeTotals.protein / totalG) * 100,
@@ -1012,10 +1012,38 @@ export default function NutritionTracker() {
     } else {
       setRecipes((prev) => [...prev, recipe]);
     }
+
+    // Also persist to saved_recipes key
+    try {
+      const existing = JSON.parse(localStorage.getItem(SAVED_RECIPES_KEY) || "[]");
+      const idx = existing.findIndex((r: any) => r.id === recipe.id);
+      if (idx >= 0) existing[idx] = recipe; else existing.push(recipe);
+      localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(existing));
+    } catch {
+      localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify([recipe]));
+    }
+
     setShowRecipeModal(false);
+    toast({ title: "Recipe saved!" });
   };
 
-  const deleteRecipe = (id: string) => { setRecipes((prev) => prev.filter((r) => r.id !== id)); };
+  const deleteRecipe = (id: string) => {
+    setRecipes((prev) => prev.filter((r) => r.id !== id));
+    try {
+      const existing = JSON.parse(localStorage.getItem(SAVED_RECIPES_KEY) || "[]");
+      localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(existing.filter((r: any) => r.id !== id)));
+    } catch {}
+  };
+
+  const logRecipeToDay = (recipe: Recipe) => {
+    const newEntries: LogEntry[] = recipe.ingredients.map((ing) => ({
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+      food: ing.food,
+      grams: ing.grams,
+    }));
+    setData((prev) => ({ ...prev, log: [...prev.log, ...newEntries] }));
+    toast({ title: `🍳 ${recipe.name} logged to today!` });
+  };
 
   const totalFoodCount = FOODS.length + customFoods.length + recipes.length;
 
@@ -1086,15 +1114,20 @@ export default function NutritionTracker() {
       {/* My Recipes list */}
       {showMyRecipes && (
         <div className="bg-nutrition/5 border border-nutrition/10 rounded-xl p-4 flex flex-col gap-2 animate-fade-in">
-          <span className="text-sm text-nutrition font-medium mb-1">My Recipes</span>
+          <span className="text-sm text-nutrition font-medium mb-1">My Recipes — click to log</span>
           {recipes.map((r) => (
             <div key={r.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40">
-              <div>
+              <div className="flex-1 min-w-0">
                 <span className="text-[15px] text-foreground">🍳 {r.name}</span>
-                <span className="text-sm text-muted-foreground ml-2">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
-                <div className="text-sm text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
+                <span className="text-sm text-muted-foreground ml-2">{r.ingredients.length} ingredients</span>
+                <div className="text-sm text-muted-foreground">
+                  {Math.round(r.ingredients.reduce((a, i) => a + i.food.calories * i.grams / 100, 0))} cal total
+                </div>
               </div>
               <div className="flex gap-1">
+                <button onClick={() => logRecipeToDay(r)} className="icon-btn w-9 h-9 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20" title="Log to today">
+                  <Plus className="w-4 h-4" />
+                </button>
                 <button onClick={() => openRecipeModal(r)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
                 <button onClick={() => deleteRecipe(r.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
               </div>
@@ -1339,6 +1372,26 @@ export default function NutritionTracker() {
           <button onClick={saveRecipe} disabled={!recipeName || recipeIngredients.length === 0} className="px-4 py-2 rounded-lg bg-accent text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">
             {editingRecipe ? "Update Recipe" : "Save Recipe"}
           </button>
+
+          {/* Saved recipes quick-log list */}
+          {recipes.length > 0 && !editingRecipe && (
+            <div className="border-t border-border/40 pt-3 flex flex-col gap-1.5">
+              <span className="text-[10px] text-muted-foreground font-medium">Saved Recipes — tap + to log</span>
+              {recipes.map((r) => (
+                <div key={r.id} className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-secondary/40 transition-colors">
+                  <div className="min-w-0">
+                    <span className="text-xs text-foreground font-medium">🍳 {r.name}</span>
+                    <span className="text-[10px] text-muted-foreground ml-1.5">
+                      {Math.round(r.ingredients.reduce((a, i) => a + i.food.calories * i.grams / 100, 0))} cal
+                    </span>
+                  </div>
+                  <button onClick={() => logRecipeToDay(r)} className="icon-btn w-7 h-7 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20" title="Log to today">
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Modal>
     </div>
