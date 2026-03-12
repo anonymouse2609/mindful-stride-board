@@ -111,7 +111,25 @@ interface PYQData {
   questions: PYQQuestion[];
 }
 
-type TabType = "today" | "upcoming" | "all" | "mastered" | "stats" | "pyq";
+type TabType = "today" | "upcoming" | "all" | "mastered" | "stats" | "pyq" | "studybuddy";
+
+interface StudyBuddyTopic {
+  id: number;
+  topic: string;
+  subject: string;
+  difficulty: string;
+  source: string;
+  dateAdded: string;
+  nextReview: string;
+}
+
+function loadStudyBuddyTopics(): StudyBuddyTopic[] {
+  try {
+    const raw = localStorage.getItem("studybuddy_topics");
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [];
+}
 
 const CBSE_SUBJECTS = [
   "Mathematics", "Physics", "Chemistry", "Biology",
