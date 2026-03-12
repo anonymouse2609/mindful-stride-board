@@ -259,6 +259,7 @@ export default function SubjectStudyTimer() {
   const [displayMs, setDisplayMs] = useState(0); // remaining ms for pomodoro, elapsed ms for free
 
   const isRunning = timerState !== null && timerState.pausedRemaining == null;
+  const pomoCompletionGuardRef = useRef<string | null>(null);
 
   const getPomoRemaining = useCallback(() => {
     if (!timerState) return 0;
@@ -284,42 +285,58 @@ export default function SubjectStudyTimer() {
 
   const selectedSubject = data.subjects.find(s => s.id === selectedSubjectId);
 
-  // Pomodoro completion handler
-  const handlePomoComplete = useCallback(() => {
+  // Direct log that doesn't depend on callback state
+  const logSessionDirect = useCallback((durationMinutes: number, subjectIdOverride?: string) => {
+    if (durationMinutes < 0.5) return;
+    const now = new Date();
+    const st = sessionStartTime || now;
+    const date = todayKey();
+    const startTime = `${st.getHours().toString().padStart(2, "0")}:${st.getMinutes().toString().padStart(2, "0")}`;
+
+    setData((prev) => {
+      const subjectId = subjectIdOverride || selectedSubjectId;
+      const sub = prev.subjects.find((s) => s.id === subjectId);
+      if (!sub) return prev;
+      const session: StudySession = {
+        id: Date.now().toString(),
+        subjectId: sub.id,
+        subjectName: sub.name,
+        date,
+        startTime,
+        durationMinutes,
+        energyLevel,
+        mode,
+      };
+      return { ...prev, sessions: [...prev.sessions, session] };
+    });
+  }, [sessionStartTime, selectedSubjectId, energyLevel, mode]);
+
+  // Pomodoro completion handler (must run exactly once per completion)
+  const handlePomoComplete = useCallback((completedState: RunningTimerState) => {
+    const guardKey = `${completedState.startedAt}-${completedState.duration}-${completedState.isBreak}-${completedState.mode}-${completedState.subjectId}`;
+    if (pomoCompletionGuardRef.current === guardKey) return;
+    pomoCompletionGuardRef.current = guardKey;
+
     playBeep();
-    notifyComplete(isBreak);
+    notifyComplete(completedState.isBreak);
     releaseWakeLock();
-    if (!isBreak) {
-      logSessionDirect(WORK_TIME / 60);
+    if (!completedState.isBreak) {
+      // Use subjectId from the exact timer state that just ended (prevents stale subject)
+      logSessionDirect(WORK_TIME / 60, completedState.subjectId);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
       setIsBreak(true);
       // Auto-setup break (paused)
-      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: true, duration: BREAK_TIME_MS, subjectId: selectedSubjectId, pausedRemaining: BREAK_TIME_MS };
+      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: true, duration: BREAK_TIME_MS, subjectId: completedState.subjectId, pausedRemaining: BREAK_TIME_MS };
       setTimerState(newTs);
       saveTimerState(newTs);
     } else {
       setIsBreak(false);
-      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: false, duration: WORK_TIME_MS, subjectId: selectedSubjectId, pausedRemaining: WORK_TIME_MS };
+      const newTs: RunningTimerState = { startedAt: Date.now(), mode: "pomodoro", isBreak: false, duration: WORK_TIME_MS, subjectId: completedState.subjectId, pausedRemaining: WORK_TIME_MS };
       setTimerState(newTs);
       saveTimerState(newTs);
     }
-  }, [isBreak, selectedSubjectId]);
-
-  // Direct log that doesn't depend on callback state
-  const logSessionDirect = useCallback((durationMinutes: number) => {
-    const sub = data.subjects.find(s => s.id === (timerState?.subjectId || selectedSubjectId));
-    if (!sub || durationMinutes < 0.5) return;
-    const now = new Date();
-    const st = sessionStartTime || now;
-    const session: StudySession = {
-      id: Date.now().toString(), subjectId: sub.id, subjectName: sub.name,
-      date: todayKey(),
-      startTime: `${st.getHours().toString().padStart(2, "0")}:${st.getMinutes().toString().padStart(2, "0")}`,
-      durationMinutes, energyLevel, mode,
-    };
-    setData(prev => ({ ...prev, sessions: [...prev.sessions, session] }));
-  }, [data.subjects, timerState, selectedSubjectId, sessionStartTime, energyLevel, mode]);
+  }, [logSessionDirect]);
 
   // Display update loop
   useEffect(() => {
@@ -329,7 +346,7 @@ export default function SubjectStudyTimer() {
       if (timerState.mode === "pomodoro") {
         const r = getPomoRemaining();
         setDisplayMs(r);
-        if (r <= 0 && timerState.pausedRemaining == null) handlePomoComplete();
+        if (r <= 0 && timerState.pausedRemaining == null) handlePomoComplete(timerState);
       } else {
         setDisplayMs(getFreeElapsed());
       }
@@ -348,7 +365,7 @@ export default function SubjectStudyTimer() {
       if (document.visibilityState === "visible" && timerState && timerState.pausedRemaining == null) {
         if (timerState.mode === "pomodoro") {
           const r = getPomoRemaining();
-          if (r <= 0) handlePomoComplete();
+          if (r <= 0) handlePomoComplete(timerState);
           else setDisplayMs(r);
         } else {
           setDisplayMs(getFreeElapsed());
@@ -370,7 +387,7 @@ export default function SubjectStudyTimer() {
       const r = Math.max(0, ts.duration - (Date.now() - ts.startedAt));
       if (r <= 0) {
         // Completed while away
-        handlePomoComplete();
+        handlePomoComplete(ts);
       }
     }
   }, []);
