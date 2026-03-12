@@ -994,7 +994,6 @@ export default function NutritionTracker() {
   const saveRecipe = () => {
     if (!recipeName || recipeIngredients.length === 0) return;
     const totalG = recipeTotals.grams;
-    // Store macros per 100g for compatibility with the main tracker
     const per100 = totalG > 0 ? {
       calories: (recipeTotals.calories / totalG) * 100,
       protein: (recipeTotals.protein / totalG) * 100,
@@ -1013,10 +1012,38 @@ export default function NutritionTracker() {
     } else {
       setRecipes((prev) => [...prev, recipe]);
     }
+
+    // Also persist to saved_recipes key
+    try {
+      const existing = JSON.parse(localStorage.getItem(SAVED_RECIPES_KEY) || "[]");
+      const idx = existing.findIndex((r: any) => r.id === recipe.id);
+      if (idx >= 0) existing[idx] = recipe; else existing.push(recipe);
+      localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(existing));
+    } catch {
+      localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify([recipe]));
+    }
+
     setShowRecipeModal(false);
+    toast({ title: "Recipe saved!" });
   };
 
-  const deleteRecipe = (id: string) => { setRecipes((prev) => prev.filter((r) => r.id !== id)); };
+  const deleteRecipe = (id: string) => {
+    setRecipes((prev) => prev.filter((r) => r.id !== id));
+    try {
+      const existing = JSON.parse(localStorage.getItem(SAVED_RECIPES_KEY) || "[]");
+      localStorage.setItem(SAVED_RECIPES_KEY, JSON.stringify(existing.filter((r: any) => r.id !== id)));
+    } catch {}
+  };
+
+  const logRecipeToDay = (recipe: Recipe) => {
+    const newEntries: LogEntry[] = recipe.ingredients.map((ing) => ({
+      id: Date.now().toString() + Math.random().toString(36).slice(2, 6),
+      food: ing.food,
+      grams: ing.grams,
+    }));
+    setData((prev) => ({ ...prev, log: [...prev.log, ...newEntries] }));
+    toast({ title: `🍳 ${recipe.name} logged to today!` });
+  };
 
   const totalFoodCount = FOODS.length + customFoods.length + recipes.length;
 
