@@ -684,6 +684,7 @@ const FOODS: FoodItem[] = [
 const STORAGE_KEY = "dashboard-nutrition";
 const CUSTOM_FOODS_KEY = "custom_foods";
 const RECIPES_KEY = "dashboard-recipes";
+const SAVED_RECIPES_KEY = "saved_recipes";
 const todayKey = () => new Date().toISOString().split("T")[0];
 
 const DEFAULT_GOALS: MacroGoals = { calories: 2000, protein: 80, carbs: 250, fat: 65 };
