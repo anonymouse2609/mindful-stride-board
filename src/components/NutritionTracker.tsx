@@ -1114,15 +1114,20 @@ export default function NutritionTracker() {
       {/* My Recipes list */}
       {showMyRecipes && (
         <div className="bg-nutrition/5 border border-nutrition/10 rounded-xl p-4 flex flex-col gap-2 animate-fade-in">
-          <span className="text-sm text-nutrition font-medium mb-1">My Recipes</span>
+          <span className="text-sm text-nutrition font-medium mb-1">My Recipes — click to log</span>
           {recipes.map((r) => (
             <div key={r.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-secondary/40">
-              <div>
+              <div className="flex-1 min-w-0">
                 <span className="text-[15px] text-foreground">🍳 {r.name}</span>
-                <span className="text-sm text-muted-foreground ml-2">{r.ingredients.length} ingredients · {r.servings} serving{r.servings > 1 ? "s" : ""}</span>
-                <div className="text-sm text-muted-foreground">{Math.round(r.calories)}cal · {Math.round(r.protein)}p · {Math.round(r.carbs)}c · {Math.round(r.fat)}f /100g</div>
+                <span className="text-sm text-muted-foreground ml-2">{r.ingredients.length} ingredients</span>
+                <div className="text-sm text-muted-foreground">
+                  {Math.round(r.ingredients.reduce((a, i) => a + i.food.calories * i.grams / 100, 0))} cal total
+                </div>
               </div>
               <div className="flex gap-1">
+                <button onClick={() => logRecipeToDay(r)} className="icon-btn w-9 h-9 min-w-0 min-h-0 bg-nutrition/10 text-nutrition hover:bg-nutrition/20" title="Log to today">
+                  <Plus className="w-4 h-4" />
+                </button>
                 <button onClick={() => openRecipeModal(r)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-foreground"><Edit2 className="w-4 h-4" /></button>
                 <button onClick={() => deleteRecipe(r.id)} className="icon-btn w-9 h-9 min-w-0 min-h-0 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>
               </div>
