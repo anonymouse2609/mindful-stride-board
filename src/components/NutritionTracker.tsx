@@ -225,7 +225,8 @@ export default function NutritionTracker() {
 
   const totals = data.log.reduce((acc, entry) => {
     const m = entry.grams / 100;
-    return { calories: acc.calories + entry.food.calories * m, protein: acc.protein + entry.food.protein * m, carbs: acc.carbs + entry.food.carbs * m, fat: acc.fat + entry.food.fat * m, fiber: acc.fiber + entry.food.fiber * m };
+    const fat = entry.oilFree ? 0 : entry.food.fat * m;
+    return { calories: acc.calories + entry.food.calories * m, protein: acc.protein + entry.food.protein * m, carbs: acc.carbs + entry.food.carbs * m, fat: acc.fat + fat, fiber: acc.fiber + entry.food.fiber * m };
   }, { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 });
 
   // Custom food handlers
