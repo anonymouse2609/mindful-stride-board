@@ -155,6 +155,8 @@ export default function NutritionTracker() {
   const [quantity, setQuantity] = useState("1");
   const [useGramMode, setUseGramMode] = useState(false);
   const [selected, setSelected] = useState<FoodItem | null>(null);
+  const [sugarFree, setSugarFree] = useState(false);
+  const [oilFree, setOilFree] = useState(false);
   const [showGoals, setShowGoals] = useState(false);
   const [editGoals, setEditGoals] = useState<MacroGoals>(data.goals);
 
