@@ -215,8 +215,8 @@ export default function NutritionTracker() {
     if (!selected || !quantity) return;
     const g = computedGrams;
     if (isNaN(g) || g <= 0) return;
-    setData((prev) => ({ ...prev, log: [...prev.log, { id: Date.now().toString(), food: selected, grams: g }] }));
-    setSearch(""); setSelected(null); setQuantity("1"); setUseGramMode(false);
+    setData((prev) => ({ ...prev, log: [...prev.log, { id: Date.now().toString(), food: selected, grams: g, sugarFree, oilFree }] }));
+    setSearch(""); setSelected(null); setQuantity("1"); setUseGramMode(false); setSugarFree(false); setOilFree(false);
   };
 
   const removeEntry = (id: string) => { setData((prev) => ({ ...prev, log: prev.log.filter((e) => e.id !== id) })); };
