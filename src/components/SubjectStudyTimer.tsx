@@ -260,6 +260,7 @@ export default function SubjectStudyTimer() {
 
   const isRunning = timerState !== null && timerState.pausedRemaining == null;
   const pomoCompletionGuardRef = useRef<string | null>(null);
+  const loggedSessionsRef = useRef<Set<string>>(new Set());
 
   const getPomoRemaining = useCallback(() => {
     if (!timerState) return 0;
@@ -286,8 +287,12 @@ export default function SubjectStudyTimer() {
   const selectedSubject = data.subjects.find(s => s.id === selectedSubjectId);
 
   // Direct log that doesn't depend on callback state
-  const logSessionDirect = useCallback((durationMinutes: number, subjectIdOverride?: string) => {
+  const logSessionDirect = useCallback((durationMinutes: number, subjectIdOverride?: string, dedupeKey?: string) => {
     if (durationMinutes < 0.5) return;
+    if (dedupeKey) {
+      if (loggedSessionsRef.current.has(dedupeKey)) return;
+      loggedSessionsRef.current.add(dedupeKey);
+    }
     const now = new Date();
     const st = sessionStartTime || now;
     const date = todayKey();
@@ -322,7 +327,7 @@ export default function SubjectStudyTimer() {
     releaseWakeLock();
     if (!completedState.isBreak) {
       // Use subjectId from the exact timer state that just ended (prevents stale subject)
-      logSessionDirect(WORK_TIME / 60, completedState.subjectId);
+      logSessionDirect(WORK_TIME / 60, completedState.subjectId, guardKey);
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
       setIsBreak(true);
