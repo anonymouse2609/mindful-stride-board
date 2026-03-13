@@ -575,12 +575,14 @@ export default function NutritionTracker() {
             return (
               <div key={entry.id} className="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-secondary/40 transition-colors">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[15px] text-foreground truncate">{entry.food.name}</span>
                     <span className="text-sm text-muted-foreground shrink-0">{Math.round(entry.grams)}g</span>
+                    {entry.sugarFree && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">SF</span>}
+                    {entry.oilFree && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-medium">OF</span>}
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5">
-                    {Math.round(entry.food.calories * m)} cal · {Math.round(entry.food.protein * m)}p · {Math.round(entry.food.carbs * m)}c · {Math.round(entry.food.fat * m)}f
+                    {Math.round(entry.food.calories * m)} cal · {Math.round(entry.food.protein * m)}p · {Math.round(entry.food.carbs * m)}c · {Math.round(entry.oilFree ? 0 : entry.food.fat * m)}f
                   </div>
                 </div>
                 <button onClick={() => removeEntry(entry.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all shrink-0">
