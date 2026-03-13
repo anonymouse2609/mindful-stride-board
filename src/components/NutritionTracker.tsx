@@ -1,25 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Settings2, RotateCcw, Search, X, ChefHat, Edit2, BookOpen } from "lucide-react";
-
-interface FoodItem {
-  name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber: number;
-}
-
-interface UnitInfo {
-  unitLabel: string;
-  gramsPerUnit: number;
-}
+import { FOODS, UNIT_MAP, type FoodItem, type UnitInfo } from "@/data/foodDatabase";
 
 interface LogEntry {
   id: string;
   food: FoodItem;
   grams: number;
+  sugarFree?: boolean;
+  oilFree?: boolean;
 }
 
 interface MacroGoals {
