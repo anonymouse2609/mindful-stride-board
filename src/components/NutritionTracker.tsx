@@ -552,6 +552,18 @@ export default function NutritionTracker() {
               )}
             </div>
           )}
+          {selected && (
+            <div className="flex gap-4 items-center mt-1">
+              <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer select-none">
+                <input type="checkbox" checked={sugarFree} onChange={(e) => setSugarFree(e.target.checked)} className="w-3.5 h-3.5 accent-nutrition rounded" />
+                Sugar Free
+              </label>
+              <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer select-none">
+                <input type="checkbox" checked={oilFree} onChange={(e) => setOilFree(e.target.checked)} className="w-3.5 h-3.5 accent-nutrition rounded" />
+                Oil Free
+              </label>
+            </div>
+          )}
         </div>
       </div>
 
