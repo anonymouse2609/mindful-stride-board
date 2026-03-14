@@ -14,7 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      user_data: {
+        Row: {
+          user_id: string
+          data_key: string
+          data_value: Json
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          data_key: string
+          data_value: Json
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          data_key?: string
+          data_value?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_data_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

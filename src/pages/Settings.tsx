@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Trash2, Download, Upload, Info, Plus, Edit2 } from "lucide-react";
+import { ArrowLeft, Trash2, Download, Upload, Info, Plus, Edit2, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SETTINGS_KEY = "user_settings";
 
@@ -85,6 +86,7 @@ function saveSettings(s: UserSettings) {
 export default function Settings() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, signOut } = useAuth();
   const [settings, setSettings] = useState<UserSettings>(loadSettings);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [editingHabit, setEditingHabit] = useState<number | null>(null);
@@ -216,6 +218,12 @@ export default function Settings() {
         {/* Profile */}
         <div className="section-card section-focus flex flex-col gap-4">
           <h2 className="text-[16px] font-semibold text-foreground">👤 Profile</h2>
+          <div className="mb-3 p-3 rounded-lg bg-secondary/30">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Email:</span>
+              <span className="text-sm font-medium text-foreground">{user?.email}</span>
+            </div>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Name</label>
@@ -412,6 +420,17 @@ export default function Settings() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Account */}
+        <div className="section-card section-study flex flex-col gap-4">
+          <h2 className="text-[16px] font-semibold text-foreground">🔐 Account</h2>
+          <button
+            onClick={signOut}
+            className="btn-secondary text-destructive border-destructive/30 flex items-center gap-2 text-sm w-full justify-center hover:bg-destructive/10"
+          >
+            <LogOut className="w-4 h-4" /> Sign Out
+          </button>
         </div>
 
         {/* About */}
