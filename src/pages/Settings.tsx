@@ -1,17 +1,30 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Trash2, Download, Info } from "lucide-react";
+import { ArrowLeft, Trash2, Download, Upload, Info, Plus, Edit2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 
-const SETTINGS_KEY = "growth_settings";
+const SETTINGS_KEY = "user_settings";
 
-interface GrowthSettings {
+interface HabitSetting {
+  name: string;
+  dailyTarget: number;
+}
+
+interface UserSettings {
   profile: {
     name: string;
-    dailyStudyGoalHours: number;
+    age: number;
+    weight: number;
+    height: number;
+  };
+  goals: {
     dailyCalorieGoal: number;
-    dailyProteinGoal: number;
+    proteinGoal: number;
+    carbsGoal: number;
+    fatGoal: number;
+    fiberGoal: number;
+    waterIntakeGoal: number;
   };
   pomodoro: {
     workDuration: number;
@@ -19,8 +32,10 @@ interface GrowthSettings {
     longBreak: number;
     longBreakAfter: number;
   };
+  habits: HabitSetting[];
   notifications: {
-    timerAlerts: boolean;
+    enabled: boolean;
+    reminderTimes: string[];
   };
   focusScore: {
     studyEnabled: boolean;
@@ -34,49 +49,109 @@ interface GrowthSettings {
   };
 }
 
-const DEFAULT_SETTINGS: GrowthSettings = {
-  profile: { name: "", dailyStudyGoalHours: 4, dailyCalorieGoal: 2000, dailyProteinGoal: 80 },
+const DEFAULT_SETTINGS: UserSettings = {
+  profile: { name: "", age: 25, weight: 70, height: 170 },
+  goals: { dailyCalorieGoal: 2000, proteinGoal: 80, carbsGoal: 250, fatGoal: 65, fiberGoal: 25, waterIntakeGoal: 8 },
   pomodoro: { workDuration: 25, shortBreak: 5, longBreak: 15, longBreakAfter: 4 },
-  notifications: { timerAlerts: true },
+  habits: [
+    { name: "💧 Drink water", dailyTarget: 8 },
+    { name: "🏃 Exercise", dailyTarget: 1 },
+    { name: "📚 Study", dailyTarget: 2 },
+    { name: "😴 Sleep 7h+", dailyTarget: 1 },
+    { name: "🧘 Meditate", dailyTarget: 1 },
+  ],
+  notifications: { enabled: true, reminderTimes: ["09:00", "14:00", "19:00"] },
   focusScore: {
     studyEnabled: true, nutritionEnabled: true, habitsEnabled: true, energyEnabled: true,
     studyPoints: 35, nutritionPoints: 25, habitsPoints: 25, energyPoints: 15,
   },
 };
 
-function loadSettings(): GrowthSettings {
+function loadSettings(): UserSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return { ...DEFAULT_SETTINGS, ...parsed, profile: { ...DEFAULT_SETTINGS.profile, ...parsed.profile }, pomodoro: { ...DEFAULT_SETTINGS.pomodoro, ...parsed.pomodoro }, notifications: { ...DEFAULT_SETTINGS.notifications, ...parsed.notifications }, focusScore: { ...DEFAULT_SETTINGS.focusScore, ...parsed.focusScore } };
+      return { ...DEFAULT_SETTINGS, ...parsed, profile: { ...DEFAULT_SETTINGS.profile, ...parsed.profile }, goals: { ...DEFAULT_SETTINGS.goals, ...parsed.goals }, pomodoro: { ...DEFAULT_SETTINGS.pomodoro, ...parsed.pomodoro }, habits: parsed.habits || DEFAULT_SETTINGS.habits, notifications: { ...DEFAULT_SETTINGS.notifications, ...parsed.notifications }, focusScore: { ...DEFAULT_SETTINGS.focusScore, ...parsed.focusScore } };
     }
   } catch {}
   return DEFAULT_SETTINGS;
 }
 
-function saveSettings(s: GrowthSettings) {
+function saveSettings(s: UserSettings) {
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
 }
 
 export default function Settings() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [settings, setSettings] = useState<GrowthSettings>(loadSettings);
+  const [settings, setSettings] = useState<UserSettings>(loadSettings);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<number | null>(null);
+  const [newHabitName, setNewHabitName] = useState("");
+  const [newReminderTime, setNewReminderTime] = useState("");
 
   useEffect(() => { saveSettings(settings); }, [settings]);
 
-  const updateProfile = (key: keyof GrowthSettings["profile"], value: string | number) => {
+  const updateProfile = (key: keyof UserSettings["profile"], value: string | number) => {
     setSettings(prev => ({ ...prev, profile: { ...prev.profile, [key]: value } }));
   };
 
-  const updatePomodoro = (key: keyof GrowthSettings["pomodoro"], value: number) => {
+  const updateGoals = (key: keyof UserSettings["goals"], value: number) => {
+    setSettings(prev => ({ ...prev, goals: { ...prev.goals, [key]: value } }));
+  };
+
+  const updatePomodoro = (key: keyof UserSettings["pomodoro"], value: number) => {
     setSettings(prev => ({ ...prev, pomodoro: { ...prev.pomodoro, [key]: value } }));
   };
 
-  const updateFocusScore = (key: keyof GrowthSettings["focusScore"], value: boolean | number) => {
+  const updateFocusScore = (key: keyof UserSettings["focusScore"], value: boolean | number) => {
     setSettings(prev => ({ ...prev, focusScore: { ...prev.focusScore, [key]: value } }));
+  };
+
+  const addHabit = () => {
+    if (!newHabitName.trim()) return;
+    setSettings(prev => ({
+      ...prev,
+      habits: [...prev.habits, { name: newHabitName.trim(), dailyTarget: 1 }]
+    }));
+    setNewHabitName("");
+  };
+
+  const updateHabit = (index: number, key: keyof HabitSetting, value: string | number) => {
+    setSettings(prev => ({
+      ...prev,
+      habits: prev.habits.map((h, i) => i === index ? { ...h, [key]: value } : h)
+    }));
+  };
+
+  const removeHabit = (index: number) => {
+    setSettings(prev => ({
+      ...prev,
+      habits: prev.habits.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addReminderTime = () => {
+    if (!newReminderTime) return;
+    setSettings(prev => ({
+      ...prev,
+      notifications: {
+        ...prev.notifications,
+        reminderTimes: [...prev.notifications.reminderTimes, newReminderTime]
+      }
+    }));
+    setNewReminderTime("");
+  };
+
+  const removeReminderTime = (time: string) => {
+    setSettings(prev => ({
+      ...prev,
+      notifications: {
+        ...prev.notifications,
+        reminderTimes: prev.notifications.reminderTimes.filter(t => t !== time)
+      }
+    }));
   };
 
   const exportData = () => {
@@ -90,9 +165,30 @@ export default function Settings() {
     const blob = new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `growth-app-data-${new Date().toISOString().split("T")[0]}.json`;
+    a.href = url; a.download = `mindful-stride-data-${new Date().toISOString().split("T")[0]}.json`;
     a.click(); URL.revokeObjectURL(url);
     toast({ title: "Data exported successfully! 📁" });
+  };
+
+  const importData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string);
+        Object.keys(data).forEach(key => {
+          localStorage.setItem(key, typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]));
+        });
+        // Reload settings
+        setSettings(loadSettings());
+        toast({ title: "Data imported successfully! 📁" });
+      } catch (error) {
+        toast({ title: "Failed to import data. Please check the file format.", variant: "destructive" });
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
   };
 
   const clearAllData = () => {
@@ -126,16 +222,47 @@ export default function Settings() {
               <input value={settings.profile.name} onChange={e => updateProfile("name", e.target.value)} placeholder="Your name" className="input-styled" />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">Daily Study Goal (hours)</label>
-              <input type="number" value={settings.profile.dailyStudyGoalHours} onChange={e => updateProfile("dailyStudyGoalHours", Number(e.target.value))} className="input-styled" min="0.5" step="0.5" />
+              <label className="text-xs text-muted-foreground">Age</label>
+              <input type="number" value={settings.profile.age} onChange={e => updateProfile("age", Number(e.target.value))} className="input-styled" min="1" max="120" />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">Daily Calorie Goal</label>
-              <input type="number" value={settings.profile.dailyCalorieGoal} onChange={e => updateProfile("dailyCalorieGoal", Number(e.target.value))} className="input-styled" min="500" />
+              <label className="text-xs text-muted-foreground">Weight (kg)</label>
+              <input type="number" value={settings.profile.weight} onChange={e => updateProfile("weight", Number(e.target.value))} className="input-styled" min="1" step="0.1" />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">Daily Protein Goal (g)</label>
-              <input type="number" value={settings.profile.dailyProteinGoal} onChange={e => updateProfile("dailyProteinGoal", Number(e.target.value))} className="input-styled" min="10" />
+              <label className="text-xs text-muted-foreground">Height (cm)</label>
+              <input type="number" value={settings.profile.height} onChange={e => updateProfile("height", Number(e.target.value))} className="input-styled" min="50" max="250" />
+            </div>
+          </div>
+        </div>
+
+        {/* Goals */}
+        <div className="section-card section-nutrition flex flex-col gap-4">
+          <h2 className="text-[16px] font-semibold text-foreground">🎯 Daily Goals</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground">Calories</label>
+              <input type="number" value={settings.goals.calories} onChange={e => updateGoals("calories", Number(e.target.value))} className="input-styled" min="500" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground">Protein (g)</label>
+              <input type="number" value={settings.goals.protein} onChange={e => updateGoals("protein", Number(e.target.value))} className="input-styled" min="10" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground">Carbs (g)</label>
+              <input type="number" value={settings.goals.carbs} onChange={e => updateGoals("carbs", Number(e.target.value))} className="input-styled" min="0" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground">Fat (g)</label>
+              <input type="number" value={settings.goals.fat} onChange={e => updateGoals("fat", Number(e.target.value))} className="input-styled" min="0" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground">Fiber (g)</label>
+              <input type="number" value={settings.goals.fiber} onChange={e => updateGoals("fiber", Number(e.target.value))} className="input-styled" min="0" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-muted-foreground">Water (ml)</label>
+              <input type="number" value={settings.goals.water} onChange={e => updateGoals("water", Number(e.target.value))} className="input-styled" min="0" step="100" />
             </div>
           </div>
         </div>
@@ -163,6 +290,37 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Habits */}
+        <div className="section-card section-habits flex flex-col gap-4">
+          <h2 className="text-[16px] font-semibold text-foreground">📅 Habits</h2>
+          <div className="space-y-3">
+            {settings.habits.map((habit, index) => (
+              <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30">
+                <input
+                  value={habit.name}
+                  onChange={e => updateHabit(index, "name", e.target.value)}
+                  placeholder="Habit name"
+                  className="flex-1 input-styled text-sm"
+                />
+                <input
+                  type="number"
+                  value={habit.dailyTarget}
+                  onChange={e => updateHabit(index, "dailyTarget", Number(e.target.value))}
+                  placeholder="Target"
+                  className="w-20 input-styled text-sm"
+                  min="1"
+                />
+                <button onClick={() => removeHabit(index)} className="icon-btn w-8 h-8 min-w-0 min-h-0 text-destructive hover:bg-destructive/10">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <button onClick={addHabit} className="btn-secondary flex items-center gap-2 text-sm w-full justify-center">
+              <Plus className="w-4 h-4" /> Add New Habit
+            </button>
+          </div>
+        </div>
+
         {/* Notifications */}
         <div className="section-card section-study flex flex-col gap-4">
           <h2 className="text-[16px] font-semibold text-foreground">🔔 Notifications</h2>
@@ -175,6 +333,25 @@ export default function Settings() {
               <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background shadow transition-transform ${settings.notifications.timerAlerts ? "translate-x-5" : "translate-x-0"}`} />
             </button>
           </label>
+          <div className="space-y-2">
+            <label className="text-xs text-muted-foreground">Reminder Times</label>
+            {settings.notifications.reminderTimes.map((time, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <input
+                  type="time"
+                  value={time}
+                  onChange={e => updateReminderTime(index, e.target.value)}
+                  className="input-styled text-sm"
+                />
+                <button onClick={() => removeReminderTime(time)} className="icon-btn w-8 h-8 min-w-0 min-h-0 text-destructive hover:bg-destructive/10">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <button onClick={addReminderTime} className="btn-secondary flex items-center gap-2 text-sm w-full justify-center">
+              <Plus className="w-4 h-4" /> Add Reminder Time
+            </button>
+          </div>
         </div>
 
         {/* Focus Score */}
@@ -218,6 +395,10 @@ export default function Settings() {
             <button onClick={exportData} className="btn-secondary flex items-center gap-2 text-sm">
               <Download className="w-4 h-4" /> Export as JSON
             </button>
+            <label className="btn-secondary flex items-center gap-2 text-sm cursor-pointer">
+              <Upload className="w-4 h-4" /> Import from JSON
+              <input type="file" accept=".json" onChange={importData} className="hidden" />
+            </label>
             <button onClick={() => setShowClearConfirm(true)} className="btn-secondary text-destructive border-destructive/30 flex items-center gap-2 text-sm">
               <Trash2 className="w-4 h-4" /> Clear All Data
             </button>
