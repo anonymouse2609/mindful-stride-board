@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { X, Trophy, Flame, TrendingUp, ChevronRight, Award, Zap, Star } from "lucide-react";
+import { loadSettings } from "@/lib/utils";
 
 // ===== TYPES =====
 interface DailyScore {
@@ -42,124 +43,133 @@ function getTodayKey() {
 
 function calculateScore(): { score: number; breakdown: { study: number; nutrition: number; habits: number; energy: number }; nudges: string[] } {
   const todayKey = getTodayKey();
+  const settings = loadSettings();
   let study = 0, nutrition = 0, habits = 0, energy = 0;
   const nudges: string[] = [];
 
   // Study (35 pts)
-  try {
-    const raw = localStorage.getItem("dashboard-study-timer");
-    if (raw) {
-      const data = JSON.parse(raw);
-      const subjects = data.subjects || [];
-      const sessions = (data.sessions || []).filter((s: any) => s.date === todayKey);
-      const todayMinutes = sessions.reduce((a: number, s: any) => a + (s.durationMinutes || 0), 0);
-      
-      let totalWeeklyGoalHours = subjects.reduce((a: number, s: any) => a + (s.weeklyGoalHours || 0), 0);
-      const dailyGoalMinutes = totalWeeklyGoalHours > 0 ? (totalWeeklyGoalHours / 7) * 60 : 60;
-      
-      const ratio = dailyGoalMinutes > 0 ? todayMinutes / dailyGoalMinutes : 0;
-      if (ratio >= 1) study = 35;
-      else if (ratio >= 0.75) study = 25;
-      else if (ratio >= 0.5) study = 15;
-      else if (ratio >= 0.25) study = 8;
-      else if (sessions.length > 0) study = 5; // at least some study
-      
-      if (study < 35) {
-        const remaining = Math.ceil((dailyGoalMinutes - todayMinutes) / 60 * 10) / 10;
-        if (remaining > 0) nudges.push(`Study ${remaining.toFixed(1)} more hours to max study points`);
+  if (settings.focusScore.studyEnabled) {
+    try {
+      const raw = localStorage.getItem("dashboard-study-timer");
+      if (raw) {
+        const data = JSON.parse(raw);
+        const subjects = data.subjects || [];
+        const sessions = (data.sessions || []).filter((s: any) => s.date === todayKey);
+        const todayMinutes = sessions.reduce((a: number, s: any) => a + (s.durationMinutes || 0), 0);
+        
+        let totalWeeklyGoalHours = subjects.reduce((a: number, s: any) => a + (s.weeklyGoalHours || 0), 0);
+        const dailyGoalMinutes = totalWeeklyGoalHours > 0 ? (totalWeeklyGoalHours / 7) * 60 : 60;
+        
+        const ratio = dailyGoalMinutes > 0 ? todayMinutes / dailyGoalMinutes : 0;
+        if (ratio >= 1) study = settings.focusScore.studyPoints;
+        else if (ratio >= 0.75) study = Math.round(settings.focusScore.studyPoints * 0.8);
+        else if (ratio >= 0.5) study = Math.round(settings.focusScore.studyPoints * 0.5);
+        else if (ratio >= 0.25) study = Math.round(settings.focusScore.studyPoints * 0.3);
+        else if (sessions.length > 0) study = Math.round(settings.focusScore.studyPoints * 0.2); // at least some study
+        
+        if (study < settings.focusScore.studyPoints) {
+          const remaining = Math.ceil((dailyGoalMinutes - todayMinutes) / 60 * 10) / 10;
+          if (remaining > 0) nudges.push(`Study ${remaining.toFixed(1)} more hours to max study points`);
+        }
+      } else {
+        nudges.push("Start a study session to earn up to " + settings.focusScore.studyPoints + " points");
       }
-    } else {
-      nudges.push("Start a study session to earn up to 35 points");
-    }
-  } catch {}
+    } catch {}
+  }
 
   // Nutrition (25 pts) - within 200 cal of goal = full points
-  try {
-    const raw = localStorage.getItem("dashboard-nutrition");
-    if (raw) {
-      const data = JSON.parse(raw);
-      if (data.date === todayKey) {
-        const meals = data.log?.length || 0;
-        if (meals >= 1) nutrition += 5;
-        else nudges.push("Log a meal to earn 5 nutrition points");
+  if (settings.focusScore.nutritionEnabled) {
+    try {
+      const raw = localStorage.getItem("dashboard-nutrition");
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data.date === todayKey) {
+          const meals = data.log?.length || 0;
+          if (meals >= 1) nutrition += Math.round(settings.focusScore.nutritionPoints * 0.2);
+          else nudges.push("Log a meal to earn 5 nutrition points");
 
-        let totalCal = 0, totalProtein = 0;
-        const calGoal = data.goals?.calories || 2000;
-        const proteinGoal = data.goals?.protein || 80;
-        (data.log || []).forEach((e: any) => {
-          const m = e.grams / 100;
-          totalCal += e.food.calories * m;
-          totalProtein += e.food.protein * m;
-        });
+          let totalCal = 0, totalProtein = 0;
+          const calGoal = data.goals?.calories || 2000;
+          const proteinGoal = data.goals?.protein || 80;
+          (data.log || []).forEach((e: any) => {
+            const m = e.grams / 100;
+            totalCal += e.food.calories * m;
+            totalProtein += e.food.protein * m;
+          });
 
-        // Within 200 calories of goal = full 10 points
-        if (Math.abs(totalCal - calGoal) <= 200) nutrition += 10;
-        else if (meals >= 1) nudges.push("Get within 200 cal of goal for 10 more points");
+          // Within 200 calories of goal = full 40% points
+          if (Math.abs(totalCal - calGoal) <= 200) nutrition += Math.round(settings.focusScore.nutritionPoints * 0.4);
+          else if (meals >= 1) nudges.push("Get within 200 cal of goal for 10 more points");
 
-        if (totalProtein >= proteinGoal) nutrition += 10;
-        else if (meals >= 1) nudges.push(`Eat ${Math.ceil(proteinGoal - totalProtein)}g more protein for 10 points`);
+          if (totalProtein >= proteinGoal) nutrition += Math.round(settings.focusScore.nutritionPoints * 0.4);
+          else if (meals >= 1) nudges.push(`Eat ${Math.ceil(proteinGoal - totalProtein)}g more protein for 10 points`);
+        } else {
+          nudges.push("Log your first meal today to start earning nutrition points");
+        }
       } else {
-        nudges.push("Log your first meal today to start earning nutrition points");
+        nudges.push("Log a meal to earn up to " + settings.focusScore.nutritionPoints + " nutrition points");
       }
-    } else {
-      nudges.push("Log a meal to earn up to 25 nutrition points");
-    }
-  } catch {}
+    } catch {}
+  }
 
   // Habits (25 pts) — read from habits_today key directly
-  try {
-    const raw = localStorage.getItem("habits_today");
-    if (raw) {
-      const data = JSON.parse(raw);
-      if (data.date === todayKey) {
-        const total = data.total || 0;
-        const completed = data.completed || 0;
-        if (total > 0) {
-          habits = Math.round((completed / total) * 25);
-          const remaining = total - completed;
-          if (remaining > 0) nudges.push(`Complete ${remaining} more habit${remaining > 1 ? "s" : ""} to earn ${Math.round((remaining / total) * 25)} more points`);
+  if (settings.focusScore.habitsEnabled) {
+    try {
+      const raw = localStorage.getItem("habits_today");
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data.date === todayKey) {
+          const total = data.total || 0;
+          const completed = data.completed || 0;
+          if (total > 0) {
+            habits = Math.round((completed / total) * settings.focusScore.habitsPoints);
+            const remaining = total - completed;
+            if (remaining > 0) nudges.push(`Complete ${remaining} more habit${remaining > 1 ? "s" : ""} to earn ${Math.round((remaining / total) * settings.focusScore.habitsPoints)} more points`);
+          }
+        }
+      } else {
+        // Fallback to old method
+        const rawOld = localStorage.getItem("dashboard-habits");
+        if (rawOld) {
+          const data = JSON.parse(rawOld);
+          const todayIdx = (new Date().getDay() + 6) % 7;
+          const total = data.habits?.length || 0;
+          if (total > 0) {
+            const perHabit = settings.focusScore.habitsPoints / total;
+            let completed = 0;
+            (data.habits || []).forEach((_: string, i: number) => {
+              if (data.grid?.[`${i}`]?.[todayIdx]) completed++;
+            });
+            // Also check by habit name keys
+            (data.habits || []).forEach((h: string) => {
+              if (data.grid?.[h]?.[todayIdx]) completed++;
+            });
+            // Deduplicate - use max
+            habits = Math.min(settings.focusScore.habitsPoints, Math.round(perHabit * completed));
+          }
         }
       }
-    } else {
-      // Fallback to old method
-      const rawOld = localStorage.getItem("dashboard-habits");
-      if (rawOld) {
-        const data = JSON.parse(rawOld);
-        const todayIdx = (new Date().getDay() + 6) % 7;
-        const total = data.habits?.length || 0;
-        if (total > 0) {
-          const perHabit = 25 / total;
-          let completed = 0;
-          (data.habits || []).forEach((_: string, i: number) => {
-            if (data.grid?.[`${i}`]?.[todayIdx]) completed++;
-          });
-          // Also check by habit name keys
-          (data.habits || []).forEach((h: string) => {
-            if (data.grid?.[h]?.[todayIdx]) completed++;
-          });
-          // Deduplicate - use max
-          habits = Math.min(25, Math.round(perHabit * completed));
-        }
-      }
-    }
-  } catch {}
+    } catch {}
+  }
 
   // Energy (15 pts)
-  try {
-    const raw = localStorage.getItem("dashboard-study-timer");
-    if (raw) {
-      const data = JSON.parse(raw);
-      const todaySessions = (data.sessions || []).filter((s: any) => s.date === todayKey && s.energyLevel);
-      if (todaySessions.length > 0) {
-        energy += 5;
-        const avgEnergy = todaySessions.reduce((a: number, s: any) => a + s.energyLevel, 0) / todaySessions.length;
-        if (avgEnergy >= 4) energy += 10;
-        else if (avgEnergy >= 3) energy += 5;
-      } else {
-        nudges.push("Log your energy level in a study session for 5 free points");
+  if (settings.focusScore.energyEnabled) {
+    try {
+      const raw = localStorage.getItem("dashboard-study-timer");
+      if (raw) {
+        const data = JSON.parse(raw);
+        const todaySessions = (data.sessions || []).filter((s: any) => s.date === todayKey && s.energyLevel);
+        if (todaySessions.length > 0) {
+          energy += Math.round(settings.focusScore.energyPoints * 0.3);
+          const avgEnergy = todaySessions.reduce((a: number, s: any) => a + s.energyLevel, 0) / todaySessions.length;
+          if (avgEnergy >= 4) energy += Math.round(settings.focusScore.energyPoints * 0.7);
+          else if (avgEnergy >= 3) energy += Math.round(settings.focusScore.energyPoints * 0.4);
+        } else {
+          nudges.push("Log your energy level in a study session for " + Math.round(settings.focusScore.energyPoints * 0.3) + " free points");
+        }
       }
-    }
-  } catch {}
+    } catch {}
+  }
 
   // Revision bonus/penalty
   let revisionBonus = 0;
@@ -367,6 +377,18 @@ const FocusScore = () => {
       setShowEndOfDay(true);
     }
   }, [currentScore]);
+
+  // Recalculate when settings change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const result = calculateScore();
+      setCurrentScore(result.score);
+      setCurrentBreakdown(result.breakdown);
+      setCurrentNudges(result.nudges);
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const last30 = useMemo(() => load30DayHistory(), [data.scores]);
 

@@ -14,6 +14,7 @@ import FocusScore from "@/components/FocusScore";
 import RevisionScheduler from "@/components/RevisionScheduler";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
+import { loadSettings } from "@/lib/utils";
 
 function getAppState(): AppState {
   const todayKey = new Date().toISOString().split("T")[0];
@@ -94,9 +95,27 @@ function getAppState(): AppState {
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const now = new Date();
-  const greeting =
-    now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening";
+  const [greeting, setGreeting] = useState(() => {
+    const now = new Date();
+    const settings = loadSettings();
+    return settings.profile.name 
+      ? `${now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening"}, ${settings.profile.name}!`
+      : (now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening");
+  });
+
+  // Update greeting when settings change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const now = new Date();
+      const settings = loadSettings();
+      const newGreeting = settings.profile.name 
+        ? `${now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening"}, ${settings.profile.name}!`
+        : (now.getHours() < 12 ? "Good morning" : now.getHours() < 17 ? "Good afternoon" : "Good evening");
+      setGreeting(newGreeting);
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Load profile name from settings
   const profileName = (() => {

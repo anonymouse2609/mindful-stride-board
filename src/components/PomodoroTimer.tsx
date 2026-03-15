@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, Pause, RotateCcw, Coffee, Bell } from "lucide-react";
-
-const WORK_TIME_MS = 25 * 60 * 1000;
-const BREAK_TIME_MS = 5 * 60 * 1000;
+import { loadSettings } from "@/lib/utils";
 
 const POMO_STORAGE = "pomo-timer-state";
 
@@ -15,11 +13,16 @@ interface PomoState {
 }
 
 function loadPomoState(): PomoState {
+  const settings = loadSettings();
+  const workDuration = settings.pomodoro.workDuration * 60 * 1000;
+  const shortBreak = settings.pomodoro.shortBreak * 60 * 1000;
+  const longBreak = settings.pomodoro.longBreak * 60 * 1000;
+
   try {
     const raw = localStorage.getItem(POMO_STORAGE);
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { startedAt: null, duration: WORK_TIME_MS, isBreak: false, sessions: 0, pausedRemaining: null };
+  return { startedAt: null, duration: workDuration, isBreak: false, sessions: 0, pausedRemaining: null };
 }
 
 function savePomoState(s: PomoState) {
@@ -43,6 +46,9 @@ function playBeep() {
 }
 
 function notifyComplete(isBreak: boolean) {
+  const settings = loadSettings();
+  if (!settings.notifications.enabled || !settings.notifications.timerAlerts) return;
+  
   if ("Notification" in window && Notification.permission === "granted") {
     new Notification("Growth App", {
       body: isBreak ? "Break over! Ready to focus? 💪" : "Pomodoro complete! Time for a break 🎉",
@@ -74,12 +80,22 @@ export default function PomodoroTimer() {
 
   // Handle timer completion
   const handleComplete = useCallback((s: PomoState) => {
+    const settings = loadSettings();
+    const workDuration = settings.pomodoro.workDuration * 60 * 1000;
+    const shortBreak = settings.pomodoro.shortBreak * 60 * 1000;
+    const longBreak = settings.pomodoro.longBreak * 60 * 1000;
+    const longBreakAfter = settings.pomodoro.longBreakAfter;
+
     playBeep();
     notifyComplete(s.isBreak);
     releaseWakeLock();
+    
+    const shouldLongBreak = !s.isBreak && (s.sessions + 1) % longBreakAfter === 0;
+    const nextDuration = s.isBreak ? workDuration : (shouldLongBreak ? longBreak : shortBreak);
+    
     const newState: PomoState = {
       startedAt: null,
-      duration: s.isBreak ? WORK_TIME_MS : BREAK_TIME_MS,
+      duration: nextDuration,
       isBreak: !s.isBreak,
       sessions: s.isBreak ? s.sessions : s.sessions + 1,
       pausedRemaining: null,

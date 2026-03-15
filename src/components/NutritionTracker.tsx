@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Settings2, RotateCcw, Search, X, ChefHat, Edit2, BookOpen } from "lucide-react";
 import { FOODS, UNIT_MAP, type FoodItem, type UnitInfo } from "@/data/foodDatabase";
+import { loadSettings, type UserSettings } from "@/lib/utils";
 
 interface LogEntry {
   id: string;
@@ -16,6 +17,8 @@ interface MacroGoals {
   protein: number;
   carbs: number;
   fat: number;
+  fiber: number;
+  water: number;
 }
 
 // FOODS and UNIT_MAP imported from @/data/foodDatabase
@@ -26,7 +29,7 @@ const RECIPES_KEY = "dashboard-recipes";
 const SAVED_RECIPES_KEY = "saved_recipes";
 const todayKey = () => new Date().toISOString().split("T")[0];
 
-const DEFAULT_GOALS: MacroGoals = { calories: 2000, protein: 80, carbs: 250, fat: 65 };
+const DEFAULT_GOALS: MacroGoals = { calories: 2000, protein: 80, carbs: 250, fat: 65, fiber: 25, water: 8 };
 
 interface CustomFood extends FoodItem {
   id: string;
@@ -60,15 +63,25 @@ interface StoredData {
 }
 
 function loadData(): StoredData {
+  const settings = loadSettings();
+  const goals: MacroGoals = {
+    calories: settings.goals.dailyCalorieGoal,
+    protein: settings.goals.proteinGoal,
+    carbs: settings.goals.carbsGoal,
+    fat: settings.goals.fatGoal,
+    fiber: settings.goals.fiberGoal,
+    water: settings.goals.waterIntakeGoal,
+  };
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw) as StoredData;
       if (data.date === todayKey()) return data;
-      return { date: todayKey(), log: [], goals: data.goals || DEFAULT_GOALS };
+      return { date: todayKey(), log: [], goals };
     }
   } catch {}
-  return { date: todayKey(), log: [], goals: DEFAULT_GOALS };
+  return { date: todayKey(), log: [], goals };
 }
 function saveData(data: StoredData) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
@@ -159,6 +172,15 @@ export default function NutritionTracker() {
   const [oilFree, setOilFree] = useState(false);
   const [showGoals, setShowGoals] = useState(false);
   const [editGoals, setEditGoals] = useState<MacroGoals>(data.goals);
+
+  // Reload data when settings change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setData(loadData());
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Custom foods
   const [customFoods, setCustomFoods] = useState<CustomFood[]>(loadCustomFoods);

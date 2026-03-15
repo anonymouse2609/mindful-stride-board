@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Check, Flame } from "lucide-react";
+import { loadSettings } from "@/lib/utils";
 
 const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 const DEFAULT_HABITS = ["💧 Drink water", "🏃 Exercise", "📚 Study", "😴 Sleep 7h+", "🧘 Meditate"];
@@ -24,6 +25,7 @@ function getTodayIndex(): number {
 }
 
 function loadData(): HabitData {
+  const settings = loadSettings();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -32,8 +34,8 @@ function loadData(): HabitData {
     }
   } catch {}
   const grid: Record<string, boolean[]> = {};
-  DEFAULT_HABITS.forEach((h) => (grid[h] = Array(7).fill(false)));
-  return { habits: DEFAULT_HABITS, grid, week: getWeekKey() };
+  settings.habits.forEach((h) => (grid[h.name] = Array(7).fill(false)));
+  return { habits: settings.habits.map(h => h.name), grid, week: getWeekKey() };
 }
 
 function saveData(data: HabitData) {
@@ -59,6 +61,15 @@ export default function HabitsTracker() {
     saveData(data);
     writeHabitsToday(data);
   }, [data]);
+
+  // Reload when settings change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setData(loadData());
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const toggleDay = (habit: string, dayIdx: number) => {
     setData((prev) => {

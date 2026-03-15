@@ -4,84 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-
-const SETTINGS_KEY = "user_settings";
-
-interface HabitSetting {
-  name: string;
-  dailyTarget: number;
-}
-
-interface UserSettings {
-  profile: {
-    name: string;
-    age: number;
-    weight: number;
-    height: number;
-  };
-  goals: {
-    dailyCalorieGoal: number;
-    proteinGoal: number;
-    carbsGoal: number;
-    fatGoal: number;
-    fiberGoal: number;
-    waterIntakeGoal: number;
-  };
-  pomodoro: {
-    workDuration: number;
-    shortBreak: number;
-    longBreak: number;
-    longBreakAfter: number;
-  };
-  habits: HabitSetting[];
-  notifications: {
-    enabled: boolean;
-    reminderTimes: string[];
-  };
-  focusScore: {
-    studyEnabled: boolean;
-    nutritionEnabled: boolean;
-    habitsEnabled: boolean;
-    energyEnabled: boolean;
-    studyPoints: number;
-    nutritionPoints: number;
-    habitsPoints: number;
-    energyPoints: number;
-  };
-}
-
-const DEFAULT_SETTINGS: UserSettings = {
-  profile: { name: "", age: 25, weight: 70, height: 170 },
-  goals: { dailyCalorieGoal: 2000, proteinGoal: 80, carbsGoal: 250, fatGoal: 65, fiberGoal: 25, waterIntakeGoal: 8 },
-  pomodoro: { workDuration: 25, shortBreak: 5, longBreak: 15, longBreakAfter: 4 },
-  habits: [
-    { name: "💧 Drink water", dailyTarget: 8 },
-    { name: "🏃 Exercise", dailyTarget: 1 },
-    { name: "📚 Study", dailyTarget: 2 },
-    { name: "😴 Sleep 7h+", dailyTarget: 1 },
-    { name: "🧘 Meditate", dailyTarget: 1 },
-  ],
-  notifications: { enabled: true, reminderTimes: ["09:00", "14:00", "19:00"] },
-  focusScore: {
-    studyEnabled: true, nutritionEnabled: true, habitsEnabled: true, energyEnabled: true,
-    studyPoints: 35, nutritionPoints: 25, habitsPoints: 25, energyPoints: 15,
-  },
-};
-
-function loadSettings(): UserSettings {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return { ...DEFAULT_SETTINGS, ...parsed, profile: { ...DEFAULT_SETTINGS.profile, ...parsed.profile }, goals: { ...DEFAULT_SETTINGS.goals, ...parsed.goals }, pomodoro: { ...DEFAULT_SETTINGS.pomodoro, ...parsed.pomodoro }, habits: parsed.habits || DEFAULT_SETTINGS.habits, notifications: { ...DEFAULT_SETTINGS.notifications, ...parsed.notifications }, focusScore: { ...DEFAULT_SETTINGS.focusScore, ...parsed.focusScore } };
-    }
-  } catch {}
-  return DEFAULT_SETTINGS;
-}
-
-function saveSettings(s: UserSettings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-}
+import { loadSettings, saveSettings, type UserSettings } from "@/lib/utils";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -152,6 +75,16 @@ export default function Settings() {
       notifications: {
         ...prev.notifications,
         reminderTimes: prev.notifications.reminderTimes.filter(t => t !== time)
+      }
+    }));
+  };
+
+  const updateReminderTime = (index: number, value: string) => {
+    setSettings(prev => ({
+      ...prev,
+      notifications: {
+        ...prev.notifications,
+        reminderTimes: prev.notifications.reminderTimes.map((t, i) => i === index ? value : t)
       }
     }));
   };
@@ -250,27 +183,27 @@ export default function Settings() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Calories</label>
-              <input type="number" value={settings.goals.calories} onChange={e => updateGoals("calories", Number(e.target.value))} className="input-styled" min="500" />
+              <input type="number" value={settings.goals.dailyCalorieGoal} onChange={e => updateGoals("dailyCalorieGoal", Number(e.target.value))} className="input-styled" min="500" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Protein (g)</label>
-              <input type="number" value={settings.goals.protein} onChange={e => updateGoals("protein", Number(e.target.value))} className="input-styled" min="10" />
+              <input type="number" value={settings.goals.proteinGoal} onChange={e => updateGoals("proteinGoal", Number(e.target.value))} className="input-styled" min="10" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Carbs (g)</label>
-              <input type="number" value={settings.goals.carbs} onChange={e => updateGoals("carbs", Number(e.target.value))} className="input-styled" min="0" />
+              <input type="number" value={settings.goals.carbsGoal} onChange={e => updateGoals("carbsGoal", Number(e.target.value))} className="input-styled" min="0" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Fat (g)</label>
-              <input type="number" value={settings.goals.fat} onChange={e => updateGoals("fat", Number(e.target.value))} className="input-styled" min="0" />
+              <input type="number" value={settings.goals.fatGoal} onChange={e => updateGoals("fatGoal", Number(e.target.value))} className="input-styled" min="0" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Fiber (g)</label>
-              <input type="number" value={settings.goals.fiber} onChange={e => updateGoals("fiber", Number(e.target.value))} className="input-styled" min="0" />
+              <input type="number" value={settings.goals.fiberGoal} onChange={e => updateGoals("fiberGoal", Number(e.target.value))} className="input-styled" min="0" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Water (ml)</label>
-              <input type="number" value={settings.goals.water} onChange={e => updateGoals("water", Number(e.target.value))} className="input-styled" min="0" step="100" />
+              <input type="number" value={settings.goals.waterIntakeGoal} onChange={e => updateGoals("waterIntakeGoal", Number(e.target.value))} className="input-styled" min="0" step="100" />
             </div>
           </div>
         </div>
