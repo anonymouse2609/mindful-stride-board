@@ -143,6 +143,18 @@ export default function PomodoroTimer() {
     return () => document.removeEventListener("visibilitychange", handle);
   }, [state, getRemaining, handleComplete]);
 
+  // Reload settings when they change
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Only reload if not currently running to avoid confusion
+      if (!isRunning) {
+        setState(loadPomoState());
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [isRunning]);
+
   // Wake lock
   const requestWakeLock = async () => {
     try {
@@ -174,12 +186,15 @@ export default function PomodoroTimer() {
 
   const reset = () => {
     releaseWakeLock();
-    const newState: PomoState = { ...state, startedAt: null, pausedRemaining: null, duration: state.isBreak ? BREAK_TIME_MS : WORK_TIME_MS };
+    const settings = loadSettings();
+    const workDuration = settings.pomodoro.workDuration * 60 * 1000;
+    const shortBreak = settings.pomodoro.shortBreak * 60 * 1000;
+    const newState: PomoState = { ...state, startedAt: null, pausedRemaining: null, duration: state.isBreak ? shortBreak : workDuration };
     setState(newState);
     savePomoState(newState);
   };
 
-  const totalMs = state.isBreak ? BREAK_TIME_MS : WORK_TIME_MS;
+  const totalMs = state.duration;
   const progress = ((totalMs - displayMs) / totalMs) * 100;
   const totalSec = Math.ceil(displayMs / 1000);
   const minutes = Math.floor(totalSec / 60).toString().padStart(2, "0");
